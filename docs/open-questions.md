@@ -14,11 +14,15 @@ them.
 
 ## 2. Does the machinery work at all? (C-13, C-9, C-11)
 
-Termination, then the acceptance suite. C-13 is the load-bearing lemma and a
-realistic first formalization. C-9 validates the definitions against a number
-Tromp computed independently. C-11 settles a disagreement between two published
-sources about the 1×9 minimax score, which is a small real contribution and a
-sharp test of the kernel.
+Termination is proved (C-13), with the game-length bound of C-26 alongside it.
+What remains is the acceptance suite. C-9 validates the definitions against a
+number Tromp computed independently. C-11 settles a disagreement between two
+published sources about the 1×9 minimax score, which is a small real
+contribution and a sharp test of the kernel.
+
+C-13 shows the formalization pipeline works. It says nothing about whether the
+definitions describe Go, which is what C-9 is for — and until C-9 reproduces,
+every theorem here is a theorem about `Defs.lean` rather than about Go.
 
 **Closable in weeks**, and closing it is what makes any later claim credible.
 

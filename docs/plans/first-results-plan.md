@@ -31,17 +31,27 @@ available.
 
 ## Phase 2 — prove termination
 
-**C-13.** Every play strictly enlarges `State.seen`, bounded by the finite set of
-situations; passes leave it alone but advance a counter that ends the game at
-two. A lexicographic measure on (unvisited situations, pass counter) decreases
-on every move.
+~~**C-13.**~~ Done. `Superko.C13_terminates`, with `C-26` the quantitative
+companion: a game from a root position makes at most 4·3^(m·n) moves.
 
-Load-bearing — determinacy and the definability of the game value both rest on
-it — and elementary, which makes it the right place to find out what
-formalizing on this material actually costs. It also exercises the whole
-pipeline once: a claim moves from `conjecture` to `proved`, the ledger's
-formalization column names a theorem, `check-ledger.sh` verifies it exists,
-`check-lean.sh` records its axioms.
+Three things were learned that the plan did not anticipate.
+
+1. **The lexicographic measure was unnecessary.** Weighting the situation count
+   by two flattens the order to a single natural number and one `omega` call per
+   case discharges it. The cost is a factor of two in the length bound, which
+   nothing downstream needs.
+2. **Termination does not depend on C-18.** The proof runs through a named
+   property, `Superko.ExcludesRepeats`, that constrains plays only; a run of
+   passes is bounded by the pass counter rather than by the history. Whichever
+   way the pass question falls, C-13 survives, and so does any variant rule that
+   ends the game on two passes.
+3. **The pipeline works and is cheap.** A claim moved from `conjecture` to
+   `proved`, `check-ledger.sh` verified the theorem exists, `check-lean.sh`
+   recorded its axioms. `Defs.lean` was not touched: the finiteness of
+   `Situation` is an instance, and an instance is a derived notion.
+
+Determinacy does **not** follow yet. `C13_terminates` supplies the well-founded
+relation a determinacy proof would recurse on, and that proof is not written.
 
 ## Phase 3 — validate the definitions
 

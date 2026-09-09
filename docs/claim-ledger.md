@@ -59,7 +59,7 @@ matching `C-<digits>`, `depends-on` comma-separated or `-`.
 | C-10 | Repetition-free games exist whose length is exponential in the board size | cited | formalizable | - | Walraet–Tromp 2016 |
 | C-11 | The 1x9 empty-board minimax score under PSK is 0 | open | formalizable | - | disputed: 0 vs 4 across sources |
 | C-12 | SUPERKO-GO under PSK and under SSK lie in the same complexity class | open | infra-gap | C-1 | no published separation or equivalence |
-| C-13 | Every play sequence under SSK from any start state is finite | conjecture | formalizable | - | measure argument, unwritten |
+| C-13 | Every play sequence under SSK from any start state is finite | proved | formalized:C13_terminates | - | lean/SuperkoComplexity/Results/C13_Termination.lean |
 | C-14 | SUPERKO-GO is in EXPTIME | conjecture | infra-gap | C-1 | Robson reported belief; no proof |
 | C-15 | The history-congruence index H(n) grows as 2^poly(n) | open | formalizable | C-13 | - |
 | C-16 | Mechanical area scoring agrees with AGA agreed scoring under optimal play | conjecture | formalizable | - | docs/formal-model.md §4 |
@@ -72,6 +72,7 @@ matching `C-<digits>`, `depends-on` comma-separated or `-`.
 | C-23 | The PSK game counts on 1x1, 1x2, 1x3, 1x4 are 1, 9, 907, 2098407841 | cited | formalizable | - | test_data/literature/game-counts.toml (transcribed, unverified) |
 | C-24 | The 1xn empty-board PSK minimax scores for n <= 8 are 0, 0, 3, 4, 0, 1, 2, 3 | cited | formalizable | - | test_data/literature/linear-go-scores.toml (transcribed, unverified) |
 | C-25 | No published complexity result isolates a repetition rule as the driver of a class change for chess, shogi or xiangqi | open | prose-only | - | confirmed absence; literature search 2026-09-09 |
+| C-26 | A game begun from a position as the root of play lasts at most 4·3^(m·n) moves under either superko rule | proved | formalized:C13_length_bound_explicit | C-13 | lean/SuperkoComplexity/Results/C13_Termination.lean |
 
 ## Detail
 
@@ -102,18 +103,48 @@ encoding.
 
 ### C-13 — termination
 
-The measure: every play strictly enlarges the history, which is bounded by the
-finite set of situations; passes do not enlarge it but advance a counter that
-ends the game at two. A lexicographic measure on (unvisited situations, pass
-counter) should decrease on every move.
+Proved, and machine-checked: `Superko.C13_terminates` in
+[`../lean/SuperkoComplexity/Results/C13_Termination.lean`](../lean/SuperkoComplexity/Results/C13_Termination.lean),
+axioms `propext, Classical.choice, Quot.sound`. The statement is that the play
+relation `Superko.Follows SSK` is well-founded, so no infinite sequence of
+legal moves exists. `C13_terminates_psk` is the same under positional superko.
 
-This is the load-bearing lemma for everything else. Determinacy follows from
-it, and so does the well-foundedness that makes the game value definable.
-Note its dependence on C-18: if passes were subject to superko, the pass
-counter would be unnecessary but the argument would change shape.
+The measure is a single natural number, `2 · (unvisited situations) + (passes
+remaining)`, not the lexicographic pair this project first proposed. The weight
+of two is what absorbs a play's reset of the pass counter, and flattening the
+order removes the well-founded-order plumbing at the cost of a factor of two in
+C-26.
 
-First target for formalization: it is elementary, it is needed, and proving it
-is a realistic first Lean exercise on this material.
+Termination turns out not to depend on C-18 after all. The proof runs through
+`Superko.ExcludesRepeats` — the property that a legal *play* may not recreate a
+seen situation — and takes no position on passes at all: what bounds a run of
+passes is the pass counter, not the history. `Superko.wellFounded_follows`
+states it in that generality, so any variant rule that ends the game on two
+passes and forbids repeated plays terminates with no further work. Whichever
+way OPEN-1 falls, this claim survives.
+
+What it does not establish: determinacy. `C13_terminates` supplies the
+well-founded relation a determinacy proof would recurse on, and is not that
+proof. Nor does it show that play must *reach* an ended state — only that it
+cannot go on forever.
+
+### C-26 — how long a game can be
+
+`Superko.C13_length_bound_explicit`. A game begun from a position as the root
+of play — encoding (C) of [`formal-model.md`](formal-model.md) §5 — makes at
+most `4 · 3^(m·n)` moves, because there are `2 · 3^(m·n)` situations
+(`Superko.card_situation`) and the measure starts at twice that.
+
+The constant is loose and the exponential is not. Two units of measure are
+charged on every play though only one reset ever needs absorbing, so a
+lexicographic measure would give something nearer `3^(m·n)`; sharpening it means
+a different proof, not a tightening of this one. Nothing downstream needs the
+constant.
+
+The exponential is the quantity the complexity question consumes. It is the
+reason a machine playing a game out needs exponentially many moves, and it is
+where the archive argument of C-3 would get its space bound. This claim does
+not make that argument, and says nothing about whether the space is necessary.
 
 ### C-14 — the headline conjecture
 

@@ -31,8 +31,8 @@ and proofs.
 
 ## Status
 
-Early. No result yet; the scaffolding, the definitions and the gates are in
-place.
+Early. Two claims proved, both aspects of one elementary fact; the scaffolding,
+the definitions and the gates are in place.
 
 The Lean development **builds** against Lean 4.34.0-rc2 and Mathlib, and the
 definitions are exercised by kernel-checked sanity theorems in
@@ -41,13 +41,21 @@ covering board geometry, chains, liberties, capture, suicide and area scoring.
 No `sorry`; no `native_decide`; the axiom record is
 [`results/axioms.txt`](results/axioms.txt).
 
-**No ledger claim is proved.** The sanity checks are hand-computed and so can
-only catch errors already imagined; the definitional validation this project
+**What is proved.** Play terminates (C-13): under either superko rule the play
+relation is well-founded, so no infinite sequence of legal moves exists. A game
+begun from a position as the root of play makes at most 4·3^(m·n) moves (C-26).
+Both are machine-checked on the three standard axioms, in
+[`lean/SuperkoComplexity/Results/C13_Termination.lean`](lean/SuperkoComplexity/Results/C13_Termination.lean).
+
+**What that is not.** It is not determinacy, and it is no evidence that the
+definitions describe Go. The sanity checks are hand-computed and so can only
+catch errors already imagined; the definitional validation this project
 actually rests on — reproducing counts other people computed — has not been
-done. See [`docs/trusted-base.md`](docs/trusted-base.md) for what a reader must
+done. Every complexity claim in the ledger is still inherited rather than held.
+See [`docs/trusted-base.md`](docs/trusted-base.md) for what a reader must
 believe, and
 [`experiments/001-mathlib-complexity-audit/`](experiments/001-mathlib-complexity-audit/)
-for the unrun audit that governs how much of this can be formalized at all.
+for the audit that governs how much of this can be formalized at all.
 
 ## What this project trusts
 

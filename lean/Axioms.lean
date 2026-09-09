@@ -3,7 +3,7 @@ Copyright (c) 2026 Joseph J. Piché. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph J. Piché
 -/
-import SuperkoComplexity.Sanity
+import SuperkoComplexity
 
 /-!
 # Axiom record
@@ -50,3 +50,22 @@ open Superko
 #print axioms Superko.Sanity.area_lone_stone
 #print axioms Superko.Sanity.area_dame_counts_for_neither
 #print axioms Superko.Sanity.area_eye_and_partition
+
+-- C-13, termination (Results/C13_Termination.lean).
+#print axioms Superko.ssk_excludesRepeats
+#print axioms Superko.psk_excludesRepeats
+#print axioms Superko.playMeasure_lt_of_follows
+#print axioms Superko.wellFounded_follows
+#print axioms Superko.C13_terminates
+#print axioms Superko.C13_terminates_psk
+#print axioms Superko.playMeasure_add_le
+#print axioms Superko.C13_no_infinite_play
+#print axioms Superko.playMeasure_start
+#print axioms Superko.C13_length_bound
+#print axioms Superko.C13_length_bound_explicit
+
+-- Finiteness of the situation space (Basic.lean).
+#print axioms Superko.card_color
+#print axioms Superko.card_position
+#print axioms Superko.card_situation
+#print axioms Superko.ncard_seen_le_card

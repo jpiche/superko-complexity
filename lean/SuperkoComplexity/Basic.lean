@@ -26,17 +26,17 @@ whole reason `Defs.lean` is kept small.
 
 ## Status
 
-Empty. Nothing here has been compiled.
+Compiles. Two groups of material, both exercised by the kernel: the decidable
+counterparts of the core definitions with their bridging lemmas, and — added
+for claim C-13 — the finiteness facts about `Situation` together with the
+one-line consequences of `step` that a termination argument needs.
 
-The first target is claim C-13, termination: every play strictly enlarges
-`State.seen`, which is bounded by the finite set of situations, while passes
-leave it alone but advance a counter that ends the game at two. A lexicographic
-measure on (unvisited situations, pass counter) should strictly decrease on
-every move.
-
-C-13 is load-bearing — determinacy and the definability of the game value both
-rest on it — and it is elementary, which makes it the right place to find out
-what formalizing on this material actually costs.
+C-13 itself is proved in `Results/C13_Termination.lean`. Its measure is not the
+lexicographic one on (unvisited situations, pass counter) that
+`docs/plans/first-results-plan.md` proposed. Weighting the situation count by
+two flattens the order to a single natural number, because two units of that
+budget are exactly enough to absorb the reset of `passes` that a play performs.
+One `omega` call per case then discharges the whole argument.
 -/
 
 namespace Superko
@@ -253,5 +253,124 @@ lemma area'_eq_area {m n : ℕ} (b : Position m n) (c : Color) :
   congr 1
   ext p
   simp
+
+/-! ## Finiteness
+
+The board is finite, so the situations are, and every history is a subset of a
+finite set. That is what lets a termination measure be a natural number which
+can run out.
+
+`Color` gets its `Fintype` instance here rather than through a `deriving`
+clause in `Defs.lean`. An instance is a derived notion, and the trusted core is
+not enlarged for one. -/
+
+instance : Fintype Color :=
+  ⟨{Color.black, Color.white}, fun c => by cases c <;> decide⟩
+
+lemma card_color : Fintype.card Color = 2 := rfl
+
+/-- A situation is nothing but its board and its player to move. -/
+def situationEquiv (m n : ℕ) : Situation m n ≃ Position m n × Color where
+  toFun s := (s.board, s.toMove)
+  invFun x := ⟨x.1, x.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+instance instFintypeSituation (m n : ℕ) : Fintype (Situation m n) :=
+  Fintype.ofEquiv (Position m n × Color) (situationEquiv m n).symm
+
+/-- Each of the `m * n` points carries a black stone, a white stone or
+nothing. -/
+lemma card_position (m n : ℕ) : Fintype.card (Position m n) = 3 ^ (m * n) := by
+  simp [Position, Point, Fintype.card_option, card_color]
+
+/-- **The count every exponential in this project comes from.** A situation is a
+position together with a player to move, so there are `2 * 3 ^ (m * n)` of
+them — singly exponential in the board size. -/
+lemma card_situation (m n : ℕ) :
+    Fintype.card (Situation m n) = 2 * 3 ^ (m * n) := by
+  rw [Fintype.card_congr (situationEquiv m n), Fintype.card_prod, card_position,
+    card_color]
+  omega
+
+-- Two counts a reader can check by hand: the 1×1 board has three positions and
+-- two players to move, the 2×2 board eighty-one and two.
+example : Fintype.card (Situation 1 1) = 6 := by rw [card_situation]; decide
+example : Fintype.card (Situation 2 2) = 162 := by rw [card_situation]; decide
+
+/-- A history never holds more situations than there are situations. -/
+lemma ncard_seen_le_card {m n : ℕ} (st : State m n) :
+    st.seen.ncard ≤ Fintype.card (Situation m n) := by
+  have h : st.seen.ncard ≤ (Set.univ : Set (Situation m n)).ncard :=
+    Set.ncard_le_ncard (Set.subset_univ _) (Set.toFinite _)
+  simpa [Set.ncard_univ, Nat.card_eq_fintype_card] using h
+
+/-! ## How a move moves the state
+
+Each of these is a one-line consequence of what `step` does, named so that a
+change to `Defs.lean` breaks a small site rather than the interior of a
+theorem. `start` is the encoding question C-1, so it is the field most likely
+to change. -/
+
+/-- A live game has a pass still to spare. -/
+lemma passes_lt_two_of_not_ended {m n : ℕ} {st : State m n} (h : ¬ Ended st) :
+    st.passes < 2 :=
+  Nat.lt_of_not_le h
+
+/-- No move ever forgets a situation. -/
+lemma seen_subset_of_step {m n : ℕ} (st : State m n) (mv : Move m n) :
+    st.seen ⊆ (step st mv).seen :=
+  Set.subset_insert _ _
+
+/-- Hence no move shrinks the history. -/
+lemma ncard_seen_le_of_step {m n : ℕ} (st : State m n) (mv : Move m n) :
+    st.seen.ncard ≤ (step st mv).seen.ncard :=
+  Set.ncard_le_ncard (seen_subset_of_step st mv) (Set.toFinite _)
+
+/-- A play whose target the history does not hold enlarges it by exactly one. -/
+lemma ncard_seen_lt_of_play {m n : ℕ} (st : State m n) (p : Point m n)
+    (h : st.now.after (Move.play p) ∉ st.seen) :
+    (step st (Move.play p)).seen.ncard = st.seen.ncard + 1 :=
+  Set.ncard_insert_of_notMem h (Set.toFinite _)
+
+/-- A play resets the pass counter. -/
+lemma passes_step_play {m n : ℕ} (st : State m n) (p : Point m n) :
+    (step st (Move.play p)).passes = 0 := rfl
+
+/-- A pass advances the pass counter. -/
+lemma passes_step_pass {m n : ℕ} (st : State m n) :
+    (step st Move.pass).passes = st.passes + 1 := rfl
+
+/-! ## The play relation
+
+What a repetition rule must do for play to terminate, and the relation whose
+well-foundedness says that it does. -/
+
+/-- A repetition rule **excludes repeats** when no legal play may recreate a
+situation the history already holds.
+
+Both superko rules have this property, and it is the only property of them a
+termination argument uses. In particular the pass exemption — OPEN-1 in
+`docs/formal-model.md`, claim C-18 — does not bear on termination: what bounds a
+run of passes is the pass counter, not the history. -/
+def ExcludesRepeats {m n : ℕ} (L : Repetition m n) : Prop :=
+  ∀ (st : State m n) (p : Point m n), L st (Move.play p) →
+    st.now.after (Move.play p) ∉ st.seen
+
+theorem ssk_excludesRepeats {m n : ℕ} : ExcludesRepeats (SSK (m := m) (n := n)) :=
+  fun _ _ h => h.2
+
+theorem psk_excludesRepeats {m n : ℕ} : ExcludesRepeats (PSK (m := m) (n := n)) := by
+  intro st p h hmem
+  exact h.2 _ hmem rfl
+
+/-- `Follows L st' st`: the game is live at `st`, and some `L`-legal move leads
+from `st` to `st'`.
+
+The successor comes first because that is the order `WellFounded` reads —
+`Acc r x` looks at every `y` with `r y x` — so `WellFounded (Follows L)` says
+no play goes on forever, rather than the reverse. -/
+def Follows {m n : ℕ} (L : Repetition m n) (st' st : State m n) : Prop :=
+  ¬ Ended st ∧ ∃ mv, L st mv ∧ st' = step st mv
 
 end Superko

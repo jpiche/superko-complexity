@@ -35,5 +35,3 @@ agent with none of this session's context, which is most of them.
 The rule: when a dead end explains a limit that still holds, lift the limit
 into `docs/` in the present tense and leave the story here. Nothing here is
 deleted.
-
-Empty.

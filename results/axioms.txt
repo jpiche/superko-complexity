@@ -1,5 +1,5 @@
 # witness: cd lean && lake env lean Axioms.lean
-# commit: pre-init (no git yet)
+# commit: PENDING
 # date: 2026-09-09
 #
 'Superko.mem_chain_iff_reachable' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -30,3 +30,18 @@
 'Superko.Sanity.area_lone_stone' depends on axioms: [propext, Classical.choice, Quot.sound]
 'Superko.Sanity.area_dame_counts_for_neither' depends on axioms: [propext, Classical.choice, Quot.sound]
 'Superko.Sanity.area_eye_and_partition' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.ssk_excludesRepeats' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.psk_excludesRepeats' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.playMeasure_lt_of_follows' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.wellFounded_follows' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.C13_terminates' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.C13_terminates_psk' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.playMeasure_add_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.C13_no_infinite_play' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.playMeasure_start' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.C13_length_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.C13_length_bound_explicit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.card_color' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.card_position' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.card_situation' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.ncard_seen_le_card' depends on axioms: [propext, Classical.choice, Quot.sound]
