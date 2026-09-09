@@ -1,0 +1,8 @@
+# The Rust pin, for the same reason lean/lean-toolchain exists: a reader who
+# cannot reproduce the build cannot check anything. rustup reads this file and
+# installs the named toolchain automatically.
+#
+# `rustfmt` and `clippy` are listed because CI runs both as gates.
+[toolchain]
+channel = "1.96.0"
+components = ["rustfmt", "clippy"]

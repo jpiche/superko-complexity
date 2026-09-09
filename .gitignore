@@ -1,0 +1,17 @@
+# Generated and throwaway output. Nothing here is committed.
+# The contents, not the directory: git cannot re-include a file whose parent
+# directory is excluded, so `/data/` here would also ignore /data/.gitkeep.
+/data/*
+
+# Rust
+/target/
+
+# Lean
+/lean/.lake/
+/lean/build/
+
+# macOS
+.DS_Store
+
+# ...but keep the directory, since CLAUDE.md directs scratch output here.
+!/data/.gitkeep

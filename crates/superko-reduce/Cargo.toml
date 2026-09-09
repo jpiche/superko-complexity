@@ -1,0 +1,11 @@
+[package]
+name = "superko-reduce"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+superko-rules.workspace = true
+superko-solve.workspace = true
+superko-geography.workspace = true

@@ -1,0 +1,56 @@
+# Empty-board minimax scores for 1xn Go under POSITIONAL superko.
+#
+# Positive is Black. Tromp rules, no suicide, PSK, no komi. Solved by Weninger
+# and Hayward's Positional Linear Go solver, whose state carries the history
+# set explicitly - the object this project wants to compress.
+#
+# See README.md in this directory: transcribed second-hand, no primary source
+# yet held.
+
+[meta]
+rule = "positional superko"
+komi = 0
+attributed_to = "Weninger & Hayward, Exploring Positional Linear Go (ACG 2017); Hayward course notes"
+transcribed_from = "Hayward course table, via literature survey 2026-09-09"
+verified_against_primary = false
+claims = ["C-11", "C-24"]
+
+[[score]]
+n = 1
+black = 0
+
+[[score]]
+n = 2
+black = 0
+
+[[score]]
+n = 3
+black = 3
+
+[[score]]
+n = 4
+black = 4
+
+[[score]]
+n = 5
+black = 0
+
+[[score]]
+n = 6
+black = 1
+
+[[score]]
+n = 7
+black = 2
+
+[[score]]
+n = 8
+black = 3
+
+# DISPUTED. Read as 0 in Hayward's course table and as 4 in an earlier draft.
+# Claim C-11. Settling this is an early target and a sharp test of the kernel:
+# the sources disagree, so reproducing either one says something.
+[[score]]
+n = 9
+black_candidates = [0, 4]
+disputed = true

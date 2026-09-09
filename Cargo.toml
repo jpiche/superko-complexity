@@ -1,0 +1,26 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/superko-rules",
+    "crates/superko-graph",
+    "crates/superko-solve",
+    "crates/superko-geography",
+    "crates/superko-reduce",
+    "crates/superko-cli",
+]
+default-members = ["crates/superko-cli"]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2024"
+# Equal to the pin in rust-toolchain.toml on purpose: a floor below the
+# toolchain CI actually builds with is a claim nothing checks.
+rust-version = "1.96"
+publish = false
+
+[workspace.dependencies]
+superko-rules = { path = "crates/superko-rules" }
+superko-graph = { path = "crates/superko-graph" }
+superko-solve = { path = "crates/superko-solve" }
+superko-geography = { path = "crates/superko-geography" }
+superko-reduce = { path = "crates/superko-reduce" }

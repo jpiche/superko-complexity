@@ -1,0 +1,55 @@
+# The gates, run on every push and pull request.
+#
+# For a project whose claim to attention is checkability, a public green build
+# is not decoration: it is the cheapest evidence a reader has that the Lean
+# development compiles, contains no `sorry`, and depends on no axiom beyond the
+# three standard ones. See docs/trusted-base.md.
+name: ci
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+# Nothing here writes to the repository. Declared rather than inherited: the
+# default GITHUB_TOKEN scope depends on account settings.
+permissions:
+  contents: read
+
+# A newer push to the same ref makes an in-flight run redundant.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo fmt --all --check
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+      - run: cargo build --workspace --verbose
+      - run: cargo test --workspace --verbose
+
+  docs-and-ledger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # No toolchain needed: these gates are shell and awk.
+      - run: ./tools/check-docs.sh
+      - run: ./tools/check-ledger.sh
+
+  lean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: "lean"
+          build: true
+          test: false
+      # check-lean.sh re-runs the build, scans for `sorry`, elaborates
+      # lean/Axioms.lean and diffs the axiom record against results/axioms.txt.
+      # It fails on any appearance of Lean.ofReduceBool (native_decide).
+      - run: ./tools/check-lean.sh
+      - run: ./tools/verify-results.sh

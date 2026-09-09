@@ -1,0 +1,38 @@
+# Exact counts of distinct Go games under POSITIONAL superko.
+#
+# A game is a maximal legal play sequence from the empty board. Under PSK these
+# correspond one-to-one with simple paths from the empty position in the
+# situation graph (claim C-7), which is what makes the count finite and exact.
+#
+# See README.md in this directory: these values are transcribed second-hand and
+# no primary source is yet held.
+
+[meta]
+rule = "positional superko"
+attributed_to = "Tromp; Tromp-Farneback, Combinatorics of Go (CG 2006, rev. 2016)"
+transcribed_from = "Tromp 2x2 solver page and Combinatorics of Go abstract, via literature survey 2026-09-09"
+verified_against_primary = false
+claims = ["C-9", "C-23"]
+
+[[count]]
+board = "1x1"
+games = 1
+
+[[count]]
+board = "1x2"
+games = 9
+
+[[count]]
+board = "1x3"
+games = 907
+
+[[count]]
+board = "1x4"
+games = 2098407841
+
+# The load-bearing one: the largest fully enumerated history space, and this
+# project's primary definitional validation. Reported factorization
+# 3 * 4651 * 27689881, computed by Tromp.
+[[count]]
+board = "2x2"
+games = 386356909593

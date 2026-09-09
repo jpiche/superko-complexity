@@ -1,0 +1,32 @@
+# witness: cd lean && lake env lean Axioms.lean
+# commit: pre-init (no git yet)
+# date: 2026-09-09
+#
+'Superko.mem_chain_iff_reachable' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.reaches_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.reaches_iff_occupied' does not depend on any axioms
+'Superko.clear'_eq_clear' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.resolve'_eq_resolve' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.playableAt'_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.area'_eq_area' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Sanity.adj_orthogonal' depends on axioms: [propext]
+'Superko.Sanity.adj_not_diagonal' depends on axioms: [propext]
+'Superko.Sanity.adj_irreflexive' depends on axioms: [propext]
+'Superko.Sanity.adj_symmetric' depends on axioms: [propext]
+'Superko.Sanity.nbr_count_center' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Sanity.nbr_count_corner' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Sanity.chain_joins_adjacent' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Sanity.chain_skips_diagonal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Sanity.chain_respects_color' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Sanity.no_liberty_when_surrounded' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Sanity.liberty_from_one_empty_neighbor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Sanity.liberty_is_shared_across_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Sanity.play_captures' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Sanity.suicide_is_illegal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Sanity.same_point_legal_for_owner' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Sanity.capture_precedes_suicide_test' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Sanity.occupied_not_playable' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Sanity.area_empty_board' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Sanity.area_lone_stone' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Sanity.area_dame_counts_for_neither' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Sanity.area_eye_and_partition' depends on axioms: [propext, Classical.choice, Quot.sound]

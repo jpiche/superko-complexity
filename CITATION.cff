@@ -1,0 +1,32 @@
+# How to cite this repository. GitHub reads this file to render a
+# "Cite this repository" button.
+#
+# There is no paper yet and no ledger claim is proved, so this cites the
+# software and its definitions — not a result. When a result lands, add a
+# `preferred-citation:` block naming the paper and leave this block in place
+# for the development itself.
+cff-version: 1.2.0
+message: >-
+  If you use the definitions, the certificates or the ledger from this
+  repository, please cite it as below.
+title: "Superko Complexity"
+abstract: >-
+  A machine-checked formalization of generalized Go under the positional and
+  situational superko rules, with a ledger of complexity-theoretic claims and
+  their evidence. The complexity classification of superko Go is open; this
+  repository states the problem formally and records what is proved, what is
+  cited, and what remains conjecture.
+type: software
+authors:
+  - family-names: "Piché"
+    given-names: "Joseph J."
+    email: "j@jpiche.com"
+license: Apache-2.0
+repository-code: "https://github.com/jpiche/superko-complexity"
+keywords:
+  - Go
+  - superko
+  - computational complexity
+  - Lean 4
+  - formalization
+  - combinatorial game theory
