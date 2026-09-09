@@ -36,7 +36,7 @@ step.
 |---|---|
 | `formalized:Name` | machine-checked; `Name` is the Lean theorem |
 | `formalizable` | within reach of current Mathlib; not yet done |
-| `infra-gap` | blocked on complexity-theory infrastructure Mathlib lacks (see C-20) |
+| `infra-gap` | blocked on complexity-theory formalization out of this project's reach: for a `cited` row, formalizing means re-proving the source; for an unproved row, there is no proof to formalize (C-20) |
 | `prose-only` | a claim about the literature or the rules; not a mathematical statement |
 | `n/a` | not applicable |
 
@@ -66,7 +66,7 @@ matching `C-<digits>`, `depends-on` comma-separated or `-`.
 | C-17 | A minimal position exists whose game value differs under PSK and SSK | open | formalizable | - | KGS anecdotes; no published minimal case |
 | C-18 | Under AGA rules a pass is exempt from the superko restriction | open | prose-only | - | AGA Rule 6 vs Tromp–Taylor; unresolved |
 | C-19 | Pass stones do not affect the outcome under area scoring | conjecture | formalizable | C-18 | docs/formal-model.md §4 |
-| C-20 | Mathlib has no usable resource-bounded complexity infrastructure | open | prose-only | - | experiments/001-mathlib-complexity-audit |
+| C-20 | Resource-bounded complexity infrastructure is absent from Mathlib, and present in the maintained downstream Lean 4 libraries surveyed here, none of which supplies the machine construction or the string-model hard source a superko claim would need | computed | prose-only | - | experiments/001-mathlib-complexity-audit; mathlib f5e9087, descriptive-complexity 2bfbb33, complexitylib 6c248df, cslib 0da3e0e, checked 2026-09-09 |
 | C-21 | Undirected vertex geography is solvable in time polynomial in the graph size | cited | infra-gap | - | Fraenkel-Scheinerman-Ullman 1993 |
 | C-22 | Directed vertex, directed edge and undirected edge geography are PSPACE-complete | cited | infra-gap | - | Geography literature; arXiv:2108.09367 |
 | C-23 | The PSK game counts on 1x1, 1x2, 1x3, 1x4 are 1, 9, 907, 2098407841 | cited | formalizable | - | test_data/literature/game-counts.toml (transcribed, unverified) |
@@ -87,6 +87,23 @@ not obviously equivalent. Until this is settled, `C-3`, `C-6`, `C-12` and
 
 Settling it is partly historical — which encoding do Lichtenstein–Sipser and
 Robson actually use — and partly a decision this project makes and states.
+
+### C-2 — the parenthetical is not Lichtenstein and Sipser's
+
+The row reads "under every ruleset (the reduction builds no kos)". The
+hardness result is `cited` and stands. The parenthetical does not come from
+Lichtenstein–Sipser, who say that they omit the ko rule and that the omission
+suits their construction. The claim that the reduction therefore transfers
+unchanged to PSK and SSK is a separate assertion, made by Demaine and Hearn in
+one sentence without argument, and it is about kos rather than about
+superko-forbidden repetition, which is strictly stronger.
+
+Recorded as a defect rather than fixed: an audit agent reports reading
+Lichtenstein–Sipser 1980 in full and finding no such statement, and the author
+has not yet read the paper. Until that reading happens, prose in this project
+may not assert that the reduction carries to superko unchanged. Phase 5 of
+[`plans/first-results-plan.md`](plans/first-results-plan.md) rests on exactly
+that premise and is restated there as open work.
 
 ### C-3 — the archive bound is inherited, not held
 
@@ -199,6 +216,34 @@ search and should be re-checked before anything is written up.
 ### C-20 — the infrastructure finding
 
 Not mathematics, but it determines how much of this project can be
-machine-checked, so it is tracked like a claim. `infra-gap` in the
-formalization column above is an assertion of C-20 and every such row is
-provisional until the audit is done.
+machine-checked, so it is tracked like a claim. The audit is
+[`../experiments/001-mathlib-complexity-audit/`](../experiments/001-mathlib-complexity-audit/)
+and it is closed.
+
+Mathlib has nothing: eleven complexity-class names return zero files across the
+whole checkout at `f5e9087`, and its one resource-bounded object,
+`Turing.TM2ComputableInPolyTime`, sits in a 278-line file with no theorems and
+no consumers. Two maintained downstream Lean 4 libraries do have real
+infrastructure — `descriptive-complexity` defines EXPSPACE and proves complete
+problems for it, `complexitylib` proves Savitch and Cook–Levin in the string
+model on this project's exact toolchain — and neither supplies what a superko
+claim would need, which is a way to build a machine and a hard source problem
+in the right model.
+
+The consequence for the table above is narrow and worth stating exactly. The
+nine `infra-gap` markings stand, and none of them was ever blocked on the
+absence of a class definition. Four are `cited` results whose formalization
+means re-proving them (C-2, C-4, C-5, C-22); four have no proof anywhere to
+formalize (C-3, C-6 `folklore`, C-12 `open`, C-14 `conjecture`). C-21 is the
+one row where the marking overstates the blocker.
+
+**This row is terminal at `computed`.** The ledger bars `computed` from
+becoming `proved` without a Lean-checked certificate, and no certificate can
+exist for a claim about other people's repositories. Its only lifecycle is
+re-checking and re-dating. Both libraries move weekly and were months old when
+checked; re-run the audit against fresh revisions before leaning on this row,
+and treat the witness date as an expiry rather than a provenance note.
+
+The cost figure the verdict rests on is an inference, not a measurement.
+[`../experiments/002-complexitylib-spike/`](../experiments/002-complexitylib-spike/)
+pre-registers the measurement.

@@ -9,9 +9,12 @@ was learned.
 2. ~~**Compile `Defs.lean`.**~~ Done. It builds, and `Sanity.lean` exercises it
    with kernel-checked checks on geometry, chains, liberties, capture, suicide
    and area scoring.
-3. **Run experiment 001** (the Mathlib complexity audit). Still the next thing.
-   Its outcome decides how much of this project can be machine-checked and
-   whether the `infra-gap` markings in the ledger survive.
+3. ~~**Run experiment 001**~~ Done, and closed. The `infra-gap` markings all
+   survive; the reason recorded for them did not. Mathlib has no complexity
+   theory, two maintained downstream Lean 4 libraries do, and neither supplies
+   what a superko claim needs. The shape of the project is unchanged: formalize
+   the combinatorial spine, cite the complexity scaffolding. Experiment 002
+   pre-registers the one measurement that could overturn that.
 
 ## Phase 1 — settle the definitions
 
@@ -92,9 +95,10 @@ chance to find out whether the encoding question (C-1) actually bites: the
 argument is insensitive to encoding, and confirming that is worth something.
 
 **The PSPACE-hardness reduction (C-2).** Harder, and the reason `superko-reduce`
-exists. Lichtenstein–Sipser's construction builds no kos at all, so it should
-carry to SSK unchanged — but "should" is the word the ledger exists to
-eliminate. Building it as a verified gadget, against a reduction already known
+exists. This project has been repeating that Lichtenstein–Sipser's construction
+builds no kos and so carries to SSK unchanged. That is not something the source
+says — see C-2's note in [`../claim-ledger.md`](../claim-ledger.md) — and it is
+open work rather than a premise. Building it as a verified gadget, against a reduction already known
 to be correct, is also how the reduction workbench gets built and tested before
 it is pointed at anything novel.
 

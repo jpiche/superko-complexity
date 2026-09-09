@@ -122,11 +122,32 @@ is disclosed here and in the ledger rather than buried.
 
 ## The boundary
 
-Some of what this project needs is not formalizable with the tooling that
-exists. Complexity classes with resource bounds, and polynomial-time many-one
-reductions, appear to have no usable Mathlib support — the finding is
-[`../experiments/001-mathlib-complexity-audit/`](../experiments/001-mathlib-complexity-audit/),
-and it governs the shape of the whole project.
+Some of what this project needs it declines to formalize, and the reason is not
+the one this document used to give.
+
+Mathlib has no resource-bounded complexity theory at all — no class, no space
+measure, no resource-bounded reduction. Two maintained downstream Lean 4
+libraries do: `SamuelSchlesinger/complexitylib` proves Savitch and Cook–Levin in
+the string model on this project's exact toolchain, and
+`PierreSenellart/descriptive-complexity` defines EXPSPACE and proves complete
+problems for it. The audit is
+[`../experiments/001-mathlib-complexity-audit/`](../experiments/001-mathlib-complexity-audit/)
+and the claim is C-20.
+
+The project declines both, and the reason belongs in this document rather than
+in a plan. Adopting either would put its definitions into the trusted base —
+`SOPFPDefinable`, `ComplexityClass.ofMem`, `Cfg.WithinDecisionSpace`,
+`DataEncode` — and item 3 above records that the definitions are the whole
+audit. Unlike the Go definitions, these have no referent a reader can check
+against beyond their memory of a textbook. Both libraries are months old,
+dominated by a single author, substantially machine-written, and not
+peer-reviewed. That is a poor trade for a project whose entire claim is that a
+reader can check it instead of trusting the author.
+
+What that costs is smaller than it sounds, and the audit is why. Neither
+library supplies what a superko claim actually needs — a way to build a Turing
+machine for Go, and a hard source problem in the right model — so adopting one
+would buy a vocabulary rather than a proof.
 
 The response is not to formalize less honestly but to arrange the work so the
 boundary falls in a useful place:

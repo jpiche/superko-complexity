@@ -97,16 +97,22 @@ so length is not what blocks a hardness proof. The question nobody appears to
 have posed in print is whether such long sequences can be made *programmable*.
 That framing alone is worth writing down.
 
-Note the asymmetry that makes this the harder direction: hardness needs the
-complexity infrastructure Mathlib lacks (C-20), so a hardness result here would
-be prose with a formalized combinatorial core, not a machine-checked theorem
-end to end.
+Note the asymmetry that makes this the harder direction. A hardness result here
+would be prose with a formalized combinatorial core rather than a machine-checked
+theorem end to end — not because no Lean library defines the classes (C-20
+records that two do) but because none supplies a hard source problem in the
+right model, and building the reduction machine is the whole cost. The
+checkable content is gadget correctness, which is a statement about Go
+positions and needs no complexity vocabulary at all.
 
 ## What would change course
 
-- **C-20 comes back positive** — usable complexity infrastructure exists, or is
-  a month's work. Then the formalizable boundary moves and hardness results come
-  back into scope.
+- **A Lean library gains a string-model PSPACE-complete problem, or proven
+  machine-composition combinators.** C-20 is closed and the general question of
+  whether complexity classes exist in Lean is settled — they do, downstream.
+  What is missing is narrower and these two are the specific triggers. The
+  second half of the same test is whether an archive decider can be built and
+  space-bounded in weeks rather than months, which experiment 002 measures.
 - **The Demaine group publishes on superko formula games.** Chung's 2026 thesis
   lists it as future work. If they reach Go first, this project's contribution
   is the small formalized results, and it should be packaged as such quickly.

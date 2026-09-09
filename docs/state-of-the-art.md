@@ -17,8 +17,13 @@ PSPACE-complete, EXPTIME-complete, EXPSPACE-complete — are all live, and the
 people who have looked do not agree.
 
 The status of the two bounds is not symmetric. C-2 is `cited`: Lichtenstein and
-Sipser prove it, and their reduction constructs no kos at all, so it holds
-identically under Japanese, Chinese, PSK and SSK rules. C-3 is `folklore`: the
+Sipser prove generalized Go PSPACE-hard. Whether their reduction carries to
+superko unchanged is a separate question this document previously ran together
+with the result. Lichtenstein and Sipser say that they omit the ko rule; that
+the construction therefore holds identically under Japanese, Chinese, PSK and
+SSK rules is asserted by Demaine and Hearn without argument, and it concerns
+kos rather than superko-forbidden repetition, which is strictly stronger. C-2's
+ledger note records the defect. C-3 is `folklore`: the
 Saffidine–Teytaud–Yen survey states it as a theorem whose proof is one
 sentence — extend the state with an exponential archive of visited situations.
 The argument is sound-looking and nobody has written it out.

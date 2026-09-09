@@ -66,8 +66,11 @@ done
 # --- 3. American English ----------------------------------------------------
 # Source as well as prose: several of these appear in identifiers.
 british='behaviour|colour|licence|modelled|labelled|analyse|centre|neighbour|favour|defence|organis|recognis|formalis|specialis|honour|offence|travelled|fulfil'
+# `data/` is gitignored scratch, and CLAUDE.md directs agents to write there.
+# It may hold vendored third-party sources, which this project does not spell.
 spell=$(find "$root" \( -name '*.md' -o -name '*.lean' -o -name '*.rs' -o -name '*.sh' \) \
-        -not -path '*/.lake/*' -not -path '*/target/*' -not -path '*/.git/*' 2>/dev/null \
+        -not -path '*/.lake/*' -not -path '*/target/*' -not -path '*/.git/*' \
+        -not -path "$root/data/*" 2>/dev/null \
         | xargs grep -niE "$british" 2>/dev/null | grep -v 'check-docs.sh' || true)
 if [ -n "$spell" ]; then
     echo "check-docs: British spelling (the project uses American English)" >&2
