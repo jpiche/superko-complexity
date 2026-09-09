@@ -1,5 +1,5 @@
 # witness: cd lean && lake env lean Axioms.lean
-# commit: PENDING
+# commit: a33be03
 # date: 2026-09-09
 #
 'Superko.mem_chain_iff_reachable' depends on axioms: [propext, Classical.choice, Quot.sound]
