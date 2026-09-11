@@ -11,8 +11,10 @@ encoded exactly, licensed by C-27), the bit-level encoding is concrete
 no history — is now read from the sources rather than assumed. What keeps
 C-1 open is the identification of that encoding with the literature's
 unstated one, which is asserted by inspection, and the reachability question
-of OPEN-4. The rules questions about passes (C-18, C-19) are unresolved and
-are reading, not research.
+of OPEN-4. The rules questions about passes are settled by the texts, now
+held: passes are exempt from repetition (C-18) and pass stones cannot enter
+an area count (C-19). The root situation counting as a previous position is
+the reading both texts support.
 
 The grounding for every complexity claim is settled:
 [`plans/complexity-grounding.md`](plans/complexity-grounding.md).

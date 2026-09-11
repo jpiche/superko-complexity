@@ -24,10 +24,10 @@ much rests on them:
 1. **OPEN-4 / C-1, the input encoding.** Blocks every complexity claim. Partly
    historical — which encoding do Lichtenstein–Sipser and Robson use — and
    partly a decision this project makes and states.
-2. **OPEN-1 / C-18, passes and superko.** A rules question. Read AGA Rule 6
-   against Tromp–Taylor. The answer changes the shape of the termination
-   argument and the PSK/SSK distinction.
-3. **OPEN-2 / C-19, pass stones.** Smaller. ~~**OPEN-3, komi and ties.**~~
+2. ~~**OPEN-1 / C-18, passes and superko.**~~ Resolved from the held AGA and
+   Tromp–Taylor texts: passes are exempt (C-18, `cited`).
+3. ~~**OPEN-2 / C-19, pass stones.**~~ Resolved: AGA Rule 12 ignores prisoners
+   under area counting (C-19, `cited`). ~~**OPEN-3, komi and ties.**~~
    Resolved: the tie half by theorem (C-27) and the quantification half by
    decision — komi is input, encoded exactly (C-31).
 

@@ -11,9 +11,10 @@ The two must agree. Where they disagree the Lean is authoritative, and the
 disagreement is a bug in this file.
 
 > **Status.** Draft. `Defs.lean` compiles and is exercised by kernel-checked
-> checks. Of the choices marked **OPEN** below, OPEN-3 is resolved by a
-> decision that C-27 licenses; OPEN-1, OPEN-2 and OPEN-4 are not settled, and
-> `Defs.lean` commits to one reading of each. Every later claim inherits them.
+> checks. Of the choices marked **OPEN** below, OPEN-1 and OPEN-2 are resolved
+> by the rules texts, now held (C-18, C-19), and OPEN-3 by a decision that
+> C-27 licenses; OPEN-4 is not settled, and `Defs.lean` commits to one reading
+> of it. Every later claim inherits it.
 
 ## 1. The problem, informally
 
@@ -64,23 +65,25 @@ illegal if the *position* it would create has occurred before, whatever the
 player to move. The project studies SSK and treats PSK as the comparison
 variant; whether they differ in complexity is itself an open claim (C-12).
 
-### OPEN-1: are passes subject to superko?
+### OPEN-1: are passes subject to superko? — resolved
 
-`Defs.lean` currently exempts passes: a pass is always legal.
+`Defs.lean` exempts passes: a pass is always legal. Both texts, now held, say
+so (C-18, `cited`). AGA Rule 6 reads "It is illegal to play in such a way as
+to recreate a previous board position from the game, with the same player to
+play", and Rule 2 says "a pass is always legal (Rule 7)". Tromp–Taylor Rule 6
+reads "A turn is either a pass; or a move that doesn't repeat an earlier grid
+coloring", so the repetition clause scopes to moves by construction.
 
-The reading is standard: Tromp–Taylor scopes its repetition clause to moves,
-treating a pass as a separate kind of turn, and AGA Rule 6 restricts playing so
-as to recreate a position. Both are paraphrases here — neither source is yet
-`held` (see [`../references/README.md`](../references/README.md)) — and it is a
-reading either way, which matters. A pass changes the player to move without changing the
-position, so under SSK an exempt pass can re-enter a situation that a play
-could not. That is the parity resource that distinguishes SSK from PSK, and it
-is the mechanism behind "sending two, returning one". If passes were subject
-to superko the distinction would partly collapse.
+The consequence stands as before: a pass changes the player to move without
+changing the position, so under SSK an exempt pass can re-enter a situation
+that a play could not. That is the parity resource that distinguishes SSK
+from PSK, and it is the mechanism behind "sending two, returning one".
 
-*Resolve by:* reading AGA Rule 6 and Tromp–Taylor against each other, and
-recording the citation in the ledger. This is a rules question, not a
-mathematical one.
+One reading the texts do not make for us: AGA Rule 6 names the *situation*
+(position with the same player to play) and so is situational superko;
+Tromp–Taylor Rule 6 names the grid coloring alone and so is positional. The
+project's object is the AGA rule, and `PSK` is defined alongside for the
+comparison, as §3 says.
 
 ## 4. Ending and score
 
@@ -96,8 +99,11 @@ komi.
 ### Why not dead stones
 
 AGA rules determine the status of dead stones by agreement, with resumption of
-play on dispute. The complexity literature does not model this, and neither
-does this project: scoring here is a total function of the final position.
+play on dispute (Rules 9 and 10, held): if the players still disagree after
+resumed play and both pass twice, "any stones remaining on the board are
+deemed alive" and the board is counted as it stands. The complexity literature
+does not model this, and neither does this project: scoring here is a total
+function of the final position.
 
 This is a real narrowing and it should be stated rather than absorbed. The
 justification is that the two-pass ending under superko makes the mechanical
@@ -105,16 +111,18 @@ score coincide with the agreed score under optimal play — a player who
 disagrees about a group's status can simply decline to pass and demonstrate.
 That justification is an argument, not a theorem, and it is claim C-16.
 
-### OPEN-2: pass stones
+### OPEN-2: pass stones — resolved
 
-AGA Rule 7 requires a passing player to hand the opponent a prisoner. Under
-*territory* scoring this is what makes the AGA result agree with the area
-result; under area scoring, the received view is that pass stones do not
-affect the outcome. `Defs.lean` omits them on that basis.
-
-*Resolve by:* checking whether the omission is exactly neutral under area
-scoring, including in the odd cases — unequal pass counts at the end, and games
-ending after an odd total number of moves.
+AGA Rule 7 requires a passing player to hand the opponent a prisoner, and
+Rule 11 requires White to make the last move, by an extra pass if necessary,
+so that both players have taken the same number of turns. Under *territory*
+counting this is what makes the two counting methods agree. Under *area*
+counting the text itself disposes of the question: Rule 12 says "When
+counting by area, the players add up their total area. Prisoners are
+ignored." A pass stone is a prisoner, so it cannot enter the area result,
+and White's extra pass changes no point of the board (C-19, `cited`).
+`Defs.lean` omits pass stones on that basis; the odd cases — unequal pass
+counts, an odd total number of turns — are odd only for territory counting.
 
 ### OPEN-3: komi and ties — resolved
 
@@ -175,9 +183,16 @@ to an exponentially larger input. Stockmeyer and Chandra speak of "the size of
 the starting position", on the strength of their abstract only.
 
 `Defs.lean` commits to **(C)**: `start` seeds `seen` with the root situation.
-The earlier wording "history empty" was inexact — the root situation is
-forbidden from the first move — and whether any position's value differs
-between the two readings is not settled.
+That is the reading both rules texts support. AGA Rule 6 forbids recreating
+"a previous board position from the game", and the position a game starts
+from is a position from the game; Tromp–Taylor Rule 5 starts play "with an
+empty grid" and Rule 6 forbids repeating "an earlier grid coloring", of which
+the initial grid is one. The extension to a game that starts from an
+arbitrary position — where the rules texts always start from the empty or
+handicap board — is this project's decision, and it is the one consistent
+with both wordings. The earlier phrase "history empty" was inexact, and
+whether any position's value differs between the two readings is not
+settled; nothing rests on it now that the reading is fixed.
 
 The bit-level encoding of an instance is
 `Superko.Enc.enc` in [`../lean/SuperkoComplexity/Encoding.lean`](../lean/SuperkoComplexity/Encoding.lean):

@@ -62,10 +62,10 @@ matching `C-<digits>`, `depends-on` comma-separated or `-`.
 | C-13 | Every play sequence under SSK from any start state is finite | proved | formalized:C13_terminates | - | lean/SuperkoComplexity/Results/C13_Termination.lean |
 | C-14 | SUPERKO-GO is in EXPTIME | conjecture | infra-gap | C-1 | Robson's belief as reported second-hand in a 2011 blog comment and in Hearn 2006; no proof |
 | C-15 | The history-congruence index H(n) grows as 2^poly(n) | open | formalizable | C-13 | - |
-| C-16 | Mechanical area scoring agrees with AGA agreed scoring under optimal play | conjecture | formalizable | - | docs/formal-model.md §4 |
+| C-16 | Mechanical area scoring agrees with AGA agreed scoring under optimal play | conjecture | formalizable | - | docs/formal-model.md §4; the resumption mechanism the argument uses is AGA Rules 9 and 10, held |
 | C-17 | A minimal position exists whose game value differs under PSK and SSK | open | formalizable | - | KGS anecdotes; no published minimal case |
-| C-18 | Under AGA rules a pass is exempt from the superko restriction | open | prose-only | - | AGA Rule 6 vs Tromp–Taylor; unresolved |
-| C-19 | Pass stones do not affect the outcome under area scoring | conjecture | formalizable | C-18 | docs/formal-model.md §4 |
+| C-18 | Under AGA rules a pass is exempt from the superko restriction | cited | prose-only | - | AGA Rules 2, 6 and 7 (held): Rule 6 restricts playing, Rule 2 says a pass is always legal; Tromp–Taylor Rule 6 (held) makes a turn either a pass or a non-repeating move |
+| C-19 | Pass stones do not affect the outcome under area scoring | cited | prose-only | - | AGA Rule 12 (held): under area counting prisoners are ignored, and a pass stone is a prisoner; Rule 11's extra White pass changes no point of the board |
 | C-20 | Mathlib has no resource-bounded complexity class; the downstream Lean 4 libraries surveyed supply classes, a generic space-membership lemma that is axiom-clean at this project's Mathlib pin, and space measures over machines and programs, and none supplies a PSPACE-complete source problem under polynomial-time many-one reductions over a string-encoded Turing-machine class | computed | prose-only | - | experiments/001-mathlib-complexity-audit and notebook/2026-09-11-complexity-grounding.md; mathlib f5e9087 checked 2026-09-09; descriptive-complexity de212562, complexitylib 6c248df and EdouardBonnet/classical-complexity 026a662 checked 2026-09-10; cslib ec768ef, Shreyas4991/Algolean f64556d and zksecurity/caliper b62f7c8b checked 2026-09-11 |
 | C-21 | Undirected vertex geography is solvable in time polynomial in the graph size | cited | infra-gap | - | Fraenkel-Scheinerman-Ullman 1993 |
 | C-22 | Directed vertex, directed edge and undirected edge geography are PSPACE-complete | cited | infra-gap | - | Schaefer 1978 and Lichtenstein–Sipser 1980 Thm 2 for the directed variants; Fraenkel–Scheinerman–Ullman 1993 for undirected edge geography, via secondary reading; arXiv:2108.09367 |
@@ -97,7 +97,12 @@ complexity results would then be taken relative to an exponentially larger
 input; Stockmeyer and Chandra speak of "the size of the starting position", on
 the strength of their abstract alone. `Defs.lean` commits to (C), and `start`
 seeds the history with the root situation, so the accurate phrase is "history
-= the root situation alone", not "history empty".
+= the root situation alone", not "history empty". The rules texts, now held,
+support that seeding: AGA Rule 6 forbids recreating "a previous board
+position from the game", and Tromp–Taylor's Rule 6 forbids repeating "an
+earlier grid coloring" in a game that Rule 5 starts from the empty grid, so
+the position a game starts from counts in both. Extending that to a game
+begun from an arbitrary position is this project's decision.
 
 The bit-level encoding is now concrete — `Superko.Enc.enc` (C-31) — and no
 source fixes one, so the identification of `enc` with the literature's
@@ -105,7 +110,8 @@ unstated encoding is asserted by inspection. That, and OPEN-4's reachability
 question, is the residue. `Position m n` ranges over all colorings, including
 ones no play produces; Lichtenstein and Sipser do not argue reachability for
 their constructions either. Whether any position's value differs between
-"history empty" and "history = the root situation" is not settled.
+"history empty" and "history = the root situation" is not settled, and
+nothing rests on it now that the reading is fixed from the texts.
 
 ### C-2 — what Lichtenstein and Sipser prove, and for which game
 

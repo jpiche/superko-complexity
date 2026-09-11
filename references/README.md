@@ -109,8 +109,8 @@ which are rules questions rather than mathematical ones.
 
 | Work | Status | Note |
 |---|---|---|
-| AGA rules, official text | sought | Rule 6 (situational superko) and Rule 7 (pass stones) — C-18, C-19 |
-| Tromp–Taylor rules | sought | the phrasing that exempts passes from repetition (C-18) |
+| AGA rules, official text | held | `data/AGA_Rules_of_Go.pdf` (gitignored), the Rules Committee text dated 1991-09-01 as amended — its Rule 3 carries the 7½ komi of 2004; read 2026-09-11. Rule 2 and 6 settle C-18, Rule 12 settles C-19, Rules 9 and 10 are the mechanism C-16 argues from |
+| Tromp–Taylor rules | held | <https://tromp.github.io/go.html>, read 2026-09-11, text saved as `data/tromp-taylor.txt`; Rule 6 exempts passes and is positional superko by its own Comment 6; Rule 5 starts from the empty grid, so the initial coloring is an earlier one |
 | Chinese rules, official text | sought | for the PSK/SSK comparison |
 
 ## Convention
