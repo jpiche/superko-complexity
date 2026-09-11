@@ -137,8 +137,9 @@ is:
 
 ## The counting numbers
 
-Context for how large the objects are, all from Tromp–Farnebäck and all
-transcribed rather than read from the paper — see
+Context for how large the objects are, all from Tromp–Farnebäck. The game
+counts are read from Table 7 of the held 2016 revision; the rest are still
+transcribed — see
 [`../test_data/literature/README.md`](../test_data/literature/README.md):
 
 | Quantity | Value |

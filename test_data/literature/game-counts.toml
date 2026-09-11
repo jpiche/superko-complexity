@@ -11,7 +11,11 @@
 rule = "positional superko"
 attributed_to = "Tromp; Tromp-Farneback, Combinatorics of Go (CG 2006, rev. 2016)"
 transcribed_from = "Tromp 2x2 solver page and Combinatorics of Go abstract, via literature survey 2026-09-09"
-verified_against_primary = false
+# Every value below was read from Table 7 of the held 2016 revision on
+# 2026-09-11 (references/README.md). One caveat survives: that table counts
+# under a ruleset permitting multi-stone suicide, which Defs.lean forbids.
+# Experiment 004 asks whether the difference reaches these boards.
+verified_against_primary = "Tromp-Farneback, Combinatorics of Go, rev. 2016, Table 7"
 claims = ["C-9", "C-23"]
 
 [[count]]

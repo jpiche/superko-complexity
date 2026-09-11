@@ -55,7 +55,7 @@ matching `C-<digits>`, `depends-on` comma-separated or `-`.
 | C-6 | Robson's EXPTIME construction, played under superko, stays in EXPTIME via undirected vertex geography | folklore | infra-gap | C-21 | Demaine–Hearn, Playing Games with Algorithms |
 | C-7 | Under PSK, games correspond one-to-one with simple paths from the empty position in the situation graph | cited | formalizable | - | Tromp–Farnebäck 2006, Lemma 2 |
 | C-8 | Under SSK the corresponding paths need not be simple; a position may be visited twice | cited | formalizable | C-7 | Tromp–Farnebäck 2006, Lemma 2 remark |
-| C-9 | The number of 2x2 games under PSK is 386356909593 | cited | formalizable | - | test_data/literature/game-counts.toml (transcribed, unverified) |
+| C-9 | The number of 2x2 games under PSK is 386356909593 | cited | formalizable | - | Tromp–Farnebäck 2016 Table 7, held; test_data/literature/game-counts.toml; the source's evidence is enumeration by Tromp's `2x2.c`, not a proof |
 | C-10 | Repetition-free games exist whose length is exponential in the board size | cited | formalizable | - | Walraet–Tromp 2016 |
 | C-11 | The 1x9 empty-board minimax score under PSK is 0 | open | formalizable | - | disputed: 0 vs 4 across sources |
 | C-12 | SUPERKO-GO under PSK and under SSK lie in the same complexity class | open | infra-gap | C-1 | no published separation or equivalence |
@@ -69,7 +69,7 @@ matching `C-<digits>`, `depends-on` comma-separated or `-`.
 | C-20 | Mathlib has no resource-bounded complexity class; the downstream Lean 4 libraries surveyed supply classes, a generic space-membership lemma that is axiom-clean at this project's Mathlib pin, and space measures over machines and programs, and none supplies a PSPACE-complete source problem under polynomial-time many-one reductions over a string-encoded Turing-machine class | computed | prose-only | - | experiments/001-mathlib-complexity-audit and notebook/2026-09-11-complexity-grounding.md; mathlib f5e9087 checked 2026-09-09; descriptive-complexity de212562, complexitylib 6c248df and EdouardBonnet/classical-complexity 026a662 checked 2026-09-10; cslib ec768ef, Shreyas4991/Algolean f64556d and zksecurity/caliper b62f7c8b checked 2026-09-11 |
 | C-21 | Undirected vertex geography is solvable in time polynomial in the graph size | cited | infra-gap | - | Fraenkel-Scheinerman-Ullman 1993 |
 | C-22 | Directed vertex, directed edge and undirected edge geography are PSPACE-complete | cited | infra-gap | - | Schaefer 1978 and Lichtenstein–Sipser 1980 Thm 2 for the directed variants; Fraenkel–Scheinerman–Ullman 1993 for undirected edge geography, via secondary reading; arXiv:2108.09367 |
-| C-23 | The PSK game counts on 1x1, 1x2, 1x3, 1x4 are 1, 9, 907, 2098407841 | cited | formalizable | - | test_data/literature/game-counts.toml (transcribed, unverified) |
+| C-23 | The PSK game counts on 1x1, 1x2, 1x3, 1x4 are 1, 9, 907, 2098407841 | cited | formalizable | - | Tromp–Farnebäck 2016 Table 7, held; test_data/literature/game-counts.toml; the source's evidence is enumeration, not a proof |
 | C-24 | The 1xn empty-board PSK minimax scores for n <= 8 are 0, 0, 3, 4, 0, 1, 2, 3 | cited | formalizable | - | test_data/literature/linear-go-scores.toml (transcribed, unverified) |
 | C-25 | No published complexity result isolates a repetition rule as the driver of a class change for chess, shogi or xiangqi | open | prose-only | - | confirmed absence; literature search 2026-09-09 |
 | C-26 | A game begun from a position as the root of play lasts at most 4·3^(m·n) moves under either superko rule | proved | formalized:C13_length_bound_explicit | C-13 | lean/SuperkoComplexity/Results/C13_Termination.lean |
@@ -260,18 +260,28 @@ PSPACE-hard for the reachability core, so *characterizing when a Go move
 creates a directed edge in situation space* is the concrete form of the
 upper-bound attack.
 
-### C-23, C-24 — transcribed, not verified
+### C-9, C-23 — read from the paper; C-24 — transcribed, not verified
 
-Both rest on values copied from secondary accounts rather than read from the
-papers — the game counts from Tromp's 2×2 solver page and the *Combinatorics of
-Go* abstract, the 1×n scores from Hayward's course table — and every source
-involved is still `sought` in
-[`../references/README.md`](../references/README.md). They are `cited` because
-the literature does establish them, but a failure to reproduce them has three
-possible causes rather than two — see
+The game counts are read from Table 7 of the held Tromp–Farnebäck revision,
+and Tromp's 2×2 program is held and read
+([`../references/README.md`](../references/README.md)). Both rows stay
+`cited` on the ledger's vocabulary, with a caveat the vocabulary has no word
+for: the source's evidence is brute-force enumeration, not a proof, so the
+rows are computation done by others. Two more things the sources settle. A
+game in Table 7 is, by Lemma 2, a simple path from the empty position with
+its forced passes, which is every legal alternating sequence ending at the
+second consecutive pass — the notion `Defs.lean` induces. And the paper's
+ruleset permits multi-stone suicide where `Defs.lean` forbids it; Tromp's
+program rejects suicide outright and its comment says none arises on 2×2.
+Whether the divergence reaches any board in the table is what experiment 004
+is for, and until it runs the counts are comparable only on that program's
+word.
+
+C-24's 1×n scores are still copied from Hayward's course table, with
+Weninger–Hayward `sought`, so a failure to reproduce them has three possible
+causes rather than two — see
 [`../test_data/literature/README.md`](../test_data/literature/README.md).
 
-Promote the witness to a real citation once a primary source is `held`.
 
 ### C-25 — a confirmed absence
 
