@@ -178,6 +178,13 @@ from primary sources in a second run. The Verdict below is the second answer.
 The first would have recorded the ecosystem half of C-20 as unexamined while
 asserting it.
 
+A second method defect, found by the grounding survey's completeness critic
+on 2026-09-11: the substitute for GitHub code search — matching package
+metadata on the Lean package index — missed `Shreyas4991/Algolean`, which was
+listed on Reservoir before this audit ran. Two further repositories with
+algorithm-level space measures were also missed. None changes the verdict;
+each is now in C-20's witness.
+
 ## Verdict
 
 **Row 1's condition fires. Row 1's consequence does not follow. The

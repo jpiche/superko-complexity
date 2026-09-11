@@ -5,24 +5,35 @@ what this project can plausibly reach, not by importance.
 
 ## 1. What is the problem? (C-1, C-18, C-19)
 
-Blocks everything else. The input encoding under superko is genuinely
-ambiguous — [`formal-model.md`](formal-model.md) §5 — and the rules questions
-about passes are unresolved. These are cheap to settle and everything inherits
-them.
+Narrower than it was. The komi question is resolved (OPEN-3: komi is input,
+encoded exactly, licensed by C-27), the bit-level encoding is concrete
+(C-31), and the literature's convention for the input — position as root,
+no history — is now read from the sources rather than assumed. What keeps
+C-1 open is the identification of that encoding with the literature's
+unstated one, which is asserted by inspection, and the reachability question
+of OPEN-4. The rules questions about passes (C-18, C-19) are unresolved and
+are reading, not research.
 
-**Closable now.** Requires reading, not research.
+The grounding for every complexity claim is settled:
+[`plans/complexity-grounding.md`](plans/complexity-grounding.md).
 
 ## 2. Does the machinery work at all? (C-13, C-9, C-11)
 
-Termination is proved (C-13), with the game-length bound of C-26 alongside it.
-What remains is the acceptance suite. C-9 validates the definitions against a
-number Tromp computed independently. C-11 settles a disagreement between two
-published sources about the 1×9 minimax score, which is a small real
-contribution and a sharp test of the kernel.
+Termination is proved (C-13), with the game-length bound of C-26 alongside it;
+so are determinacy (C-28), the correctness of a fuel-indexed archive decider
+against `WinsFor` (C-29), the komi normalization (C-27) and the string
+encoding with its length bounds (C-31). What remains is the acceptance suite.
+C-9 validates the definitions against a number Tromp computed independently;
+the decider of C-29 cannot help there — a winner is not a game count, and
+kernel evaluation of it reaches only small boards — so Rust remains the only
+candidate. C-11
+settles a disagreement between two published sources about the 1×9 minimax
+score, which is a small real contribution and a sharp test of the kernel.
 
-C-13 shows the formalization pipeline works. It says nothing about whether the
-definitions describe Go, which is what C-9 is for — and until C-9 reproduces,
-every theorem here is a theorem about `Defs.lean` rather than about Go.
+C-13 and its successors show the formalization pipeline works. They say
+nothing about whether the definitions describe Go, which is what C-9 is for —
+and until C-9 reproduces, every theorem here is a theorem about `Defs.lean`
+rather than about Go.
 
 **Closable in weeks**, and closing it is what makes any later claim credible.
 
@@ -83,6 +94,13 @@ move creates a directed edge in situation space.** If the irreversible moves
 can be bounded or factored out, the folklore argument might extend; if they
 can encode computation, they are the route to hardness instead.
 
+Two things to keep in view. The archive decider of C-29 is doubly exponential
+in time (C-34), so C-3's argument lends this conjecture nothing. And by
+APSPACE = EXPTIME the conjecture is equivalent to the existence of a
+polynomial-space alternating machine deciding the game — the crisp form of the
+question, and only an interpretation of it, since such a machine may decide
+the game by any characterization at all.
+
 `superko-geography` exists so this is testable rather than quotable: build the
 situation graph of a small position and ask whether it is undirected.
 
@@ -107,12 +125,15 @@ positions and needs no complexity vocabulary at all.
 
 ## What would change course
 
-- **A Lean library gains a string-model PSPACE-complete problem, or proven
-  machine-composition combinators.** C-20 is closed and the general question of
-  whether complexity classes exist in Lean is settled — they do, downstream.
-  What is missing is narrower and these two are the specific triggers. The
-  second half of the same test is whether an archive decider can be built and
-  space-bounded in weeks rather than months, which experiment 002 measures.
+- **A Lean library on this toolchain gains a string-model PSPACE-complete
+  problem under polynomial-time reductions together with proven, public
+  machine-composition combinators.** The grounding decision
+  ([`plans/complexity-grounding.md`](plans/complexity-grounding.md)) keeps every
+  complexity library out of `lean/` because none proves that its class is the
+  textbook's; a hard source with composition would let a hardness statement be
+  formalized end to end and is the specific trigger to revisit that. The
+  companion trigger is experiment 003 firing on its first outcome: a
+  machine-checked membership for the archive decider in a disclosed side base.
 - **The Demaine group publishes on superko formula games.** Chung's 2026 thesis
   lists it as future work. If they reach Go first, this project's contribution
   is the small formalized results, and it should be packaged as such quickly.

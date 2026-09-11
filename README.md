@@ -31,8 +31,9 @@ and proofs.
 
 ## Status
 
-Early. Two claims proved, both aspects of one elementary fact; the scaffolding,
-the definitions and the gates are in place.
+Early. Six claims proved; the scaffolding, the definitions and the gates are
+in place; the grounding for complexity-theoretic claims is decided
+([`docs/plans/complexity-grounding.md`](docs/plans/complexity-grounding.md)).
 
 The Lean development **builds** against Lean 4.34.0-rc2 and Mathlib, and the
 definitions are exercised by kernel-checked sanity theorems in
@@ -44,18 +45,28 @@ No `sorry`; no `native_decide`; the axiom record is
 **What is proved.** Play terminates (C-13): under either superko rule the play
 relation is well-founded, so no infinite sequence of legal moves exists. A game
 begun from a position as the root of play makes at most 4·3^(m·n) moves (C-26).
-Both are machine-checked on the three standard axioms, in
-[`lean/SuperkoComplexity/Results/C13_Termination.lean`](lean/SuperkoComplexity/Results/C13_Termination.lean).
+From every state exactly one color has a winning strategy (C-28). A
+fuel-indexed archive decider, run at the floor of the komi with that
+game-length bound as its fuel, decides `BlackWins` (C-29); every komi is
+equivalent to a half-integer one (C-27); and the string encoding of an
+instance is injective, with the board linear in its length (C-31). All are
+machine-checked on the three standard axioms, under
+[`lean/SuperkoComplexity/Results/`](lean/SuperkoComplexity/Results/) and
+[`lean/SuperkoComplexity/Encoding.lean`](lean/SuperkoComplexity/Encoding.lean).
 
-**What that is not.** It is not determinacy, and it is no evidence that the
-definitions describe Go. The sanity checks are hand-computed and so can only
-catch errors already imagined; the definitional validation this project
-actually rests on — reproducing counts other people computed — has not been
-done. Every complexity claim in the ledger is still inherited rather than held.
-See [`docs/trusted-base.md`](docs/trusted-base.md) for what a reader must
-believe, and
-[`experiments/001-mathlib-complexity-audit/`](experiments/001-mathlib-complexity-audit/)
-for the audit that governs how much of this can be formalized at all.
+**What that is not.** It is no evidence that the definitions describe Go. The
+sanity checks are hand-computed and so can only catch errors already imagined;
+the definitional validation this project actually rests on — reproducing
+counts other people computed — has not been done, and the decider cannot do
+it: a winner is not a game count, and kernel evaluation of the decider reaches
+only small boards. Nor is any of
+it a complexity result: the classes are grounded in prose, cited to Hearn
+2006, and the one sentence that turns the decider into an EXPSPACE membership
+— that a Turing machine iterating its step uses space polynomial in the
+configuration — is claim C-32, `folklore`, written out in
+[`proofs/C-32.md`](proofs/C-32.md). Both bounds on SUPERKO-GO remain inherited
+rather than held. See [`docs/trusted-base.md`](docs/trusted-base.md) for what
+a reader must believe.
 
 ## What this project trusts
 

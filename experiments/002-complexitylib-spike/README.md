@@ -2,8 +2,9 @@
 
 **Author:** Joseph J. Piché
 **Models:** Claude Opus 5 (`claude-opus-5`)
-**Status:** planned
+**Status:** done — retired unrun on 2026-09-11; see Verdict
 **Opened:** 2026-09-09
+**Closed:** 2026-09-11
 **Claims touched:** C-3, C-20
 
 ## Question
@@ -98,8 +99,45 @@ committed.
 
 ## Result
 
-Not yet run.
+Not run. The grounding survey of 2026-09-10 and 2026-09-11
+([`../../notebook/2026-09-11-complexity-grounding.md`](../../notebook/2026-09-11-complexity-grounding.md),
+decision in [`../../docs/plans/complexity-grounding.md`](../../docs/plans/complexity-grounding.md))
+established three things about this experiment before it could start, each
+`computed` against the pinned revisions named there:
+
+1. **The premise was false when written.** "The mathematical input is already
+   done … What remains is machine engineering" assumed a decider existed to be
+   compiled. At 2026-09-09 nothing about the game was computable:
+   `Situation.after` is noncomputable (it goes through the classical
+   `resolve`), `State.seen` is a `Set`, and there was no move enumeration, no
+   decider and no bridge to `WinsFor`. Those were built during the survey,
+   over `Defs.lean` and Mathlib alone, and are now C-29 and C-31. The
+   machine-engineering question sits behind them, not in place of them.
+2. **The measures were the ones the maintainer ruled out.** The falsification
+   table keys on a ten-working-day box and a 2,500-line threshold. Both were
+   scaffolding figures, and on 2026-09-10 the maintainer directed that such
+   estimates be ignored. With them removed the table has no rows.
+3. **The baseline was the wrong baseline.** The four ~1,100-line anchors
+   hand-build transition tables. complexitylib's actual route to a space bound
+   is its window calculus — `Complexity.TM.decidesInSpace_of_keepsWindow` and
+   `loopTM_keepsWindow_indexed` in `Combinators/Internal/Window.lean` — which
+   is generic in the bound, carries no `Unreviewed` marker, and reports only
+   the three admitted axioms at this project's own Mathlib pin in a re-pinned
+   scratch copy. Measuring against the anchors would have measured something
+   no proof would use.
 
 ## Verdict
 
-Pending.
+**Retired as written; null result recorded.** Rewriting a pre-registered
+criterion after the evidence arrives is the failure the falsification field
+exists to prevent, so this file is not edited into a different experiment. It
+stays in place with its table intact, and the question it asked — can a
+decider for SUPERKO-GO be space-bounded over complexitylib — is re-opened as
+[`../003-complexitylib-window-probe/`](../003-complexitylib-window-probe/)
+with a corrected premise, the library's real landing gear as the target, and
+falsifiers that are fixed in advance and free of thresholds.
+
+What 001's verdict rested on — a cost inference — is no longer what any
+decision rests on. The grounding decision is made on trusted-base cost,
+fidelity to the literature's classes, and concrete proof obligations, and
+003 is not load-bearing for it.

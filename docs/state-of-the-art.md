@@ -6,8 +6,10 @@ one may be leaned on.
 
 Every source named below is listed in
 [`../references/README.md`](../references/README.md) with its acquisition
-status. None is yet `held`: this file is assembled from secondary accounts,
-and a claim resting on a detail of a primary source says so in its ledger row.
+status. Several are now `held`: Lichtenstein–Sipser 1980, Hearn 2006, the
+Saffidine–Teytaud–Yen draft and Demaine–Hearn were read in full during the
+grounding survey of 2026-09-10. Robson's papers remain unread, and a claim
+resting on a detail of an unread source says so in its ledger row.
 
 ## The bracket
 
@@ -16,17 +18,25 @@ Generalized Go under superko is **PSPACE-hard** (C-2) and **in EXPSPACE**
 PSPACE-complete, EXPTIME-complete, EXPSPACE-complete — are all live, and the
 people who have looked do not agree.
 
-The status of the two bounds is not symmetric. C-2 is `cited`: Lichtenstein and
-Sipser prove generalized Go PSPACE-hard. Whether their reduction carries to
-superko unchanged is a separate question this document previously ran together
-with the result. Lichtenstein and Sipser say that they omit the ko rule; that
-the construction therefore holds identically under Japanese, Chinese, PSK and
-SSK rules is asserted by Demaine and Hearn without argument, and it concerns
-kos rather than superko-forbidden repetition, which is strictly stronger. C-2's
-ledger note records the defect. C-3 is `folklore`: the
-Saffidine–Teytaud–Yen survey states it as a theorem whose proof is one
-sentence — extend the state with an exponential archive of visited situations.
-The argument is sound-looking and nobody has written it out.
+The status of the two bounds is not symmetric. C-2 is `cited`, for a narrower
+game than the row used to say: Lichtenstein and Sipser prove PSPACE-hardness
+for a reduced ruleset — ko omitted, a capture order under which suicide is
+effectively legal, territory scoring with judged dead stones, no komi — with
+White to move, and they never name the reduction resource. Whether their
+construction carries to SUPERKO-GO as this project defines it is C-33,
+`open`; the claim that it does is Demaine and Hearn's, asserted without
+argument, and it concerns kos rather than superko-forbidden repetition, which
+is strictly stronger. C-3 is `folklore`: the Saffidine–Teytaud–Yen survey
+states it as a theorem whose proof is one sentence — extend the state with an
+exponential archive of visited situations — and labels it folklore itself.
+This project has written the argument out and split it: the decider's
+correctness, the encoding's honesty and the komi normalization are
+machine-checked (C-29, C-31, C-27), the configuration bound is open (C-30),
+and the one remaining sentence — that a Turing machine iterating the decider
+runs in space polynomial in its configuration — is named as C-32 and stays
+prose, because it is the invariance thesis instantiated to this project's own
+functions and no source proves it. The grounding for that arrangement is in
+[`plans/complexity-grounding.md`](plans/complexity-grounding.md).
 
 ## Why the Japanese-rules result does not transfer
 

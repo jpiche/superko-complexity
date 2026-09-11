@@ -25,8 +25,10 @@ document defines the small thing.
    only part that cannot be discharged mechanically.
 
 4. **The statements — not the proofs — of the bridging lemmas** in
-   `Basic.lean`, each marked `**Bridge.**` in its docstring. See "The bridge"
-   below for why these are unavoidable and what reading them costs.
+   `Basic.lean`, `Decide.lean` and `Encoding.lean`, each marked `**Bridge.**`
+   in its docstring, together with the one root statement they serve. See
+   "The bridge" below for why these are unavoidable and what reading them
+   costs.
 
 5. **The results cited from the literature**, each named in
    [`claim-ledger.md`](claim-ledger.md) with its source, and each carrying the
@@ -48,10 +50,36 @@ those lemmas*. A checker that does not route through one proves nothing about
 Go; a bridging lemma whose statement is subtly wrong makes every check that
 uses it worthless, in exactly the way a wrong definition would.
 
-The cost is small and bounded. Each statement is two or three lines and reads
-as an equation between a definition and its computable twin — `area' b c =
-area b c`. There are seven. Their proofs are kernel-checked and need no
-review.
+The cost is small and bounded. Seven of the statements are two or three lines
+each and read as an equation between a definition and its computable twin —
+`area' b c = area b c`. Their proofs are kernel-checked and need no review.
+
+Seven more of the same kind live in
+[`../lean/SuperkoComplexity/Decide.lean`](../lean/SuperkoComplexity/Decide.lean),
+where a computable game layer is tied to the core: `afterC_eq_after`,
+`step'_toState`, `ended'_iff`, `winnerZ_eq_winner`, `start'_toState`,
+`ssk'_faithful` and `psk'_faithful`, each an equation or an equivalence
+between a twin and a notion of `Defs.lean`. They serve one statement of a
+new kind, the root: `Superko.C29_decideWins_iff_blackWins` says that a
+fuel-indexed archive decider, run at `⌊komi⌋` with fuel `4·3^(m·n) + 1`,
+returns `true` exactly when `Superko.BlackWins m n b komi` holds. Its
+right-hand side is the audited definition itself, so a wrong twin on the left
+makes the theorem unprovable rather than misleading; what a reader audits in
+the root is that it is not vacuous and quantifies over every position and
+every komi.
+
+Three more enter with the string encoding of
+[`../lean/SuperkoComplexity/Encoding.lean`](../lean/SuperkoComplexity/Encoding.lean):
+`cellFlat_idx`, which pins the row-major order; `boardOf_boardBits`, the
+board's round trip through its bits; and `blackWinsFrom_black`, which says the
+language's predicate at Black to move is `BlackWins` itself. The encoding's
+eleven short definitions have referents a reader can check against — concrete
+bit strings, kernel-checked on small boards — and the language `goLang` is
+built over the audited `WinsFor`, so no Go semantics re-enters through them.
+
+That is seventeen marked statements and one root statement, against the
+threshold of twenty the notebook set on 2026-09-09. Any further growth is a
+decision recorded in the notebook, not something absorbed.
 
 This is an honest enlargement of item 3, not a footnote to it. The alternative
 was a decidable core, which would have moved the reachability machinery — a
@@ -122,39 +150,76 @@ is disclosed here and in the ledger rather than buried.
 
 ## The boundary
 
-Some of what this project needs it declines to formalize, and the reason is not
-the one this document used to give.
+Some of what this project needs it declines to formalize. Where the boundary
+falls, and what grounds the claims on the far side of it, is a decision,
+recorded with its evidence in
+[`plans/complexity-grounding.md`](plans/complexity-grounding.md); this section
+states the arrangement a reader must accept.
 
-Mathlib has no resource-bounded complexity theory at all — no class, no space
-measure, no resource-bounded reduction. Two maintained downstream Lean 4
-libraries do: `SamuelSchlesinger/complexitylib` proves Savitch and Cook–Levin in
-the string model on this project's exact toolchain, and
-`PierreSenellart/descriptive-complexity` defines EXPSPACE and proves complete
-problems for it. The audit is
-[`../experiments/001-mathlib-complexity-audit/`](../experiments/001-mathlib-complexity-audit/)
-and the claim is C-20.
+**The classes are the textbook's, by citation.** PSPACE, EXPTIME, EXPSPACE and
+polynomial-time many-one reducibility mean what Hearn 2006, *Games, Puzzles,
+and Computation*, Appendix A defines them to mean — Sipser's definitions,
+transcribed by a coauthor of the survey that states this project's open
+problem. Each definition is written out in this project's prose with the
+citation attached. Sipser is added as a second, independent referent once a
+named edition is held: the independent-agreement defense above, applied to
+definitions. The referent is a book a reader can open, which is the one
+property no library definition has.
 
-The project declines both, and the reason belongs in this document rather than
-in a plan. Adopting either would put its definitions into the trusted base —
-`SOPFPDefinable`, `ComplexityClass.ofMem`, `Cfg.WithinDecisionSpace`,
-`DataEncode` — and item 3 above records that the definitions are the whole
-audit. Unlike the Go definitions, these have no referent a reader can check
-against beyond their memory of a textbook. Both libraries are months old,
-dominated by a single author, substantially machine-written, and not
-peer-reviewed. That is a poor trade for a project whose entire claim is that a
-reader can check it instead of trusting the author.
+**No complexity library is in `lean/`.** Mathlib has no resource-bounded
+complexity theory — no class, no space measure, no resource-bounded reduction.
+Several downstream Lean 4 libraries do, and each was examined at a pinned
+revision (C-20): `SamuelSchlesinger/complexitylib` defines the classes over
+multi-tape machines in the string model on this project's exact toolchain and
+proves Savitch and Cook–Levin; `PierreSenellart/descriptive-complexity`
+defines them as logics over finite structures and proves PSPACE-complete
+problems; `leanprover/cslib` has a machine with a space measure and no class;
+others are smaller. The project adopts none of them, for one reason that item
+3 already states: adopting a library puts its definitions —
+`Cfg.WithinDecisionSpace`, `DSPACE`, `SOPFPDefinable`, `ComplexityClass.ofMem`
+— into the trusted base, and not one of them proves, or cites a proof, that
+its class is the textbook's. Every library's bridge to the class the Go
+literature means is asserted in a docstring or declined outright. That is a
+poor trade for a project whose entire claim is that a reader can check it
+instead of trusting the author, and it would be a poor trade even if the
+libraries were mature and multiply reviewed, which most are not.
 
-What that costs is smaller than it sounds, and the audit is why. Neither
-library supplies what a superko claim actually needs — a way to build a Turing
-machine for Go, and a hard source problem in the right model — so adopting one
-would buy a vocabulary rather than a proof.
+What the libraries do supply is narrower than the earlier version of this
+section said. complexitylib's window calculus is generic in the space bound and
+axiom-clean at this project's own Mathlib pin, so a Go decider *could* be
+space-bounded there; what no library supplies is a PSPACE-complete source
+problem under polynomial-time reductions over a string-encoded machine class.
+complexitylib is therefore the subject of a pre-registered probe in a side
+workspace, [`../experiments/003-complexitylib-window-probe/`](../experiments/003-complexitylib-window-probe/),
+whose success would yield a second witness in a disclosed side base and never
+a dependency of a headline theorem.
 
-The response is not to formalize less honestly but to arrange the work so the
-boundary falls in a useful place:
+**The mathematics of the archive argument is on the formalized side.** That a
+fuel-indexed archive decider decides `BlackWins` (C-29), that the input
+encoding is injective with the board linear in its length (C-31), that komi
+enters only through its floor (C-27), and that the game is determined (C-28)
+are kernel-checked over `Defs.lean` and Mathlib alone. The run-level bound on
+the decider's configuration (C-30) is stated and open.
+
+**One sentence is prose, and it is named.** That a Turing machine iterating
+the decider's step uses work space polynomial in the configuration size —
+hence that SUPERKO-GO is in EXPSPACE once C-30 and C-31 are in hand — is
+claim C-32, `folklore`, written out in [`../proofs/C-32.md`](../proofs/C-32.md).
+It is the invariance thesis instantiated to this project's own functions, and
+it is asserted by inspection, in those words: the algorithm-to-RAM half is
+cited to Dershowitz and Falkovich-Derzhavetz 2015, and the RAM-space to
+machine-space half is covered by no source this project has read. It is also
+the entire content of the one-line published proof that the literature calls
+folklore.
+
+The arrangement the project aims at is unchanged:
 
 > **Every novel claim lands on the formalized side. Every claim on the
 > unformalized side is one this project cites rather than proves.**
 
-Where that arrangement holds, the trusted base contains no new mathematics
-that a machine has not checked. Where it does not hold, the ledger says so,
-and the paper says so, in those words.
+C-32 is the named exception. It is novel only in that no source proves it for
+a Lean function; it is the same sentence at which every published membership
+proof for a game stops. Where the arrangement holds, the trusted base contains
+no new mathematics that a machine has not checked. Where it does not hold —
+C-32 — the ledger says so, this document says so, and the paper will say so,
+in those words.

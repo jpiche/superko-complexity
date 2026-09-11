@@ -27,10 +27,13 @@ much rests on them:
 2. **OPEN-1 / C-18, passes and superko.** A rules question. Read AGA Rule 6
    against Tromp–Taylor. The answer changes the shape of the termination
    argument and the PSK/SSK distinction.
-3. **OPEN-2 / C-19, pass stones**, and **OPEN-3, komi and ties.** Smaller.
+3. **OPEN-2 / C-19, pass stones.** Smaller. ~~**OPEN-3, komi and ties.**~~
+   Resolved: the tie half by theorem (C-27) and the quantification half by
+   decision — komi is input, encoded exactly (C-31).
 
 These are reading, not research, and they are the cheapest high-value work
-available.
+available. C-1's residue is now the identification of the concrete encoding
+with the literature's unstated one, plus OPEN-4.
 
 ## Phase 2 — prove termination
 
@@ -53,8 +56,9 @@ Three things were learned that the plan did not anticipate.
    recorded its axioms. `Defs.lean` was not touched: the finiteness of
    `Situation` is an instance, and an instance is a derived notion.
 
-Determinacy does **not** follow yet. `C13_terminates` supplies the well-founded
-relation a determinacy proof would recurse on, and that proof is not written.
+Determinacy followed on 2026-09-11: C-28, by well-founded induction on the
+relation `C13_terminates` supplies, with the exclusivity half needing no
+hypothesis at all.
 
 ## Phase 3 — validate the definitions
 
@@ -87,24 +91,27 @@ Both bounds on SUPERKO-GO are currently inherited rather than held. Writing
 each out for *this* ruleset and this input encoding is what turns them from
 citations into results this project can stand behind.
 
-**The EXPSPACE archive algorithm (C-3).** Cheap, and can be done as soon as the
-definitions settle — it needs no reduction machinery. The literature states it
-in one sentence and no source proves it, which is why the ledger marks it
-`folklore`. Writing it out is what moves it to `proved`, and it is the first
-chance to find out whether the encoding question (C-1) actually bites: the
-argument is insensitive to encoding, and confirming that is worth something.
+**The EXPSPACE archive algorithm (C-3).** Written out, and it did not move to
+`proved`: the grounding decision ([`complexity-grounding.md`](complexity-grounding.md))
+splits it into the decider's correctness (C-29, `proved`), the encoding's
+honesty (C-31, `proved`), the komi normalization (C-27, `proved`), the
+run-level configuration bound (C-30, `open`), and one sentence about Turing
+machines that stays prose and is named C-32, `folklore`. The encoding question
+did bite, in the opposite direction from the one anticipated: the argument is
+insensitive to which of the three history conventions is chosen and fails
+under a compressive encoding, which is why C-3 now depends on C-31's lower
+length bound. What remains on this item is C-30, and the acquisition of
+Robson 1984 and 1985, which may make the whole row `cited`.
 
 **The PSPACE-hardness reduction (C-2).** Harder, and the reason `superko-reduce`
-exists. This project has been repeating that Lichtenstein–Sipser's construction
-builds no kos and so carries to SSK unchanged. That is not something the source
-says — see C-2's note in [`../claim-ledger.md`](../claim-ledger.md) — and it is
-open work rather than a premise. Building it as a verified gadget, against a reduction already known
-to be correct, is also how the reduction workbench gets built and tested before
-it is pointed at anything novel.
-
-Do the archive algorithm early, out of order, if Phase 1 stalls on source
-acquisition. It is the one piece of real mathematics here that depends on
-nothing else.
+exists. Lichtenstein and Sipser have now been read: their game is a reduced
+ruleset, their instances have White to move, and the transfer of their
+construction to SUPERKO-GO is C-33, `open`, with no source. Under the §7
+language the color to move is input, so White-to-move instances land in the
+language directly; what has to be re-proved is the gadget correctness under
+situational superko, mechanical area scoring, no suicide and komi. Building it
+as a verified gadget is also how the reduction workbench gets built and tested
+before it is pointed at anything novel.
 
 ## Rewrite this plan here
 
