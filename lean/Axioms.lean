@@ -69,3 +69,93 @@ open Superko
 #print axioms Superko.card_position
 #print axioms Superko.card_situation
 #print axioms Superko.ncard_seen_le_card
+
+-- The computable decider and the bridges to Defs.lean (Decide.lean).
+#print axioms Superko.mem_allMoves
+#print axioms Superko.afterC_eq_after
+#print axioms Superko.step'_toState
+#print axioms Superko.ended'_iff
+#print axioms Superko.winnerZ_eq_winner
+#print axioms Superko.decideWins_sound
+#print axioms Superko.playMeasure'_eq
+#print axioms Superko.decideWins_mono
+#print axioms Superko.decideWins_complete_aux
+#print axioms Superko.start'_toState
+#print axioms Superko.ssk'_faithful
+#print axioms Superko.psk'_faithful
+#print axioms Superko.playMeasure'_start
+
+-- C-31, the input encoding (Encoding.lean).
+#print axioms Superko.Enc.natOf_bits
+#print axioms Superko.Enc.length_dbl
+#print axioms Superko.Enc.length_sd
+#print axioms Superko.Enc.readSd_append
+#print axioms Superko.Enc.readSd_sd
+#print axioms Superko.Enc.readSd_length_lt
+#print axioms Superko.Enc.readSd_len
+#print axioms Superko.Enc.cellOf_bits
+#print axioms Superko.Enc.cellFlat_idx
+#print axioms Superko.Enc.idx_lt
+#print axioms Superko.Enc.length_boardBits
+#print axioms Superko.Enc.boardBits_even
+#print axioms Superko.Enc.boardBits_odd
+#print axioms Superko.Enc.cellAt_boardBits
+#print axioms Superko.Enc.boardOf_boardBits
+#print axioms Superko.Enc.length_komiBits
+#print axioms Superko.Enc.readKomi_ne_nil
+#print axioms Superko.Enc.readKomi_komiBits
+#print axioms Superko.Enc.colorOf_colorBit
+#print axioms Superko.Enc.dec_enc
+#print axioms Superko.Enc.enc_inj_dims
+#print axioms Superko.Enc.enc_inj
+#print axioms Superko.Enc.enc_inj_full
+#print axioms Superko.Enc.num_halfInteger
+#print axioms Superko.Enc.den_halfInteger
+#print axioms Superko.Enc.length_enc
+#print axioms Superko.Enc.C31_enc_length_lower
+#print axioms Superko.Enc.enc_length_upper
+#print axioms Superko.Enc.size_le_self
+#print axioms Superko.Enc.length_enc_halfInteger
+#print axioms Superko.Enc.length_enc_halfInteger_poly
+#print axioms Superko.Enc.four_pow_eq
+#print axioms Superko.Enc.three_pow_le_two_pow_length
+#print axioms Superko.Enc.card_situation_le_two_pow_length
+#print axioms Superko.Enc.card_situation_mul_le
+#print axioms Superko.Enc.lengthBound_le_two_pow
+#print axioms Superko.Enc.length_encSparse_empty
+#print axioms Superko.Enc.sparse_encoding_refuted
+#print axioms Superko.Enc.blackWinsFrom_black
+#print axioms Superko.Enc.decStrict_enc
+#print axioms Superko.Enc.enc_of_decStrict
+#print axioms Superko.Enc.goLangBlack_subset
+#print axioms Superko.Enc.goLang_eq_decStrict
+#print axioms Superko.Enc.two_mul_le_length_of_decStrict
+#print axioms Superko.Enc.two_mul_le_length_of_dec
+#print axioms Superko.Enc.margin_ne_zero_halfInteger
+#print axioms Superko.Enc.winner_swap_iff
+
+-- C-27, komi through its floor (Results/C27_Komi.lean).
+#print axioms Superko.area_add_area_le
+#print axioms Superko.winner_eq_of_floor_eq
+#print axioms Superko.winner_eq_halfInteger
+#print axioms Superko.winner_const_of_floor_ge
+#print axioms Superko.winner_congr_floor
+#print axioms Superko.blackWins_congr_floor
+#print axioms Superko.C27_blackWins_iff_halfInteger
+
+-- C-28, determinacy (Results/C28_Determinacy.lean).
+#print axioms Superko.C28_determined
+#print axioms Superko.C28_determined_ssk
+#print axioms Superko.C28_determined_psk
+#print axioms Superko.C28_not_both
+#print axioms Superko.C28_exactly_one
+
+-- C-29, the decider decides BlackWins (Results/C29_DeciderCorrect.lean).
+#print axioms Superko.C29_decideWins_iff_blackWins
+#print axioms Superko.C29_decideWins_iff_blackWinsPSK
+#print axioms Superko.C29_decideWins_iff_winsFor_black
+#print axioms Superko.not_blackWins_11_half
+#print axioms Superko.blackWins_11_neg_half
+#print axioms Superko.not_blackWins_12_six_half
+#print axioms Superko.blackWins_12_neg_half
+#print axioms Superko.not_blackWinsPSK_12_half

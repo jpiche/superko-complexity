@@ -24,6 +24,8 @@ by hand rather than concluding the install failed.
 | `SuperkoComplexity/Defs.lean` | **the trusted core** — every definition the main theorem mentions, and nothing else |
 | `SuperkoComplexity/Basic.lean` | derived notions and the decidable counterparts |
 | `SuperkoComplexity/Sanity.lean` | kernel-checked checks on concrete positions |
+| `SuperkoComplexity/Decide.lean` | the fuel-indexed archive decider, computable, with the lemmas tying it to the core definitions |
+| `SuperkoComplexity/Encoding.lean` | the bit encoding of an instance, its decoder, and the length bounds the archive argument needs |
 | `SuperkoComplexity/Certificates/` | checkers for witnesses the Rust side emits |
 | `SuperkoComplexity/Results/` | one file per proved claim, named for its ledger id |
 | `Axioms.lean` | the axiom record; outside the library, elaborated by `check-lean.sh` |
