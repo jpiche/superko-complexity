@@ -1,0 +1,24 @@
+# witness: cargo run --release -q -p superko-cli -- scc-census --board 1x3 --suicide remove-own 2>/dev/null
+# commit: 4fdfe58
+# date: 2026-09-12
+# defs-blob: 9f7554402827c94c8689dea639e05f295e80b5a2
+#
+board=1x3
+suicide=remove-own
+divergences=dims-are-runtime:unlicensed,suicide-remove-own:unlicensed
+legal-situations=30
+legal-edges=72
+legal-components=1
+legal-largest=30
+legal-trivial=0
+legal-empty-component=30
+legal-outside-largest=0
+legal-depth=1
+all-situations=54
+all-edges=104
+all-components=13
+all-largest=30
+all-trivial=0
+all-empty-component=30
+all-outside-largest=24
+all-depth=2

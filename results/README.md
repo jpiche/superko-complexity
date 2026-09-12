@@ -32,6 +32,7 @@ visibly, unless `SUPERKO_VERIFY_SLOW=1` is set.
 |---|---|
 | `axioms.txt` | the `#print axioms` dump for every headline theorem, checked by `check-lean.sh` |
 | `count-games-<board>-<rule>-<suicide>.txt` | one game count from the empty board by the Rust mirror (`computed`): the body `superko count-games` prints, with the resolved rules, the divergence list, the count, the node count and the refusal census. Cited by C-23, C-36, C-37 and, once the 2×2 runs land, C-9 and C-38 |
+| `scc-census-<board>-<suicide>.txt` | the strongly connected components of one board's situation graph (`computed`): vertices, edges, components, the largest, the empty board's, the count outside the largest, and the condensation depth, under both readings of the vertex set — `legal-` over the positions play can reach, `all-` over every coloring `Defs.lean` admits. `outside-largest` is the number C-46 cites: it bounds what C-42's forward-cone prune can remove. Cited by C-45 and C-46 |
 
 A `count-games` body is thread-independent; the witness command runs
 single-threaded and a `# produced-with:` line says how many threads the

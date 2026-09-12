@@ -7,6 +7,7 @@
 //!                         [--naive] [--threads N] [--depth-cap D]
 //! superko count-positions --board MxN
 //! superko graph-census    --board MxN --suicide forbid|remove-own
+//! superko scc-census      --board MxN --suicide forbid|remove-own
 //! ```
 //!
 //! Argument parsing is hand-rolled, because the workspace has no dependencies:
@@ -38,6 +39,7 @@ use std::time::Instant;
 
 use superko_graph::census::{legal_positions, position_graph};
 use superko_graph::enumerate::{self, Options};
+use superko_graph::scc::situation_graph;
 use superko_graph::walk;
 use superko_rules::code::render;
 use superko_rules::config::{Dims, Repetition, Suicide};
@@ -51,6 +53,7 @@ usage: superko <command> [options]
                   [--naive] [--threads N] [--depth-cap D]
   count-positions --board MxN
   graph-census    --board MxN --suicide forbid|remove-own
+  scc-census      --board MxN --suicide forbid|remove-own
 
 Standard output is a results body of key=value lines. Timing goes to standard
 error. The witness header of a promoted result is written by hand.";
@@ -79,6 +82,7 @@ fn run(args: &[String]) -> Result<String, String> {
         "count-games" => count_games(&opts),
         "count-positions" => count_positions(&opts),
         "graph-census" => graph_census(&opts),
+        "scc-census" => scc_census(&opts),
         other => Err(format!("unknown command {other:?}")),
     }
 }
@@ -299,6 +303,41 @@ fn count_games(flags: &Flags) -> Result<String, String> {
 }
 
 /// `superko count-positions`.
+/// The component structure of the situation graph, under both readings of the
+/// vertex set: the positions play can reach, and every coloring `Defs.lean`
+/// admits.
+///
+/// The number the upper-bound work consumes is `outside-largest`: it bounds
+/// what the forward-cone prune of `Compress.winsFor_seen_inter_cone` can
+/// remove from an archive (C-45, C-46).
+fn scc_census(flags: &Flags) -> Result<String, String> {
+    flags.reject(&["--rule", "--threads", "--depth-cap", "--naive"])?;
+    let dims = flags.board()?;
+    let suicide = flags.suicide()?;
+    let mut under = vec![Divergence::DimsAreRuntime];
+    if matches!(suicide, Suicide::RemoveOwn) {
+        under.push(Divergence::SuicideRemoveOwn);
+    }
+
+    let started = Instant::now();
+    let legal = situation_graph(dims, suicide, true);
+    let all = situation_graph(dims, suicide, false);
+    let elapsed = started.elapsed();
+
+    let mut body = String::new();
+    let _ = writeln!(body, "board={dims}");
+    let _ = writeln!(body, "suicide={suicide}");
+    let _ = writeln!(body, "divergences={}", divergences(&under));
+    for line in legal.lines("legal-") {
+        let _ = writeln!(body, "{line}");
+    }
+    for line in all.lines("all-") {
+        let _ = writeln!(body, "{line}");
+    }
+    eprintln!("# elapsed={:.3}s", elapsed.as_secs_f64());
+    Ok(body)
+}
+
 fn count_positions(flags: &Flags) -> Result<String, String> {
     flags.reject(&["--rule", "--suicide", "--threads", "--depth-cap", "--naive"])?;
     let dims = flags.board()?;

@@ -1,0 +1,24 @@
+# witness: cargo run --release -q -p superko-cli -- scc-census --board 3x4 --suicide forbid 2>/dev/null
+# commit: 4fdfe58
+# date: 2026-09-12
+# defs-blob: 9f7554402827c94c8689dea639e05f295e80b5a2
+#
+board=3x4
+suicide=forbid
+divergences=dims-are-runtime:unlicensed
+legal-situations=643378
+legal-edges=3439262
+legal-components=2
+legal-largest=643376
+legal-trivial=0
+legal-empty-component=2
+legal-outside-largest=2
+legal-depth=2
+all-situations=1062882
+all-edges=5053602
+all-components=209754
+all-largest=643376
+all-trivial=0
+all-empty-component=2
+all-outside-largest=419506
+all-depth=10

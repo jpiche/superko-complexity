@@ -74,7 +74,9 @@
 
 pub mod census;
 pub mod enumerate;
+pub mod scc;
 pub mod walk;
 
 pub use census::{GraphCensus, legal_positions, position_graph};
 pub use enumerate::{Board, Options, Report, count_games};
+pub use scc::{SccCensus, situation_graph};
