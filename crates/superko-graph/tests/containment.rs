@@ -33,8 +33,17 @@ struct Tally {
 
 /// Walk under situational superko — the weaker rule, so the tree contains
 /// every state the stricter one reaches — and check the containment at every
-/// move of every state.
+/// move of every state a game can move from.
+///
+/// Ended states are excluded before anything is tallied. `Superko.WinsFor`
+/// moves only from a state with `¬ Ended`, so the two rules' verdicts at a
+/// state with two consecutive passes behind it are verdicts no game consults;
+/// counting them inflated `ssk_only` and admitted separating moves that no
+/// play can reach.
 fn walk(dims: Dims, suicide: Suicide, st: &State, depth: usize, tally: &mut Tally) {
+    if ended(st) {
+        return;
+    }
     for mv in all_moves(dims) {
         let by_psk = psk(st, mv, suicide);
         let by_ssk = ssk(st, mv, suicide);
@@ -48,7 +57,7 @@ fn walk(dims: Dims, suicide: Suicide, st: &State, depth: usize, tally: &mut Tall
         }
     }
 
-    if ended(st) || depth == 0 {
+    if depth == 0 {
         return;
     }
 
@@ -108,18 +117,24 @@ const fn pt(row: usize, col: usize) -> Point {
     Point::new(row, col)
 }
 
-/// The shallowest line on which the two rules differ under `Defs.lean`'s own
-/// suicide convention, written out, so that the counter above is not the only
-/// evidence that they do.
+/// A line on which the two rules differ under `Defs.lean`'s own suicide
+/// convention, written out, so that the counter above is not the only evidence
+/// that they do.
 ///
 /// On 1×3: Black passes, White takes the left point, Black the right, White
 /// the middle — capturing Black's stone — and Black retakes at the right,
 /// capturing both White stones. The board is now `..X` with White to move, and
 /// White's play at the left point would recreate `O.X`, which stood earlier
 /// with *White* to move. Positional superko forbids it; situational superko
-/// does not, because the player to move differs. The parity was changed by the
-/// opening pass, which is exactly the resource OPEN-1's pass exemption
-/// supplies (C-18, `cited`).
+/// does not, because the player to move differs.
+///
+/// **This is not the shallowest such line, and the opening pass is not what
+/// separates the rules.** The pass here lies outside the cycle that does the
+/// work: it only puts White on the move. What separates the rules is the
+/// three-play cycle White-play, Black-play, White-play that returns the board
+/// to `O.X` with the colors swapped, and
+/// [`the_rules_differ_on_one_by_three_without_any_pass`] is a five-move line
+/// exhibiting it with no pass at all.
 #[test]
 fn the_rules_differ_on_one_by_three() {
     let dims = Dims::new(1, 3);
@@ -156,4 +171,66 @@ fn the_rules_differ_on_one_by_one_under_remove_own() {
     let play = Move::Play(pt(0, 0));
     assert!(ssk(&st, play, suicide));
     assert!(!psk(&st, play, suicide));
+}
+
+/// The two rules differ on 1×3 **with no pass anywhere in the line**, one move
+/// sooner than the line above.
+///
+/// This is the claim that matters, and it corrects a mechanism this project
+/// had stated wrongly. Black takes the left point, White the right, Black the
+/// middle — capturing the White stone — White retakes the right, capturing
+/// both Black stones, and Black plays the left point again. The board is now
+/// `X.O` with White to move; `X.O` stood at move two with *Black* to move.
+/// Positional superko refuses the play, situational superko permits it.
+///
+/// The three plays from `X.O` back to `X.O` are the whole mechanism: a closed
+/// walk of odd length in the graph of positions, which is what joins a board's
+/// two colorings. It captures one White stone, then two Black stones, then
+/// none — the shape Go calls "sending two, returning one", whose name this
+/// project holds no source for beyond its own use of it.
+///
+/// A pass *at the recurring board* cannot supply that parity: it archives both
+/// of that board's situations at once, since `Superko.step` inserts the
+/// successor and `now ∈ seen` holds already, so after a pass at `X.O` no later
+/// play could recreate `X.O` under either rule. A pass at some other board can
+/// sit inside a return walk — from the empty 2×2 board, Black (0,0), White
+/// (0,1), Black (1,0), White passes, Black (1,1), White (0,1) taking three,
+/// Black (0,0) brings `XO/..` back with the colors swapped — so what this line
+/// shows is that the separation *needs* no pass. It therefore does not depend
+/// on the pass exemption of OPEN-1 and C-18, and survives the other reading of
+/// that question, in which passes are subject to the repetition rule.
+#[test]
+fn the_rules_differ_on_one_by_three_without_any_pass() {
+    let dims = Dims::new(1, 3);
+    let suicide = Suicide::Forbid;
+    let line = [
+        Move::Play(pt(0, 0)),
+        Move::Play(pt(0, 2)),
+        Move::Play(pt(0, 1)),
+        Move::Play(pt(0, 2)),
+    ];
+    assert!(
+        line.iter().all(|mv| matches!(mv, Move::Play(_))),
+        "the point of this line is that it holds no pass"
+    );
+
+    // The board the cycle returns to stands at move two, with Black to move.
+    let entry = play_out(dims, suicide, &line[..2]);
+    assert_eq!(render(&entry.now().board), "X.O");
+    assert_eq!(entry.now().to_move, Color::Black);
+
+    let st = play_out(dims, suicide, &line);
+    assert_eq!(render(&st.now().board), "..O");
+    assert_eq!(st.now().to_move, Color::Black);
+
+    let retake = Move::Play(pt(0, 0));
+    assert!(ssk(&st, retake, suicide), "ssk refuses the retake");
+    assert!(!psk(&st, retake, suicide), "psk permits the retake");
+
+    // And the retake really does recreate the board of move two, with the
+    // other color to move: that is what makes the two rules disagree.
+    let after = step(&st, retake, suicide);
+    assert_eq!(render(&after.now().board), "X.O");
+    assert_eq!(after.now().to_move, Color::White);
+    assert!(entry.seen().contains(entry.now()));
 }
