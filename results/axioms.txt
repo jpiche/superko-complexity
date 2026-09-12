@@ -1,5 +1,5 @@
 # witness: cd lean && lake env lean Axioms.lean
-# commit: 9363f25
+# commit: b93f20e
 # date: 2026-09-12
 #
 'Superko.mem_chain_iff_reachable' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -138,5 +138,7 @@
 'Superko.pass_seen_both' depends on axioms: [propext, Classical.choice, Quot.sound]
 'Superko.C50_pass_closes_board' depends on axioms: [propext, Classical.choice, Quot.sound]
 'Superko.resolve_keeps_mover' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.resolve_mover_of_ne' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.resolve_other_of_other' depends on axioms: [propext, Classical.choice, Quot.sound]
 'Superko.C51_play_changes_board' depends on axioms: [propext, Classical.choice, Quot.sound]
 'Superko.C51_two_plays_by_one_color_change_board' depends on axioms: [propext, Classical.choice, Quot.sound]

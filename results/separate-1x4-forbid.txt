@@ -1,5 +1,5 @@
 # witness: cargo run --release -q -p superko-cli -- separate --board 1x4 --suicide forbid 2>/dev/null
-# commit: d7de167
+# commit: b93f20e
 # date: 2026-09-12
 # defs-blob: 9f7554402827c94c8689dea639e05f295e80b5a2
 #
@@ -11,12 +11,13 @@ resolved=162
 unresolved=0
 unresolved-least=none
 minimum-unconditional=true
+minimum-liberties-unconditional=true
 empty-psk=4
 empty-ssk=4
 separating=0
 separating-liberties=0
-ssk-only-plays=14
-roots-with-ssk-only=8
-resolved-with-ssk-only=8
+ssk-only-plays=6
+roots-with-ssk-only=4
+resolved-with-ssk-only=4
 min-stones=0
 skipped=0

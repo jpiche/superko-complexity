@@ -1,5 +1,5 @@
 # witness: cargo run --release -q -p superko-cli -- separate --board 1x1 --suicide remove-own 2>/dev/null
-# commit: d7de167
+# commit: b93f20e
 # date: 2026-09-12
 # defs-blob: 9f7554402827c94c8689dea639e05f295e80b5a2
 #
@@ -11,6 +11,7 @@ resolved=6
 unresolved=0
 unresolved-least=none
 minimum-unconditional=true
+minimum-liberties-unconditional=true
 empty-psk=0
 empty-ssk=0
 separating=0
