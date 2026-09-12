@@ -1,11 +1,11 @@
 # Working agreements
 
 Instructions for an agent working in this repository. [`README.md`](README.md)
-describes the project and is the place to start; this file says only what an
-agent is expected to *do* differently.
+describes the project and is the place to start; this file says what an agent
+is expected to *do* differently.
 
-This is a research repository, not a product one. The deliverable is a set of
-claims with honest evidence. The failure mode that matters is not a bug — it
+This is a research repository; the deliverable is a set of claims with
+evidence. The failure mode that matters is not a bug — it
 is a claim that is believed more strongly than its evidence supports.
 
 ## The one rule
@@ -44,17 +44,14 @@ The maintainer additionally uses a hierarchy of worktrees:
   (`../superko-upper-bound`, `../superko-psk-ssk`)
 - ephemeral at the harness default, for experiments
 
-In a plain clone, a branch is enough. Nothing else in this file depends on the
-worktree layout.
-
 **Before starting any work, confirm the current working directory and git
 status are as expected.**
 
 ## Git
 
 - Work on a branch. Do not commit to `main` and do not merge into it.
-- **Do not `git push` unless asked.** Once this repository is public, a push is
-  immediately and permanently visible.
+- **Do not `git push`.**. This project maintains that humans gate both merging
+  to main and submitting a PR.
 - Do not rewrite a commit that has been pushed.
 
 Commit subjects take the form `<scope>: <lowercase description>`, no trailing
@@ -110,12 +107,11 @@ accountable and the specific model or models used, with exact ids:
 `**Models:** none` when no model was involved. List every model that did
 substantive work, not just the last one.
 
-This is not a disclaimer. The README discloses that AI assists the project,
-which tells a reader nothing they can act on. What they can act on is which
-model produced *which* artifact: model behavior differs enough between versions
-that a result's provenance is part of reproducing it, and a reader assessing
-machine-assisted work in a field where such work is now common needs the
-specific claim, not the general one.
+This is not a disclaimer. The README discloses that AI assists the project;
+what they can act on is which model produced *which* artifact: model behavior
+differs enough between versions that a result's provenance is part of
+reproducing it, and a reader assessing machine-assisted work in a field where
+such work is now common needs the specific claim, not the general one.
 
 The same reasoning applies as to the rest of the project — the reader is being
 asked to check rather than to trust, so tell them exactly what they are

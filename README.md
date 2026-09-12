@@ -21,13 +21,14 @@ is the ledger of every claim and its evidence.
 
 ## Why
 
-This is a research project run by Joseph J. Piché for fun: I find Go and
-computational complexity theory interesting.
+Fun. I find Go and computational complexity theory interesting. I have no
+affiliation nor relevant credentials.
 
 ## AI Usage
 
-AI models such as Anthropic's Claude are used to assist with building the code
-and proofs.
+Joseph J Piché is acting as armchair mathematician, with AI models assisting.
+Claude Code is the primary harness used. The model used per task is recorded
+in the relevant notebook or experiment file.
 
 ## Status
 
