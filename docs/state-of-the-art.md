@@ -148,7 +148,7 @@ transcribed — see
 | Base of liberties | lim L(m,n)^(1/mn) ≈ 2.9757341920433572493 |
 | Games on 19×19 | 10^(10^48) < N(19) < 10^(10^171), stated as an open problem |
 | Games on 1×n | at least 2^(2^(n−1)) |
-| Exact game counts under PSK | 1×1: 1, 1×2: 9, 1×3: 907, 1×4: 2,098,407,841, 2×2: 386,356,909,593 (C-9, C-23) |
+| Exact game counts under PSK, the paper's suicide-permitting rules | 1×1: 1, 1×2: 9, 1×3: 907, 1×4: 2,098,407,841, 2×2: 386,356,909,593 (C-9, C-23); under this project's no-suicide rule 1×4 is 719,178,893 (C-36, `computed`) |
 
 **Note the notation clash.** Tromp–Farnebäck's `N(n)` counts *games*. This
 project writes `H(n)` for the history-congruence index (C-15) to keep the two

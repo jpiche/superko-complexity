@@ -54,7 +54,10 @@ Playing color `c` at point `p` resolves in this order:
 3. remove every `c.other` chain now without a liberty;
 4. **no suicide** — if the chain containing `p` now has no liberty, the move
    was illegal. AGA rules forbid suicide; this is a divergence from
-   Tromp–Taylor and New Zealand, which permit it.
+   Tromp–Taylor and New Zealand, which permit it. The divergence is
+   observable in a game count from four points on a line: from the empty 1×4
+   board under positional superko this rule gives 719 178 893 games and
+   Tromp–Farnebäck's gives 2 098 407 841 (C-36, `computed`).
 
 A **situation** is a position together with the player to move. The **history**
 is the set of situations that have occurred, including the current one.

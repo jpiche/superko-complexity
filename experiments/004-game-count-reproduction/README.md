@@ -2,9 +2,9 @@
 
 **Author:** Joseph J. Piché
 **Models:** Claude Fable 5.1 (`claude-fable-5-1`)
-**Status:** planned
+**Status:** running
 **Opened:** 2026-09-11
-**Claims touched:** C-9, C-23; the trusted base's definitional validation
+**Claims touched:** C-9, C-23, C-36, C-37, C-38; the trusted base's definitional validation
 
 ## Question
 
@@ -57,8 +57,52 @@ reading as well.
 
 ## Result
 
-Not yet run.
+Interim, 2026-09-11, at commit `dbeac39`; the 2×2 runs are in progress.
+Every value is `computed` by the Rust mirror
+([`../../docs/plans/rules-mirror-plan.md`](../../docs/plans/rules-mirror-plan.md)),
+from the empty board with Black to move, root archived, passes exempt, and
+the game ended at the second consecutive pass. Bodies with their witness
+commands are under `results/`.
+
+| board | rule | suicide forbidden (`Defs.lean`) | suicide removed (the paper's) | published |
+|---|---|---|---|---|
+| 1×1 | PSK | 1 | 1 | 1 |
+| 1×2 | PSK | 9 | 9 | 9 |
+| 1×3 | PSK | 907 | 907 | 907 |
+| 1×4 | PSK | **719 178 893** | 2 098 407 841 | 2 098 407 841 |
+| 1×4 | SSK | 1 359 471 437 | not run | none |
+
+The legal-position counts `L(1,1..8)`, `L(2,2)`, `L(2,3)` and `L(3,3)`
+reproduce the published table, and the position-graph census reproduces
+Figures 1 and 2 under the paper's convention and gives 8 and 36 edges under
+`Defs.lean`'s (`cargo test -p superko-graph --test census`).
+
+The 1×4 runs took 36 s, 107 s and 65 s single-threaded at about
+6 × 10⁷ nodes per second (`data/`, not committed; wall time is not part of a
+witness body). The 1×4 run under the paper's convention explores
+6.3 × 10⁹ nodes for 2.1 × 10⁹ games, a ratio of three; the 2×2 projection
+from that ratio is about 1.2 × 10¹² nodes per run.
 
 ## Verdict
 
-Not yet run.
+**Falsification row 2 fired on 1×4.** The counts agree under `Defs.lean`'s
+rule on 1×1 through 1×3 and disagree on 1×4, where the published figure is
+reproduced exactly under the paper's suicide-removal convention and not
+under the no-suicide rule. The hand argument in the hypothesis was wrong: a
+two-stone self-capture that changes the position fits on four points. From
+`.OX.` Black plays the right end; the chain of two has the white stone on
+one side and the edge on the other, the white stone keeps its liberty, and
+under suicide removal the result is `.O..`, a position the game need not
+have visited.
+
+Consequences, applied: C-23 now states its ruleset; C-36 and C-37 record the
+1×4 counts under `Defs.lean`'s rules as `computed`; `formal-model.md` §3
+records that the suicide choice is observable at four points; C-38 records
+why 2×2 is expected to agree under both conventions. Row 3, the definitional
+validation this experiment exists for, waits on the 2×2 runs.
+
+What this does not establish: that the mirror agrees with `Defs.lean` on
+1×4 beyond what its tests reach (the naive arbiter has matched the fast
+enumerator on 1×4 to twelve plies, and the Lean oracle covers no game tree
+past two plies there); that 719 178 893 is right, which has no independent
+source; or anything about 2×2.

@@ -30,6 +30,9 @@ games = 9
 board = "1x3"
 games = 907
 
+# Under this project's no-suicide rule the 1x4 count is 719178893 instead
+# (C-36, computed; results/count-games-1x4-psk-forbid.txt). The three smaller
+# boards agree under both conventions.
 [[count]]
 board = "1x4"
 games = 2098407841

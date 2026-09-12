@@ -1,0 +1,18 @@
+# witness: cargo run --release -q -p superko-cli -- count-games --board 1x2 --rule psk --suicide remove-own 2>/dev/null
+# commit: dbeac39
+# date: 2026-09-11
+# defs-blob: 9f7554402827c94c8689dea639e05f295e80b5a2
+# produced-with: --threads 4; the body is thread-independent (crates/superko-graph/tests/determinism.rs), and the witness runs single-threaded
+#
+board=1x2
+rule=psk
+suicide=remove-own
+divergences=dims-are-runtime:unlicensed,suicide-remove-own:unlicensed,psk-archive-projection:unlicensed,rule-table-memo:unlicensed
+root=..
+games=9
+nodes=27
+max-depth=5
+max-archive=3
+refused-occupied=16
+refused-suicide=0
+refused-repetition=12
