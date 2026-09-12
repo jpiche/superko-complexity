@@ -518,6 +518,11 @@ fn solve(flags: &Flags) -> Result<String, String> {
     let to_move = flags.to_move()?;
     let komi_floor = flags.komi_floor()?;
     let budget = flags.budget()?;
+    if flags.naive && budget.is_some() {
+        // The naive engine has no budget, and a body printing one would claim a
+        // cap that was not in force.
+        return Err("--budget applies to the fast engine; drop it with --naive".to_string());
+    }
     let under = solver_divergences(flags.naive, rep, suicide, komi_floor.is_some());
 
     let started = Instant::now();
