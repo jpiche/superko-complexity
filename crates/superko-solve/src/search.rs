@@ -10,10 +10,12 @@
 //!
 //! Alpha-beta returns the minimax value of the tree whatever order it visits
 //! moves in, so [`solve`] is order-independent in its value and
-//! order-dependent in its node count. The order is the one
-//! `superko_rules::reference::all_moves` fixes — the pass, then each point
-//! row-major — which is the order `superko_graph::enumerate` counts in and the
-//! order `tests/rules_walk.rs` pins.
+//! order-dependent in its node count. The default order,
+//! [`MoveOrder::Heuristic`], keeps the pass where
+//! `superko_rules::reference::all_moves` puts it — first — and sorts the plays
+//! by a one-ply area count, with `all_moves` order breaking ties.
+//! [`MoveOrder::Static`] is the `all_moves` order itself, which
+//! `superko_graph::enumerate` counts in and `tests/rules_walk.rs` pins.
 //!
 //! The window is the whole score range, `-(m · n) - 1` to `m · n + 1`, so the
 //! value returned is exact rather than a bound. Scores lie in
@@ -74,9 +76,10 @@ pub struct Solution {
     pub nodes: u64,
     /// The greatest number of moves from the root the search reached.
     pub max_depth: usize,
-    /// Plays the search took that positional superko would have refused —
-    /// always zero under positional superko, and the measure of whether the
-    /// two rules met at all in this tree.
+    /// Plays positional superko would have refused that the search made —
+    /// counted when made, so a play a cutoff pruned is not — always zero under
+    /// positional superko, and the measure of whether the two rules met at all
+    /// in this tree.
     pub ssk_only: u64,
 }
 
@@ -173,8 +176,9 @@ impl<'t> Solver<'t> {
     /// order, then the pass.
     ///
     /// Under [`MoveOrder::Static`] this is a wholly different visit order;
-    /// under [`MoveOrder::Heuristic`] it reverses the tie-break alone. Either
-    /// way the value must not move, and that a reversed search agrees on the
+    /// under [`MoveOrder::Heuristic`] it reverses the tie-break and also moves
+    /// the pass from first to last, which costs alpha-beta its cheapest bound.
+    /// Either way the value must not move, and that a reversed search agrees on the
     /// value while disagreeing on the node count is evidence that the cutoffs
     /// preserve the answer — evidence available on boards the naive arbiter of
     /// [`crate::naive`] cannot reach.
@@ -208,15 +212,17 @@ impl<'t> Solver<'t> {
     /// being empty included — so the repetition read is the only other
     /// conjunct.
     ///
-    /// Under situational superko this also counts the plays **positional
-    /// superko would have refused**: the same archive answers both reads, so
-    /// the count costs one bit test. A search that never met such a play has
-    /// searched a tree the two rules agree on, and a report of no separation
-    /// from it would say nothing at all, and [`Solution::ssk_only`] is what
-    /// makes that distinguishable.
-    fn legal_succ(&mut self, mv: Move) -> Option<PosCode> {
+    /// It also says whether the play is one **positional superko would have
+    /// refused** while situational superko permits it: the same archive answers
+    /// both reads, so the answer costs one bit test. The search counts such a
+    /// play when it makes it, not when it generates it, so a play a cutoff
+    /// pruned is not counted. A search that made no such play has searched a
+    /// tree on which the two rules agree, and a report of no separation from it
+    /// would say nothing at all; [`Solution::ssk_only`] is what makes that
+    /// distinguishable.
+    fn legal_succ(&self, mv: Move) -> Option<(PosCode, bool)> {
         match mv {
-            Move::Pass => Some(self.code),
+            Move::Pass => Some((self.code, false)),
             Move::Play(p) => {
                 if !self.table.playable(self.code, self.to_move, p) {
                     return None;
@@ -228,10 +234,8 @@ impl<'t> Solver<'t> {
                 {
                     return None;
                 }
-                if matches!(self.rep, Repetition::Ssk) && self.archive.contains_psk(succ) {
-                    self.ssk_only += 1;
-                }
-                Some(succ)
+                let gap = matches!(self.rep, Repetition::Ssk) && self.archive.contains_psk(succ);
+                Some((succ, gap))
             }
         }
     }
@@ -343,27 +347,27 @@ impl<'t> Solver<'t> {
     /// sorts ahead of standing still.
     ///
     /// The order changes which cutoffs fire and cannot change the value.
-    /// `tests/agreement.rs` holds that by running the same searches under the
-    /// unordered move list and under its reverse.
+    /// `tests/agreement.rs` holds that by comparing this order against the
+    /// unsorted move list reversed.
     ///
     /// Returned in a fixed array rather than a `Vec` so that the recursion
     /// allocates nothing per node, and so that no borrow of `self.moves` is
     /// held across the recursive call.
-    fn ordered_moves(&mut self) -> ([(Move, PosCode); MAX_MOVES], usize) {
-        let mut out = [(Move::Pass, self.code); MAX_MOVES];
+    fn ordered_moves(&self) -> ([(Move, PosCode, bool); MAX_MOVES], usize) {
+        let mut out = [(Move::Pass, self.code, false); MAX_MOVES];
         let mut len = 0;
         let mut i = 0;
         while i < self.moves.len() {
             let mv = self.moves[i];
             i += 1;
-            if let Some(succ) = self.legal_succ(mv) {
-                out[len] = (mv, succ);
+            if let Some((succ, gap)) = self.legal_succ(mv) {
+                out[len] = (mv, succ, gap);
                 len += 1;
             }
         }
         if matches!(self.order, MoveOrder::Heuristic) {
             let maximizing = self.to_move == Color::Black;
-            let key = |&(_, succ): &(Move, PosCode)| {
+            let key = |&(_, succ, _): &(Move, PosCode, bool)| {
                 let diff = self.diff_at(succ);
                 if maximizing { -diff } else { diff }
             };
@@ -373,7 +377,7 @@ impl<'t> Solver<'t> {
             // are stable, so `all_moves` order survives as the tie-break.
             let at = out[..len]
                 .iter()
-                .position(|(mv, _)| matches!(mv, Move::Pass))
+                .position(|(mv, _, _)| matches!(mv, Move::Pass))
                 .expect("a pass is always legal");
             out[..at].sort_by_key(key);
             out[at + 1..len].sort_by_key(key);
@@ -404,8 +408,11 @@ impl<'t> Solver<'t> {
         // ended always visits a child.
         let mut best = if maximizing { alpha - 1 } else { beta + 1 };
         let (moves, len) = self.ordered_moves();
-        for &(mv, succ) in &moves[..len] {
+        for &(mv, succ, gap) in &moves[..len] {
             let undo = self.make(mv, succ);
+            if gap {
+                self.ssk_only += 1;
+            }
             let v = self.alphabeta(alpha, beta);
             self.unmake(undo);
             if self.over_budget {
@@ -436,8 +443,11 @@ impl<'t> Solver<'t> {
         }
         let mover = self.to_move == c;
         let (moves, len) = self.ordered_moves();
-        for &(mv, succ) in &moves[..len] {
+        for &(mv, succ, gap) in &moves[..len] {
             let undo = self.make(mv, succ);
+            if gap {
+                self.ssk_only += 1;
+            }
             let won = self.verdict(komi_floor, c);
             self.unmake(undo);
             if self.over_budget {

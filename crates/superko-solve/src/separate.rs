@@ -33,8 +33,10 @@
 //! The sweep compares scores because one score search answers about every
 //! komi at once. The witness it then names is a **verdict at one komi floor**,
 //! produced by [`verdicts`] from the recursion `Superko.decideWins` uses, so
-//! that the claim a reader is asked to check never routes through the
-//! threshold agreement between scores and winners (see the crate docs).
+//! the witness itself never routes through the threshold agreement between
+//! scores and winners (see the crate docs). A report of *no* separation, and
+//! the minimality of a witness, do: they are statements about values, and
+//! reach winners only through that agreement.
 
 use core::fmt;
 
@@ -164,7 +166,8 @@ pub fn verdicts(
 pub struct Sweep {
     /// The board.
     pub dims: Dims,
-    /// Roots examined: `2 · 3^(m·n)`, every coloring with each color to move.
+    /// The size of the domain: `2 · 3^(m·n)`, every coloring with each color to
+    /// move, so that `resolved + unresolved + skipped == roots`.
     pub roots: u64,
     /// Roots both searches resolved within the node budget.
     pub resolved: u64,
@@ -176,6 +179,9 @@ pub struct Sweep {
     /// what decides whether the minimum below is a minimum: a root of lower
     /// rank that no search resolved could be a smaller separating position.
     pub unresolved_least: Option<(PosCode, Color, u32)>,
+    /// The least unresolved root carrying no libertyless chain, in the same
+    /// order — what decides whether [`Sweep::minimal_liberties`] is a minimum.
+    pub unresolved_least_liberties: Option<(PosCode, Color, u32)>,
     /// Separating roots among the resolved ones.
     pub separating: u64,
     /// Separating roots carrying no libertyless chain.
@@ -190,17 +196,18 @@ pub struct Sweep {
     pub empty_ssk: Option<i32>,
     /// Nodes visited across every search of the sweep.
     pub nodes: u64,
-    /// Plays the situational-superko searches took that positional superko
-    /// would have refused. **A sweep reporting no separation with this at zero
+    /// Plays positional superko would have refused that the
+    /// situational-superko searches made — counted when made, so a play a
+    /// cutoff pruned is not. **A sweep reporting no separation with this at zero
     /// reports nothing**: the two rules never met in the trees it searched.
     pub ssk_only_plays: u64,
-    /// Roots whose situational-superko search met at least one such play.
+    /// Roots whose situational-superko search made at least one such play.
     pub roots_with_ssk_only: u64,
-    /// **Resolved** roots whose situational-superko search met at least one
+    /// **Resolved** roots whose situational-superko search made at least one
     /// such play. This is the number a null result stands on, and it is not
     /// the one above: on a budgeted sweep the roots with repetition cycles in
     /// them are exactly the expensive ones, so a sweep can meet thousands of
-    /// such plays and resolve none of the roots that met them.
+    /// such plays and resolve none of the roots that made them.
     pub resolved_with_ssk_only: u64,
     /// Roots excluded by a stone-count floor, which restricts the sweep's
     /// domain rather than failing to resolve it.
@@ -220,15 +227,45 @@ impl Sweep {
     /// root, since the sweep then ranged over part of the board.
     #[must_use]
     pub fn unconditional(&self) -> bool {
+        self.unconditional_over(self.minimal, self.unresolved_least)
+    }
+
+    /// Whether the minimum among roots carrying no libertyless chain is a
+    /// minimum over every such root of the board: the test of
+    /// [`Sweep::unconditional`], restricted to those roots. The two can
+    /// differ under a budget, when the least unresolved root overall carries a
+    /// dead chain and a root with liberties of lower rank than
+    /// [`Sweep::minimal_liberties`] went unresolved.
+    #[must_use]
+    pub fn unconditional_liberties(&self) -> bool {
+        self.unconditional_over(self.minimal_liberties, self.unresolved_least_liberties)
+    }
+
+    fn unconditional_over(
+        &self,
+        minimal: Option<Separating>,
+        least_unresolved: Option<(PosCode, Color, u32)>,
+    ) -> bool {
         if self.skipped > 0 {
             return false;
         }
-        match (self.minimal, self.unresolved_least) {
+        match (minimal, least_unresolved) {
             (_, None) => true,
             (None, Some(_)) => false,
             (Some(best), Some((code, to_move, stones))) => {
                 best.rank() < rank_of(stones, code, to_move)
             }
+        }
+    }
+
+    /// The empty board's value as a body prints it: the value, `unresolved`
+    /// when a budget stopped its search, or `skipped` when a stone-count floor
+    /// kept it out of the domain.
+    fn empty_value(&self, v: Option<i32>) -> String {
+        match v {
+            Some(n) => n.to_string(),
+            None if self.min_stones > 0 => "skipped".to_string(),
+            None => "unresolved".to_string(),
         }
     }
 
@@ -252,8 +289,12 @@ impl Sweep {
                 }
             ),
             format!("minimum-unconditional={}", self.unconditional()),
-            format!("empty-psk={}", opt(self.empty_psk)),
-            format!("empty-ssk={}", opt(self.empty_ssk)),
+            format!(
+                "minimum-liberties-unconditional={}",
+                self.unconditional_liberties()
+            ),
+            format!("empty-psk={}", self.empty_value(self.empty_psk)),
+            format!("empty-ssk={}", self.empty_value(self.empty_ssk)),
             format!("separating={}", self.separating),
             format!("separating-liberties={}", self.separating_liberties),
             format!("ssk-only-plays={}", self.ssk_only_plays),
@@ -309,11 +350,6 @@ impl Sweep {
         }
         out
     }
-}
-
-/// A score that a budget may have left unresolved.
-fn opt(v: Option<i32>) -> String {
-    v.map_or_else(|| "unresolved".to_string(), |n| n.to_string())
 }
 
 /// Sweep every root of a board under both repetition rules.
@@ -384,6 +420,7 @@ pub fn sweep_on_above(table: &RuleTable, budget: Option<u64>, min_stones: u32) -
         resolved: 0,
         unresolved: 0,
         unresolved_least: None,
+        unresolved_least_liberties: None,
         separating: 0,
         separating_liberties: 0,
         minimal: None,
@@ -435,6 +472,13 @@ pub fn sweep_on_above(table: &RuleTable, budget: Option<u64>, min_stones: u32) -
                     .is_none_or(|(c, m, s)| rank < rank_of(s, c, m))
                 {
                     out.unresolved_least = Some((code, to_move, stones));
+                }
+                if liberties
+                    && out
+                        .unresolved_least_liberties
+                        .is_none_or(|(c, m, s)| rank < rank_of(s, c, m))
+                {
+                    out.unresolved_least_liberties = Some((code, to_move, stones));
                 }
                 continue;
             };

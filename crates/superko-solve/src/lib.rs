@@ -21,15 +21,17 @@
 //!
 //! Black wins at komi floor `k` exactly when the minimax score exceeds `k`.
 //! That is a short induction over the game tree and it is **not proved here
-//! or in Lean**: it is `computed`, checked by `tests/agreement.rs` at every
-//! komi floor of every root position of every board with `m · n <= 3` under
-//! both rules and both suicide conventions.
+//! or in Lean**: it is `computed`, checked by the fast engine in
+//! `tests/agreement.rs` at every komi floor from `-(m·n) - 1` to `m·n + 1`, at
+//! every root position of 1×1, 1×2, 1×3, 1×4 and 2×2, under both rules and both
+//! suicide conventions (C-55).
 //!
-//! Nothing this crate reports as a headline rests on it. A separation claim is
-//! stated as two verdicts at one named komi, each produced by the decision
-//! recursion of job 1, which mirrors `Superko.decideWins` and needs no
-//! threshold argument. The score is the search order and the summary, not the
-//! evidence.
+//! A separating **witness** does not rest on it: it is stated as two verdicts
+//! at one named komi, each produced by the decision recursion of job 1, which
+//! mirrors `Superko.decideWins` and needs no threshold argument. A report of
+//! **no** separation, and the minimality of a witness, do rest on it: the sweep
+//! compares values and reaches winners only through the agreement, so on boards
+//! outside the range above they are statements about values alone.
 //!
 //! # Two engines, one of them the arbiter
 //!
@@ -62,10 +64,11 @@
 //! The two engines and the separation sweep exist. What the tests establish is
 //! `computed` and bounded: the two engines agree on the value and on both
 //! colors' verdicts at every komi floor, at every root position, on every
-//! board with `m · n <= 3` under both rules and both suicide conventions; the
-//! verdicts satisfy determinacy (C-28, `proved`) and the threshold agreement
-//! over that same range; and the 1×n empty-board scores under positional
-//! superko reproduce the published table of C-24 as far as the tests run.
+//! board with `m · n <= 3` under both rules and both suicide conventions; on
+//! 1×1, 1×2, 1×3, 1×4 and 2×2 the fast engine's verdicts satisfy determinacy
+//! (C-28, `proved`) and the threshold agreement (C-55); and the 1×n empty-board
+//! scores under positional superko reproduce the transcribed table of C-24 for
+//! n ≤ 6.
 //!
 //! What they do not establish: agreement with `Defs.lean` on any board those
 //! tests do not reach, or anything at all about a board the sweep did not

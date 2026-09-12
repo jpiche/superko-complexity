@@ -170,7 +170,7 @@ fn verdicts_are_determined_and_track_the_value() {
 /// The comparison is the default heuristic order — the pass in place, the
 /// plays sorted by a one-ply area count — against `MoveOrder::Static` run
 /// over the reversed move list, which is every point in reverse row-major
-/// order and then the pass. Those two share no move at the same index.
+/// order and then the pass: the pass is first in one order and last in the other.
 ///
 /// A root the second order cannot reach within its budget is skipped and
 /// counted, not failed: the comparison is about the cutoffs, and a search that
@@ -179,6 +179,9 @@ fn verdicts_are_determined_and_track_the_value() {
 fn the_value_survives_a_reversed_move_order() {
     /// Nodes the second order may spend on one root.
     const BUDGET: u64 = 2_000_000;
+    /// Roots, of the 960 on these boards, the second order resolves within its
+    /// budget.
+    const COMPARED: u64 = 816;
     let mut differing_counts = 0u64;
     let mut compared = 0u64;
     let mut skipped = 0u64;
@@ -220,12 +223,14 @@ fn the_value_survives_a_reversed_move_order() {
         "no search changed its node count under the reversed order, so the order \
          agreement was asserted about a case that never arises"
     );
-    // A floor, so that a solver change which quietly stopped reaching these
-    // roots breaks the build instead of reducing the test to nothing.
-    assert!(
-        compared >= 800,
-        "only {compared} roots were compared under both orders and {skipped} were \
-         skipped at a budget of {BUDGET} nodes"
+    // Pinned exactly, so that a solver change which quietly stopped reaching
+    // these roots — the expensive, cycle-rich ones, likeliest to expose an
+    // unsound cutoff — breaks the build instead of shrinking the test.
+    assert_eq!(
+        (compared, skipped),
+        (COMPARED, 960 - COMPARED),
+        "the two orders were compared at {compared} roots and {skipped} were skipped at a \
+         budget of {BUDGET} nodes; this test records {COMPARED} compared"
     );
 }
 
@@ -279,26 +284,29 @@ fn a_line_sweep_agrees_with_the_sweep_of_the_line_turned_on_its_side() {
     const BUDGET: Option<u64> = Some(2_000_000);
     for n in 2..=5 {
         for suicide in [Suicide::Forbid, Suicide::RemoveOwn] {
+            // 1×5 with suicide removed leaves roots unresolved at this budget,
+            // so the comparison could not cover them, and no claim rests on
+            // that board; it is left out rather than compared vacuously.
+            if n == 5 && matches!(suicide, Suicide::RemoveOwn) {
+                continue;
+            }
             let across = superko_solve::separate::sweep(Dims::new(1, n), suicide, BUDGET)
                 .expect("a small board");
             let down = superko_solve::separate::sweep(Dims::new(n, 1), suicide, BUDGET)
                 .expect("a small board");
-            let fields = |s: &superko_solve::separate::Sweep| {
-                (
-                    s.roots,
-                    s.resolved,
-                    s.unresolved,
-                    s.separating,
-                    s.separating_liberties,
-                    s.empty_psk,
-                    s.empty_ssk,
-                    s.minimal
-                        .map(|m| (m.code, m.to_move, m.psk, m.ssk, m.stones, m.liberties)),
-                )
+            // An unresolved root would be unresolved in both sweeps and the two
+            // would still agree, so the comparison would say nothing about it.
+            assert_eq!(
+                across.unresolved, 0,
+                "the 1x{n} sweep under {suicide} left roots unresolved at the budget"
+            );
+            // Every field, the node counts included; only the board differs.
+            let turned = superko_solve::separate::Sweep {
+                dims: across.dims,
+                ..down
             };
             assert_eq!(
-                fields(&across),
-                fields(&down),
+                across, turned,
                 "the 1x{n} sweep and the {n}x1 sweep disagree under {suicide}"
             );
         }

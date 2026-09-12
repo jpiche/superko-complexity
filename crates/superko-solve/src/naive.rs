@@ -16,8 +16,10 @@
 //! [`wins_for`] mirrors `Superko.decideWins`: a two-valued game at a fixed
 //! komi floor, which is the question `Superko.WinsFor` asks. [`value`] returns
 //! the minimax area difference, which `Defs.lean` does not define at all.
-//! Neither is computed from the other here, so that `tests/agreement.rs` can
-//! check that they agree.
+//! Neither is computed from the other here. `tests/agreement.rs` compares each
+//! with its fast-engine counterpart on every board of at most three points, and
+//! compares the fast engine's two recursions with each other on 1×1 to 1×4 and
+//! 2×2; the two naive recursions meet only through the fast engine.
 
 use superko_rules::config::{Repetition, Suicide};
 use superko_rules::reference::{
