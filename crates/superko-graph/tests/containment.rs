@@ -185,9 +185,9 @@ fn the_rules_differ_on_one_by_one_under_remove_own() {
 ///
 /// The three plays from `X.O` back to `X.O` are the whole mechanism: a closed
 /// walk of odd length in the graph of positions, which is what joins a board's
-/// two colorings. It captures one White stone, then two Black stones, then
-/// none — the shape Go calls "sending two, returning one", whose name this
-/// project holds no source for beyond its own use of it.
+/// two situations. It captures one White stone, then two Black stones, then
+/// none — the shape this project calls "sending two, returning one"; no source
+/// for the name is held.
 ///
 /// A pass *at the recurring board* cannot supply that parity: it archives both
 /// of that board's situations at once, since `Superko.step` inserts the
