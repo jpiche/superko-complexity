@@ -35,66 +35,45 @@ in the relevant notebook or experiment file.
 
 ## Status
 
-Early. Six claims proved; the scaffolding, the definitions and the gates are
-in place; the grounding for complexity-theoretic claims is decided
-([`docs/plans/complexity-grounding.md`](docs/plans/complexity-grounding.md)).
+Early. Both bounds of the Abstract are inherited rather than held — PSPACE-hard
+is C-2, `cited`, and EXPSPACE membership is C-3, `folklore`. Nothing here is a
+complexity result, and nothing bears on the EXPTIME conjecture (C-14) either
+way.
 
-The Lean development **builds** against Lean 4.34.0-rc2 and Mathlib, and the
-definitions are exercised by kernel-checked sanity theorems in
-[`lean/SuperkoComplexity/Sanity.lean`](lean/SuperkoComplexity/Sanity.lean)
-covering board geometry, chains, liberties, capture, suicide and area scoring.
-No `sorry`; no `native_decide`; the axiom record is
-[`results/axioms.txt`](results/axioms.txt).
+[`docs/claim-ledger.md`](docs/claim-ledger.md) is the spine — every claim, its
+status and its witness. This section summarizes it, and where the two disagree
+the ledger is right.
 
-**What is proved.** Play terminates (C-13): under either superko rule the play
-relation is well-founded, so no infinite sequence of legal moves exists. A game
-begun from a position as the root of play makes at most 4·3^(m·n) moves (C-26).
-From every state exactly one color has a winning strategy (C-28). A
-fuel-indexed archive decider, run at the floor of the komi with that
-game-length bound as its fuel, decides `BlackWins` (C-29); every komi is
-equivalent to a half-integer one (C-27); and the string encoding of an
-instance is injective, with the board linear in its length (C-31). On the
-upper-bound side: the game value reads the archive only inside the forward
-cone of the current situation, so entries outside it may be dropped (C-42),
-by a transfer schema parametric in the repetition rule (C-41); and no play
-ever produces the empty board, because the played stone survives its own move
-(C-44). All are machine-checked on the three standard axioms, under
-[`lean/SuperkoComplexity/Results/`](lean/SuperkoComplexity/Results/),
-[`lean/SuperkoComplexity/Encoding.lean`](lean/SuperkoComplexity/Encoding.lean)
-and [`lean/SuperkoComplexity/Compress.lean`](lean/SuperkoComplexity/Compress.lean).
+**Proved.** Ten claims, machine-checked against Lean 4.34.0-rc2 and Mathlib on
+the three standard axioms, no `sorry` and no `native_decide`
+([`results/axioms.txt`](results/axioms.txt)). Play terminates, and a game from
+a root position makes at most 4·3^(m·n) moves (C-13, C-26). From every state
+exactly one color has a winning strategy (C-28). A fuel-indexed archive decider
+decides `BlackWins` (C-29, C-43), komi enters only through its floor (C-27),
+and the string encoding is injective with the board linear in its length
+(C-31). The value reads the archive only inside the forward cone of the current
+situation (C-41, C-42), and no play ever produces the empty board (C-44). The
+sources are under [`lean/SuperkoComplexity/`](lean/SuperkoComplexity/).
 
-**What is computed.** A Rust mirror of `Defs.lean`, not trusted, reproduces
-the one game count another person computed from an independent
-formalization: 386,356,909,593 games on 2×2 under positional superko, under
-this project's rules and under Tromp's (C-39, C-38), together with the
-smaller published counts and the legal-position table (experiment 004). The
-same run found the suicide convention observable from four points on a line
-(C-36). Every such number is `computed`: an untrusted program agreeing with
-another untrusted program, checked by no kernel. The mirror is held to the
-Lean by a second reading of the definitions at every position of every
-board with at most six points, evaluated by the Lean compiler and graded
-`observed`.
+**Computed.** An untrusted Rust mirror of `Defs.lean` reproduces the one game
+count another person computed from an independent formalization:
+386,356,909,593 games on 2×2 under positional superko (C-39). That is the
+validation [`docs/trusted-base.md`](docs/trusted-base.md) asks for, and it is
+one quantity on one board — it sees neither komi nor scoring. The mirror also
+censuses the situation graph and finds a single mutually reachable component
+above the empty board, so C-42's prune removes at most two archive entries
+(C-45, C-46): pruning the archive to a subset of itself is closed. Every number
+here regenerates from a witness command in [`results/`](results/).
 
-The same mirror censuses the situation graph, and the census refutes the
-theorem's usefulness rather than its truth: above the empty board the graph is
-a single mutually reachable component on every board through `m·n = 12`
-(C-45), so C-42's prune removes at most two entries from an archive of up to
-2·3^(m·n) (C-46). Pruning the archive to a subset of itself is closed as a
-route to a smaller state.
+**Not established.** The classes, which is the gap that matters. They are
+grounded in prose (C-20); the sentence that turns the decider into an EXPSPACE
+membership is C-32, `folklore` ([`proofs/C-32.md`](proofs/C-32.md)); the
+transfer of the hardness construction to this ruleset is C-33, `open`; and the
+theorem that would carry the folklore EXPTIME argument beyond Robson's
+construction to arbitrary Go is C-49, which nobody has.
 
-**What that is not.** The sanity checks are hand-computed and so can only
-catch errors already imagined. The reproduced count is the independent
-agreement the trusted base asks for and no more: it says the definitions
-agree with Tromp's on one quantity, on one board, and it sees neither komi
-nor scoring. The decider cannot do this work — a winner is not a game count,
-and kernel evaluation of the decider reaches only small boards. Nor is any of
-it a complexity result: the classes are grounded in prose, cited to Hearn
-2006, and the one sentence that turns the decider into an EXPSPACE membership
-— that a Turing machine iterating its step uses space polynomial in the
-configuration — is claim C-32, `folklore`, written out in
-[`proofs/C-32.md`](proofs/C-32.md). Both bounds on SUPERKO-GO remain inherited
-rather than held. See [`docs/trusted-base.md`](docs/trusted-base.md) for what
-a reader must believe.
+What a reader must believe is [`docs/trusted-base.md`](docs/trusted-base.md);
+what is live is [`docs/open-questions.md`](docs/open-questions.md).
 
 ## What this project trusts
 
