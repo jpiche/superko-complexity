@@ -40,7 +40,9 @@ kernel has checked a count. Every theorem here is still a theorem about
 `Defs.lean`; what changed is that `Defs.lean` now agrees with Tromp where
 the two can be compared.
 
-**The 1×n scores are closable in weeks**; the 2×2 row is closed.
+The 1×n values reproduce for n ≤ 6 (C-24); 1×7 and 1×8 do not resolve within
+the solver test's budget of 4 × 10⁷ nodes, and C-11's 1×9 is not attempted.
+The 2×2 row is closed.
 
 ## 3. Positional versus situational superko (C-12, C-17, C-8)
 
@@ -53,9 +55,18 @@ Two sub-questions, of very different difficulty:
 
 - **A minimal separating position** (C-17). Real PSK/SSK divergences are
   documented in KGS games, but no minimal case with computed values is
-  published. This is a search problem with a certificate: Rust finds the
-  position and the two winning strategies, Lean checks both. Fully formalizable,
-  and publishable on its own.
+  published. Under `Defs.lean`'s rules none exists on any board of at most five
+  points (C-53, `computed`), although its searches make plays SSK permits and
+  PSK refuses on some of those boards; under the suicide-removing convention
+  the least is `X.` on 1×2 (C-54, `computed`). Under that convention separation
+  is not monotone in the board; under `Defs.lean`'s rules nothing is known
+  either way, so the absence at five points bounds nothing at six, and the
+  boards of six points are unswept. The shape of a separating play is settled (C-50 and C-51,
+  `proved`; C-52, `proved` by hand): it closes an odd walk of at least three
+  plays with no pass at the recurring board, so a value separation needs a
+  position where closing that walk is worth a player's while. A witness, once
+  found, would be certified by kernel evaluation of `Superko.decideWins` under
+  both rules at one komi, if that evaluation reaches its board. Fully formalizable, and publishable on its own.
 - **A complexity separation** (C-12). Much harder, and `infra-gap`.
 
 **C-17 is the best short-term target in the project**: novel, self-contained,

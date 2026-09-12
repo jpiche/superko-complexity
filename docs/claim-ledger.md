@@ -63,14 +63,14 @@ matching `C-<digits>`, `depends-on` comma-separated or `-`.
 | C-14 | SUPERKO-GO is in EXPTIME | conjecture | infra-gap | C-1 | Robson's belief as reported second-hand in a 2011 blog comment and in Hearn 2006; no proof |
 | C-15 | The index of the congruence on histories that agrees on legality and on the value, maximized over roots and komi floors, grows as 2^poly(m·n) | open | formalizable | C-13 | - ; the row used to say "the history-congruence index H(n)", which named neither the congruence nor the quantifier over roots, and open-questions.md §4 leans on it |
 | C-16 | Mechanical area scoring agrees with AGA agreed scoring under optimal play | conjecture | formalizable | - | docs/formal-model.md §4; the resumption mechanism the argument uses is AGA Rules 9 and 10, held |
-| C-17 | A minimal position exists whose game value differs under PSK and SSK | open | formalizable | - | KGS anecdotes; no published minimal case |
+| C-17 | A minimal position exists whose game value differs under PSK and SSK | open | formalizable | - | KGS anecdotes; no published minimal case. Under Defs.lean's rules there is none on any board of at most five points (C-53); under suicide removal the least is X. on 1x2 (C-54); experiment 005, and "game value" is defined in the detail below |
 | C-18 | Under AGA rules a pass is exempt from the superko restriction | cited | prose-only | - | AGA Rules 2, 6 and 7 (held): Rule 6 restricts playing, Rule 2 says a pass is always legal; Tromp–Taylor Rule 6 (held) makes a turn either a pass or a non-repeating move |
 | C-19 | Pass stones do not affect the outcome under area scoring | cited | prose-only | - | AGA Rule 12 (held): under area counting prisoners are ignored, and a pass stone is a prisoner; Rule 11's extra White pass changes no point of the board |
 | C-20 | Mathlib has no resource-bounded complexity class; the downstream Lean 4 libraries surveyed supply classes, a generic space-membership lemma that is axiom-clean at this project's Mathlib pin, and space measures over machines and programs, and none supplies a PSPACE-complete source problem under polynomial-time many-one reductions over a string-encoded Turing-machine class | computed | prose-only | - | experiments/001-mathlib-complexity-audit and notebook/2026-09-11-complexity-grounding.md; mathlib f5e9087 checked 2026-09-09; descriptive-complexity de212562, complexitylib 6c248df and EdouardBonnet/classical-complexity 026a662 checked 2026-09-10; cslib ec768ef, Shreyas4991/Algolean f64556d and zksecurity/caliper b62f7c8b checked 2026-09-11 |
 | C-21 | Undirected vertex geography is solvable in time polynomial in the graph size | cited | infra-gap | - | Fraenkel-Scheinerman-Ullman 1993 |
 | C-22 | Directed vertex, directed edge and undirected edge geography are PSPACE-complete | cited | infra-gap | - | Schaefer 1978 and Lichtenstein–Sipser 1980 Thm 2 for the directed variants; Fraenkel–Scheinerman–Ullman 1993 for undirected edge geography, via secondary reading; arXiv:2108.09367 |
 | C-23 | The PSK game counts on 1x1, 1x2, 1x3, 1x4 from the empty board under Tromp–Farnebäck's suicide-permitting rules are 1, 9, 907, 2098407841 | cited | formalizable | - | Tromp–Farnebäck 2016 Table 7, held; reproduced by the Rust mirror under remove-own suicide (computed): results/count-games-1x1-psk-remove-own.txt through results/count-games-1x4-psk-remove-own.txt; the first three also hold under Defs.lean's rule, the fourth does not (C-36) |
-| C-24 | The 1xn empty-board PSK minimax scores for n <= 8 are 0, 0, 3, 4, 0, 1, 2, 3 | cited | formalizable | - | test_data/literature/linear-go-scores.toml (transcribed, unverified) |
+| C-24 | The 1xn empty-board PSK minimax scores for n <= 8 are 0, 0, 3, 4, 0, 1, 2, 3 | cited | formalizable | - | test_data/literature/linear-go-scores.toml (transcribed, unverified); the entries n <= 6 are reproduced under Defs.lean's rule, whose suicide convention is the one the transcribed header names (computed): crates/superko-solve/tests/published.rs; 1x7 and 1x8 do not resolve within its budget of 4*10^7 nodes, and 1x9 is not attempted |
 | C-25 | No published complexity result isolates a repetition rule as the driver of a class change for chess, shogi or xiangqi | open | prose-only | - | confirmed absence; literature search 2026-09-09 |
 | C-26 | A game begun from a position as the root of play lasts at most 4·3^(m·n) moves under either superko rule | proved | formalized:C13_length_bound_explicit | C-13 | lean/SuperkoComplexity/Results/C13_Termination.lean |
 | C-27 | The verdict depends on komi only through its floor: every komi is equivalent for BlackWins to the half-integer floor(komi) + 1/2, so the tie-to-White convention is unobservable for BlackWins at a fixed color to move | proved | formalized:C27_blackWins_iff_halfInteger | C-29 | lean/SuperkoComplexity/Results/C27_Komi.lean |
@@ -96,6 +96,12 @@ matching `C-<digits>`, `depends-on` comma-separated or `-`.
 | C-47 | A game whose reachable states number 2^poly(n) in the input length n, with names of 2^O(n) bits and a successor computable in time polynomial in a name, is decidable in EXPTIME by backward induction over the state graph | folklore | infra-gap | - | no source held; the step every "bounded effective state implies EXPTIME" argument consumes, this project's included, and it appeared nowhere in docs/, proofs/, notebook/ or lean/ before this row |
 | C-48 | APSPACE = EXPTIME, and APTIME(poly) = PSPACE | folklore | infra-gap | - | Chandra–Kozen–Stockmeyer 1981, sought; held only through Hearn 2006's uncited restatement. open-questions.md §5 consumes it |
 | C-49 | Undirected vertex geography with unconditional pass edges and a terminal scored by area is solvable in time polynomial in the graph size | open | infra-gap | C-21 | no source; C-21 is a normal-play theorem — last player able to move wins — while a superko Go game never becomes immobile (C-18) and ends by scoring. This is the theorem generalizing C-6 to arbitrary Go, and nobody has it |
+| C-50 | A pass made while the board is X archives both of X's situations, so at every state whose history contains the history that pass left, no play recreating X is permitted under either superko rule | proved | formalized:C50_pass_closes_board | - | lean/SuperkoComplexity/Results/C50_Mechanism.lean; pass_seen_both, with now_mem_seen_start and now_mem_seen_step for the invariant it needs. That every later state of a game is such a state is Basic.seen_subset_of_step iterated along the moves, which is not written as a theorem about sequences of moves |
+| C-51 | A play never removes the mover's own stones, puts a mover stone at no point but the one played, and adds no opponent stone; so no play recreates the board it was played on, and no two plays by one color with only passes between them do | proved | formalized:C51_play_changes_board | - | lean/SuperkoComplexity/Results/C50_Mechanism.lean; resolve_keeps_mover, resolve_mover_of_ne, resolve_other_of_other and C51_two_plays_by_one_color_change_board. Two plays by different colors can recreate a board: a ko |
+| C-52 | Where SSK permits a play that PSK refuses, the board it creates has stood only with the mover to play; the walk back from its last occurrence has odd length, begins and ends with plays by the mover, holds at least three plays, and no pass is made at that board before the separating play; each color's plays remove exactly as many of the other's stones as the other plays, so with three plays and no pass the middle play removes two stones and the outer two remove one between them. Such plays occur in games with no pass, so the separation does not depend on C-18 | proved | formalizable | C-50, C-51 | proofs/C-52.md, by hand: the argument over a walk is checked by no kernel, its local steps are (C-50, C-51); the pass-free 1x3 game is also replayed by crates/superko-graph/tests/containment.rs |
+| C-53 | Under Defs.lean's rules no position separates PSK from SSK on any board of at most five points: at every coloring of 1x1, 1x2, 1x3, 1x4, 2x2 and 1x5 and of their transposes, with either color to move, the minimax area difference is the same under both rules. The rules do differ in legality on those boards: the SSK searches made plays PSK refuses at 4, 98 and 328 roots of 1x4, 2x2 and 1x5. On 1x3 they made none, every such play they generated being cut off, so the 1x3 agreement carries no evidence from the searches that the rules met there; the 1x3 legality gap is exhibited by crates/superko-graph/tests/containment.rs | computed | formalizable | - | results/separate-1x1-forbid.txt through -1x5-forbid.txt and -2x2-forbid.txt, experiment 005; the line transposes by crates/superko-solve/tests/agreement.rs, which compares every field with no root unresolved; the counts of roots making such a play depend on the search order and are lower bounds |
+| C-54 | Under the suicide-removing convention, which Defs.lean does not model, the least position separating PSK from SSK in experiment 005's order is X. on 1x2 with Black to move: its minimax area difference is -2 under PSK and 0 under SSK, and at komi floor -2 White wins under PSK and Black under SSK, as at -1 read through C-55. No 1x1 position separates, and none of 1x3, 1x4 or 2x2 does, so under that convention separation is not monotone in the board | computed | formalizable | C-55 | results/separate-1x2-remove-own.txt with its four witness verdicts, each a separate search; -1x1-, -1x3-, -1x4- and -2x2-remove-own.txt for the absences; traced by hand in notebook/2026-09-12-c17-separation-search.md; formalizing it needs a suicide-removing rule, which Defs.lean does not have |
+| C-55 | At every position of 1x1, 1x2, 1x3, 1x4 and 2x2 as the root, with either color to move, under either superko rule and either suicide convention, exactly one color wins at each komi floor k from -(m*n)-1 to m*n+1, and Black wins at k exactly when the minimax area difference exceeds k | computed | formalizable | - | crates/superko-solve/tests/agreement.rs, verdicts_are_determined_and_track_the_value, which computes the winners and the value by separate recursions; the general statement is a short induction over WinsFor and is not written |
 
 ## Detail
 
@@ -303,6 +309,13 @@ C-24's 1×n scores are still copied from Hayward's course table, with
 Weninger–Hayward `sought`, so a failure to reproduce them has three possible
 causes rather than two — see
 [`../test_data/literature/README.md`](../test_data/literature/README.md).
+None has occurred as far as the solver reaches: `superko-solve` reproduces the
+entries for n ≤ 6 exactly, under `Defs.lean`'s rule, whose suicide convention is
+the one the transcribed header names (`computed`,
+`crates/superko-solve/tests/published.rs`). The row stays `cited`. Reproduction
+is evidence that this workspace computes what the table records, not that
+either describes Go. 1×7 and 1×8 do not resolve within the test's budget of
+4 × 10⁷ nodes, and the disputed 1×9 of C-11 is not attempted.
 
 
 ### C-25 — a confirmed absence
@@ -573,3 +586,76 @@ lives only in a reader's head is the kind of thing this ledger exists to stop.
 Robson's construction engineers a normal-play-like payoff; arbitrary Go has
 none. Whether the matching argument survives the addition of free pass edges
 and a scored terminal is open, and is the concrete form of the question.
+
+### C-17 — what "game value" means, and where the search stands
+
+`Defs.lean` defines no game value: `Superko.WinsFor` is a two-valued game at a
+fixed komi. This project reads C-17's "game value" as the **minimax area
+difference** — Black's area less White's at the finished game, Black
+maximizing and White minimizing. That quantity belongs to `superko-solve`, and
+it reaches `WinsFor` only through the threshold agreement of C-55, which is
+`computed` and not proved. A witness for C-17 is therefore recorded as a pair
+of verdicts at one named komi floor. That is the quantity `Defs.lean` defines
+and the one a kernel evaluation of `Superko.decideWins` can check; the value
+locates candidates and is not the evidence. The absence of a witness and the
+minimality of one are statements about values, and reach winners only through
+C-55.
+
+Minimal is taken in experiment 005's order: board area, then the number of
+stones, then the position code, then Black to move before White. Under `Defs.lean`'s rules there is no witness on any board of at
+most five points (C-53). Under the suicide-removing convention the least
+witness is on 1×2 (C-54), and under that convention separation is not
+monotone in the board: 1×2 separates while 1×3, 1×4 and 2×2 do not. Under
+`Defs.lean`'s rules nothing is known either way, so the absence of a witness on
+the boards swept bounds nothing about the boards above them. The boards of six points are not swept.
+
+### C-50 to C-52 — what separates the rules
+
+The two rules differ exactly at a play whose board has stood with the mover to
+play and never with the opponent. C-50 and C-51 are the two local facts about
+`resolve` and `step` that decide how a game reaches such a play, and C-52
+assembles them over the walk back from the board's last occurrence: odd length,
+at least three plays, the mover's first and last, and no pass at that board
+before the play.
+
+The pass exemption is not the parity resource separating the rules. A pass at
+the recurring board closes it to both rules; separating plays occur in games
+with no pass; a pass at another board can sit inside a walk. The `SSK`
+docstring in `Defs.lean` says otherwise and is pending correction: any change to
+that file, comments included, invalidates the digest every Lean oracle fixture
+records (`tools/check-oracle.sh`), so it changes when the fixtures are next
+regenerated.
+
+C-52 is `proved` with formalization `formalizable`: a hand proof in
+[`../proofs/C-52.md`](../proofs/C-52.md), and the first `proved` row no kernel
+has checked. Its local steps are kernel-checked. The argument over a walk
+needs a notion of a game as a sequence of states, which the development does
+not have.
+
+### C-53, C-54 — the separation sweep
+
+`superko separate` solves every root of a board under both rules: every
+coloring `Superko.Position` admits, with each color to move, since
+`formal-model.md` §5 takes a position as the root of play. A null result is
+worth only as much as the searched trees differed, so each body counts the
+roots whose SSK search made a play PSK would refuse. That count depends on the
+order alpha-beta visits moves in, and is a lower bound. On a sweep run under a node
+budget it must be read over the resolved roots alone, because the roots with
+repetition cycles in them are exactly the expensive ones.
+
+The value is compared rather than the winner because one search answers for
+every komi at once. On the boards C-55 covers, equal values mean equal winners
+at every komi floor in C-55's range; on 1×5, C-53 is a statement about values
+only.
+
+### C-55 — the threshold agreement
+
+`superko-solve` computes the minimax area difference and `WinsFor` by separate
+recursions, neither derived from the other, and its test holds them together
+at every komi floor from one below the lowest possible score to one above the
+highest. The general statement is a short induction over the game tree: at a
+finished game the leaf test is `winnerZ`, the mover's disjunction is a maximum,
+and the waiter's conjunction is a minimum. It is not written in Lean. Nothing
+`proved` rests on it, and no C-17 witness may. The absence of separation C-53
+records, and the minimality of C-54's witness, are statements about values, and
+reach winners only through it.

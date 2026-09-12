@@ -57,7 +57,12 @@ Playing color `c` at point `p` resolves in this order:
    Tromp–Taylor and New Zealand, which permit it. The divergence is
    observable in a game count from four points on a line: from the empty 1×4
    board under positional superko this rule gives 719 178 893 games and
-   Tromp–Farnebäck's gives 2 098 407 841 (C-36, `computed`).
+   Tromp–Farnebäck's gives 2 098 407 841 (C-36, `computed`). It is observable
+   in a value too: with suicide removed, the 1×2 position `X.` with Black to
+   play is worth −2 under positional superko and 0 under situational superko
+   (C-54, `computed`), while under this rule no position on a board of at most
+   five points has values differing between the two superko rules (C-53,
+   `computed`).
 
 A **situation** is a position together with the player to move. The **history**
 is the set of situations that have occurred, including the current one.
@@ -77,10 +82,29 @@ play", and Rule 2 says "a pass is always legal (Rule 7)". Tromp–Taylor Rule 6
 reads "A turn is either a pass; or a move that doesn't repeat an earlier grid
 coloring", so the repetition clause scopes to moves by construction.
 
-The consequence stands as before: a pass changes the player to move without
-changing the position, so under SSK an exempt pass can re-enter a situation
-that a play could not. That is the parity resource that distinguishes SSK
-from PSK, and it is the mechanism behind "sending two, returning one".
+The consequence: a pass changes the player to move without changing the
+position, so under SSK an exempt pass can enter a situation a play could not.
+That is **not** what separates SSK from PSK. The two rules differ only at a
+play recreating a board that has stood with the mover to play and never with
+the opponent to play, and the walk back to that board has odd length, holds at
+least three plays, and holds no pass made at that board: a pass archives both
+of a board's situations and closes it to both rules (C-50 and C-51, `proved`;
+C-52, `proved` by hand). Separating plays occur in games with no pass at all —
+from the empty 1×3 board, the fifth move of one such game separates the rules
+(C-52; `computed` in `crates/superko-graph/tests/containment.rs`) — so the
+difference between them
+does not depend on this OPEN, and it survives the reading in which passes are
+subject to the repetition rule. A pass made at some other board can still sit
+inside such a walk. The three-play walk with no pass, whose middle play removes
+two stones and whose outer plays remove one between them, is the shape this
+project has called "sending two, returning one"; no source for the name is
+held.
+
+The `SSK` docstring in `Defs.lean` says the pass exemption is the parity
+resource separating the rules, which C-50 and C-52 contradict. It is pending
+correction: a change to that file, comments included, invalidates the digest
+every Lean oracle fixture records (`tools/check-oracle.sh`), so it changes when
+the fixtures are next regenerated.
 
 One reading the texts do not make for us: AGA Rule 6 names the *situation*
 (position with the same player to play) and so is situational superko;

@@ -2,9 +2,9 @@
 
 **Author:** Joseph J. Piché
 **Models:** Claude Opus 5 (`claude-opus-5`)
-**Status:** planned
+**Status:** running
 **Opened:** 2026-09-12
-**Claims touched:** C-17, C-8, C-12, C-24, C-11
+**Claims touched:** C-17, C-8, C-12, C-24, C-11; opened C-50 to C-55
 
 ## Question
 
@@ -130,8 +130,117 @@ Every body lands in `results/` with a witness header.
 
 ## Result
 
-Not yet run.
+Runs of 2026-09-12. The bodies under `results/` were produced at commit
+`b93f20e`. Every value is `computed` by `superko-solve`, from `Defs.lean`'s
+rules unless a table says otherwise.
+
+**The gate of row 1.** `crates/superko-solve/tests/published.rs` reproduces
+the empty-board 1×n values under PSK for n ≤ 6 — 0, 0, 3, 4, 0, 1, the first
+six entries of the transcribed table. 1×7 and 1×8 do not resolve within the
+test's budget of 4 × 10⁷ nodes, and 1×9 is not attempted.
+
+**The solver's own checks, row 2.** In `crates/superko-solve/tests/agreement.rs`:
+
+- The naive and fast engines agree on every value and every verdict at every
+  root of every board of at most three points, under both rules and both
+  suicide conventions.
+- On 1×1, 1×2, 1×3, 1×4 and 2×2, exactly one color wins at every komi floor
+  from −(m·n)−1 to m·n+1, and Black wins exactly when the value exceeds it
+  (C-55).
+- The value is unchanged under a second, reversed move order at the 816 of
+  the 960 searches through 1×4 that the reversed order finishes within
+  2 × 10⁶ nodes; the test pins that count.
+- A line board and its transpose sweep identically, every field, with no root
+  unresolved: through 1×5 with suicide forbidden and through 1×4 with it
+  removed. 1×5 with suicide removed leaves roots unresolved at the test's
+  budget and is not compared.
+
+**The sweep, suicide forbidden** (`results/separate-<board>-forbid.txt`):
+
+| board | roots | resolved | separating | resolved roots meeting an SSK-only play | empty board, PSK / SSK |
+|---|---|---|---|---|---|
+| 1×1 | 6 | 6 | 0 | 0 | 0 / 0 |
+| 1×2 | 18 | 18 | 0 | 0 | 0 / 0 |
+| 1×3 | 54 | 54 | 0 | 0 | 3 / 3 |
+| 1×4 | 162 | 162 | 0 | 4 | 4 / 4 |
+| 2×2 | 162 | 162 | 0 | 98 | 1 / 1 |
+| 1×5 | 486 | 486 | 0 | 328 | 0 / 0 |
+
+"Meeting an SSK-only play" means the SSK search made a play PSK would refuse —
+made, not merely generated at a node where a cutoff then pruned it. The count
+depends on the order alpha-beta visits moves in and is a lower bound. On 1×3
+the searches made none: every such play they generated was cut off. The 1×3
+row therefore carries no evidence from the searches that the rules met there,
+and the 1×3 legality gap is the one `crates/superko-graph/tests/containment.rs`
+exhibits.
+
+**The sweep, suicide removed** (`results/separate-<board>-remove-own.txt`),
+which has no counterpart in `Defs.lean`:
+
+| board | separating | least separating root |
+|---|---|---|
+| 1×1 | 0 | — |
+| 1×2 | 4 | `X.`, Black to move: PSK −2, SSK 0 |
+| 1×3 | 0 | — |
+| 1×4 | 0 | — |
+| 2×2 | 0 | — |
+
+The four witness verdicts at komi floor −2, each a separate search: under PSK
+White wins and Black does not; under SSK Black wins and White does not. Traced
+by hand in `notebook/2026-09-12-c17-separation-search.md`.
+
+Method step 4's verdicts came from the sweep body, which runs the four verdict
+searches separately from the score searches, rather than from separate
+`superko solve` runs.
+
+**Not run.** The boards of six points, exhaustively: the empty 1×6 root
+resolves under PSK in 27 925 122 nodes (`superko solve --board 1x6 --rule psk
+--suicide forbid --root ......`), and a sweep of 1×6 was started and lost to a
+machine crash before it finished. `remove-own` on 1×5. The Lean route of row 3,
+which needs a witness under `Defs.lean`'s rules.
+
+**The mechanism.** The analysis the sweep prompted became C-50, C-51 and C-52:
+a separating play closes an odd walk of at least three plays with no pass at
+the recurring board, and such plays occur in games with no pass. That
+corrected the mechanism `docs/formal-model.md` §OPEN-1 stated.
 
 ## Verdict
 
-Not yet reached.
+**Row 1 passed, and row 2 did not fire**, so the sweep's numbers are worth
+reading.
+
+**Row 6 fired, on the boards swept.** Under `Defs.lean`'s rules no root
+separates on any board of at most five points (C-53); under the
+suicide-removing convention the least witness is `X.` on 1×2 (C-54). The
+separation found is a fact about `superko-rules`, not about the audit target.
+As the row prescribed: C-17 stays `open` for `Defs.lean`, C-54 records the
+fact, and `docs/formal-model.md` §3 records that the suicide convention is
+observable in the value.
+
+**Row 4 held through five points, and six was not reached.** C-53 records the
+exhausted region exactly. Under the suicide-removing convention separation is
+not monotone in the board (C-54); under `Defs.lean`'s rules nothing is known
+either way, so the null result bounds nothing above five points. Row 4's second
+consequence — a row asking whether separation is impossible below some size —
+is not opened: whether any position separates at all is C-17, and a proof of the
+absence C-53 computes would move C-53 itself to `proved`, so the question
+already has the rows it needs.
+
+**The hypothesis is not refuted under `Defs.lean`'s rules, and is narrowed.**
+It placed the smallest separating board at `m · n` between 4 and 6; 4 and 5
+hold none, so it now requires six points, which are unswept. Under the
+suicide-removing convention the least separating board has two points, outside
+the guessed range.
+
+**Row 3 was not reached**, so C-17 has no certificate.
+
+Consequences applied: ledger rows C-50 to C-55; the witness columns of C-17
+and C-24; `docs/formal-model.md` §OPEN-1 and §3; `docs/open-questions.md` §2
+and §3; the validation table of `docs/trusted-base.md`.
+
+What this does not establish: anything about boards of six points or more;
+that the SSK-only plays counted are all such plays in the trees; that the two
+rules give the same winner on 1×5 at every komi, which needs C-55 beyond the
+boards it was checked on; and anything `proved` about C-17.
+
+**Status stays `running`.** It resumes at the six-point boards.

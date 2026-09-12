@@ -127,7 +127,7 @@ from their own formalizations:
 |---|---|---|---|
 | 2×2 games under positional superko | 386,356,909,593 | Tromp | reproduced under this project's rules and under Tromp's (C-39, C-38, `computed`) |
 | Legal positions `L(m,n)` | table | Tromp–Farnebäck | reproduced to 3×3 (`cargo test -p superko-graph --test census`, `computed`) |
-| 1×n minimax scores under PSK | table | Weninger–Hayward | not attempted |
+| 1×n minimax scores under PSK | table | Weninger–Hayward | reproduced for n ≤ 6 under `Defs.lean`'s rule, whose suicide convention is the one the transcribed table names (C-24, `computed`); 1×7 and 1×8 unresolved within 4 × 10⁷ nodes, 1×9 not attempted |
 
 A definition of Go that is subtly wrong will not produce 386,356,909,593. The
 argument is not airtight — a definition could be wrong in a way these

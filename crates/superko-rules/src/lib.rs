@@ -75,7 +75,8 @@
 //! convention, and the 2x2 game count under both conventions (all
 //! `computed`, recorded under `results/`, and cited by the ledger's C-23,
 //! C-38 and C-39); on 1x4 the no-suicide rule gives a different count
-//! (C-36). The 1xn minimax scores are unrun.
+//! (C-36). The 1xn minimax scores reproduce for n <= 6, by `superko-solve`
+//! (C-24).
 
 pub mod archive;
 pub mod code;

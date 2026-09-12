@@ -44,7 +44,7 @@ way.
 status and its witness. This section summarizes it, and where the two disagree
 the ledger is right.
 
-**Proved.** Ten claims, machine-checked against Lean 4.34.0-rc2 and Mathlib on
+**Proved.** Twelve claims, machine-checked against Lean 4.34.0-rc2 and Mathlib on
 the three standard axioms, no `sorry` and no `native_decide`
 ([`results/axioms.txt`](results/axioms.txt)). Play terminates, and a game from
 a root position makes at most 4·3^(m·n) moves (C-13, C-26). From every state
@@ -52,25 +52,40 @@ exactly one color has a winning strategy (C-28). A fuel-indexed archive decider
 decides `BlackWins` (C-29, C-43), komi enters only through its floor (C-27),
 and the string encoding is injective with the board linear in its length
 (C-31). The value reads the archive only inside the forward cone of the current
-situation (C-41, C-42), and no play ever produces the empty board (C-44). The
-sources are under [`lean/SuperkoComplexity/`](lean/SuperkoComplexity/).
+situation (C-41, C-42), and no play ever produces the empty board (C-44). A
+pass made at a board closes it to both superko rules, and a play never removes
+the mover's own stones (C-50, C-51). The sources are under
+[`lean/SuperkoComplexity/`](lean/SuperkoComplexity/). A thirteenth claim, C-52 —
+that a play one superko rule permits and the other refuses closes a walk of at least three plays with
+no pass at the recurring board — is proved by hand in [`proofs/`](proofs/), and
+no kernel has checked it.
 
 **Computed.** An untrusted Rust mirror of `Defs.lean` reproduces the one game
 count another person computed from an independent formalization:
 386,356,909,593 games on 2×2 under positional superko (C-39). That is the
 validation [`docs/trusted-base.md`](docs/trusted-base.md) asks for, and it is
-one quantity on one board — it sees neither komi nor scoring. The mirror also
+one quantity on one board — it sees neither komi nor scoring. A solver over the
+same mirror reproduces a second table, which does see scoring and is
+transcribed second-hand, unverified against its source: the empty-board 1×n
+minimax values under positional superko for n ≤ 6 (C-24). The
+mirror also
 censuses the situation graph and finds a single mutually reachable component
 above the empty board, so C-42's prune removes at most two archive entries
-(C-45, C-46): pruning the archive to a subset of itself is closed. Every number
-here regenerates from a witness command in [`results/`](results/).
+(C-45, C-46): pruning the archive to a subset of itself is closed. The solver
+finds no position whose value differs between positional and situational
+superko on any board of at most five points (C-53), where the suicide-removing
+convention, which `Defs.lean` does not model, already separates them on 1×2
+(C-54). Every number here regenerates from a witness command in [`results/`](results/) or a named
+test.
 
 **Not established.** The classes, which is the gap that matters. They are
 grounded in prose (C-20); the sentence that turns the decider into an EXPSPACE
 membership is C-32, `folklore` ([`proofs/C-32.md`](proofs/C-32.md)); the
 transfer of the hardness construction to this ruleset is C-33, `open`; and the
 theorem that would carry the folklore EXPTIME argument beyond Robson's
-construction to arbitrary Go is C-49, which nobody has.
+construction to arbitrary Go is C-49, which nobody has. No position whose value
+differs between the two superko rules under `Defs.lean`'s rules is known (C-17,
+`open`).
 
 What a reader must believe is [`docs/trusted-base.md`](docs/trusted-base.md);
 what is live is [`docs/open-questions.md`](docs/open-questions.md).
