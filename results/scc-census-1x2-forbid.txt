@@ -1,5 +1,5 @@
 # witness: cargo run --release -q -p superko-cli -- scc-census --board 1x2 --suicide forbid 2>/dev/null
-# commit: 4fdfe58
+# commit: 7e66f60
 # date: 2026-09-12
 # defs-blob: 9f7554402827c94c8689dea639e05f295e80b5a2
 #
