@@ -1,0 +1,22 @@
+# witness: cargo run --release -q -p superko-cli -- separate --board 2x2 --suicide remove-own 2>/dev/null
+# commit: d7de167
+# date: 2026-09-12
+# defs-blob: 9f7554402827c94c8689dea639e05f295e80b5a2
+#
+board=2x2
+suicide=remove-own
+divergences=dims-are-runtime:unlicensed,suicide-remove-own:unlicensed,psk-archive-projection:unlicensed,rule-table-memo:unlicensed,winner-via-floor-komi:Superko.winnerZ_eq_winner
+roots=162
+resolved=162
+unresolved=0
+unresolved-least=none
+minimum-unconditional=true
+empty-psk=1
+empty-ssk=1
+separating=0
+separating-liberties=0
+ssk-only-plays=13920
+roots-with-ssk-only=130
+resolved-with-ssk-only=130
+min-stones=0
+skipped=0

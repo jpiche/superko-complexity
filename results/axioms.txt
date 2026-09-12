@@ -1,5 +1,5 @@
 # witness: cd lean && lake env lean Axioms.lean
-# commit: 520e2ad
+# commit: 9363f25
 # date: 2026-09-12
 #
 'Superko.mem_chain_iff_reachable' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -132,3 +132,11 @@
 'Superko.Compress.winsFor_insert_unreachable' depends on axioms: [propext, Classical.choice, Quot.sound]
 'Superko.Compress.decideWins_iff_winsFor' depends on axioms: [propext, Classical.choice, Quot.sound]
 'Superko.Compress.sitStep_empty_board' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.now_mem_seen_start' does not depend on any axioms
+'Superko.now_mem_seen_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.eq_or_eq_other' depends on axioms: [propext]
+'Superko.pass_seen_both' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.C50_pass_closes_board' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.resolve_keeps_mover' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.C51_play_changes_board' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.C51_two_plays_by_one_color_change_board' depends on axioms: [propext, Classical.choice, Quot.sound]
