@@ -1,6 +1,6 @@
 //! The `superko` binary — the operator surface over the search crates.
 //!
-//! Three subcommands, all of them counters:
+//! Six subcommands: four counters and two solvers.
 //!
 //! ```text
 //! superko count-games     --board MxN --rule psk|ssk --suicide forbid|remove-own
@@ -8,6 +8,11 @@
 //! superko count-positions --board MxN
 //! superko graph-census    --board MxN --suicide forbid|remove-own
 //! superko scc-census      --board MxN --suicide forbid|remove-own
+//! superko solve           --board MxN --rule psk|ssk --suicide forbid|remove-own
+//!                         --root POS [--to-move black|white] [--komi-floor K]
+//!                         [--budget N] [--naive]
+//! superko separate        --board MxN --suicide forbid|remove-own [--budget N]
+//!                         [--min-stones K]
 //! ```
 //!
 //! Argument parsing is hand-rolled, because the workspace has no dependencies:
@@ -41,10 +46,12 @@ use superko_graph::census::{legal_positions, position_graph};
 use superko_graph::enumerate::{self, Options};
 use superko_graph::scc::situation_graph;
 use superko_graph::walk;
-use superko_rules::code::render;
+use superko_rules::code::{parse, render};
 use superko_rules::config::{Dims, Repetition, Suicide};
 use superko_rules::divergence::Divergence;
-use superko_rules::reference::Position;
+use superko_rules::reference::{Color, Position};
+use superko_rules::table::RuleTable;
+use superko_solve::{naive, search, separate as sep};
 
 const USAGE: &str = "\
 usage: superko <command> [options]
@@ -54,6 +61,11 @@ usage: superko <command> [options]
   count-positions --board MxN
   graph-census    --board MxN --suicide forbid|remove-own
   scc-census      --board MxN --suicide forbid|remove-own
+  solve           --board MxN --rule psk|ssk --suicide forbid|remove-own
+                  --root POS [--to-move black|white] [--komi-floor K]
+                  [--budget N] [--naive]
+  separate        --board MxN --suicide forbid|remove-own [--budget N]
+                  [--min-stones K]
 
 Standard output is a results body of key=value lines. Timing goes to standard
 error. The witness header of a promoted result is written by hand.";
@@ -83,6 +95,8 @@ fn run(args: &[String]) -> Result<String, String> {
         "count-positions" => count_positions(&opts),
         "graph-census" => graph_census(&opts),
         "scc-census" => scc_census(&opts),
+        "solve" => solve(&opts),
+        "separate" => separate(&opts),
         other => Err(format!("unknown command {other:?}")),
     }
 }
@@ -95,6 +109,11 @@ struct Flags {
     suicide: Option<String>,
     threads: Option<String>,
     depth_cap: Option<String>,
+    root: Option<String>,
+    to_move: Option<String>,
+    komi_floor: Option<String>,
+    budget: Option<String>,
+    min_stones: Option<String>,
     naive: bool,
 }
 
@@ -123,6 +142,11 @@ impl Flags {
                 "--suicide" => &mut out.suicide,
                 "--threads" => &mut out.threads,
                 "--depth-cap" => &mut out.depth_cap,
+                "--root" => &mut out.root,
+                "--to-move" => &mut out.to_move,
+                "--komi-floor" => &mut out.komi_floor,
+                "--budget" => &mut out.budget,
+                "--min-stones" => &mut out.min_stones,
                 other => return Err(format!("unknown option {other:?}")),
             };
             if slot.is_some() {
@@ -189,6 +213,56 @@ impl Flags {
             .map_err(|_| format!("--depth-cap takes a non-negative integer, not {text:?}"))
     }
 
+    /// The root of play, parsed on the board the command line names.
+    fn root(&self, dims: Dims) -> Result<Position, String> {
+        let text = self.root.as_deref().ok_or("--root is required")?;
+        parse(dims, text).map_err(|e| format!("--root: {e}"))
+    }
+
+    /// Who moves first from the root. Black by default, which is the color
+    /// `Superko.BlackWins` fixes.
+    fn to_move(&self) -> Result<Color, String> {
+        match self.to_move.as_deref() {
+            None | Some("black") => Ok(Color::Black),
+            Some("white") => Ok(Color::White),
+            Some(other) => Err(format!("--to-move is black or white, not {other:?}")),
+        }
+    }
+
+    /// The komi floor to decide a winner at, when one was asked for.
+    fn komi_floor(&self) -> Result<Option<i64>, String> {
+        let Some(text) = self.komi_floor.as_deref() else {
+            return Ok(None);
+        };
+        text.parse()
+            .map(Some)
+            .map_err(|_| format!("--komi-floor takes an integer, not {text:?}"))
+    }
+
+    /// The node budget a search is abandoned at, when one was given.
+    fn budget(&self) -> Result<Option<u64>, String> {
+        let Some(text) = self.budget.as_deref() else {
+            return Ok(None);
+        };
+        let n: u64 = text
+            .parse()
+            .map_err(|_| format!("--budget takes a positive integer, not {text:?}"))?;
+        if n == 0 {
+            return Err("--budget takes a positive integer, not 0".to_string());
+        }
+        Ok(Some(n))
+    }
+
+    /// The stone-count floor a sweep restricts its domain to, when one was
+    /// given.
+    fn min_stones(&self) -> Result<u32, String> {
+        let Some(text) = self.min_stones.as_deref() else {
+            return Ok(0);
+        };
+        text.parse()
+            .map_err(|_| format!("--min-stones takes a non-negative integer, not {text:?}"))
+    }
+
     /// Refuse a flag a command does not take, rather than ignoring it.
     fn reject(&self, unwanted: &[&str]) -> Result<(), String> {
         for name in unwanted {
@@ -197,6 +271,11 @@ impl Flags {
                 "--suicide" => self.suicide.is_some(),
                 "--threads" => self.threads.is_some(),
                 "--depth-cap" => self.depth_cap.is_some(),
+                "--root" => self.root.is_some(),
+                "--to-move" => self.to_move.is_some(),
+                "--komi-floor" => self.komi_floor.is_some(),
+                "--budget" => self.budget.is_some(),
+                "--min-stones" => self.min_stones.is_some(),
                 "--naive" => self.naive,
                 _ => false,
             };
@@ -311,7 +390,13 @@ fn count_games(flags: &Flags) -> Result<String, String> {
 /// what the forward-cone prune of `Compress.winsFor_seen_inter_cone` can
 /// remove from an archive (C-45, C-46).
 fn scc_census(flags: &Flags) -> Result<String, String> {
-    flags.reject(&["--rule", "--threads", "--depth-cap", "--naive"])?;
+    flags.reject(&[
+        "--rule",
+        "--threads",
+        "--depth-cap",
+        "--naive",
+        "--min-stones",
+    ])?;
     let dims = flags.board()?;
     let suicide = flags.suicide()?;
     let mut under = vec![Divergence::DimsAreRuntime];
@@ -359,7 +444,13 @@ fn count_positions(flags: &Flags) -> Result<String, String> {
 
 /// `superko graph-census`.
 fn graph_census(flags: &Flags) -> Result<String, String> {
-    flags.reject(&["--rule", "--threads", "--depth-cap", "--naive"])?;
+    flags.reject(&[
+        "--rule",
+        "--threads",
+        "--depth-cap",
+        "--naive",
+        "--min-stones",
+    ])?;
     let dims = flags.board()?;
     let suicide = flags.suicide()?;
     let mut under = vec![Divergence::DimsAreRuntime];
@@ -379,6 +470,156 @@ fn graph_census(flags: &Flags) -> Result<String, String> {
         let _ = writeln!(body, "{line}");
     }
     eprintln!("# elapsed={:.3}s", elapsed.as_secs_f64());
+    Ok(body)
+}
+
+/// The divergences a solver run was under.
+///
+/// A solver reads the transition table and, under positional superko, the
+/// two-bit archive projection; it decides a winner by comparing the floor of
+/// komi against a difference of area scores, which
+/// `Superko.winnerZ_eq_winner` licenses. The naive engine runs the
+/// transliteration itself and reads neither the table nor the projection.
+fn solver_divergences(
+    naive: bool,
+    rep: Repetition,
+    suicide: Suicide,
+    komi: bool,
+) -> Vec<Divergence> {
+    let mut under = vec![Divergence::DimsAreRuntime];
+    if matches!(suicide, Suicide::RemoveOwn) {
+        under.push(Divergence::SuicideRemoveOwn);
+    }
+    if !naive {
+        under.push(Divergence::RuleTableMemo);
+        if matches!(rep, Repetition::Psk) {
+            under.push(Divergence::PskArchiveProjection);
+        }
+    }
+    if komi {
+        under.push(Divergence::WinnerViaFloorKomi);
+    }
+    under
+}
+
+/// `superko solve`.
+///
+/// The value is the minimax **area difference** — Black's area less White's
+/// under optimal play — which `Defs.lean` does not define; the verdict lines a
+/// `--komi-floor` adds are the quantity `Superko.WinsFor` does define, and
+/// they come from a separate search rather than from the value. See the
+/// `superko_solve` crate docs for why the distinction is kept.
+fn solve(flags: &Flags) -> Result<String, String> {
+    flags.reject(&["--threads", "--depth-cap", "--min-stones"])?;
+    let dims = flags.board()?;
+    let rep = flags.rule()?;
+    let suicide = flags.suicide()?;
+    let root = flags.root(dims)?;
+    let to_move = flags.to_move()?;
+    let komi_floor = flags.komi_floor()?;
+    let budget = flags.budget()?;
+    let under = solver_divergences(flags.naive, rep, suicide, komi_floor.is_some());
+
+    let started = Instant::now();
+    let solution = if flags.naive {
+        search::Solution {
+            value: Some(naive::value_from(&root, to_move, rep, suicide)),
+            nodes: 0,
+            max_depth: 0,
+            ssk_only: 0,
+        }
+    } else {
+        search::solve(&root, to_move, rep, suicide, budget).map_err(|e| e.to_string())?
+    };
+    let elapsed = started.elapsed();
+
+    let mut body = String::new();
+    let _ = writeln!(body, "board={dims}");
+    let _ = writeln!(body, "rule={rep}");
+    let _ = writeln!(body, "suicide={suicide}");
+    let _ = writeln!(body, "divergences={}", divergences(&under));
+    let _ = writeln!(body, "root={}", render(&root));
+    let _ = writeln!(body, "to-move={to_move}");
+    let _ = writeln!(
+        body,
+        "value={}",
+        solution
+            .value
+            .map_or_else(|| "unresolved".to_string(), |v| v.to_string())
+    );
+    if !flags.naive {
+        let _ = writeln!(body, "nodes={}", solution.nodes);
+        let _ = writeln!(body, "max-depth={}", solution.max_depth);
+    }
+    if let Some(floor) = komi_floor {
+        let _ = writeln!(body, "komi-floor={floor}");
+        for c in [Color::Black, Color::White] {
+            let wins = if flags.naive {
+                Some(naive::wins_from(&root, to_move, rep, suicide, floor, c))
+            } else {
+                search::decide(&root, to_move, rep, suicide, floor, c, budget)
+                    .map_err(|e| e.to_string())?
+                    .wins
+            };
+            let _ = writeln!(
+                body,
+                "{c}-wins={}",
+                wins.map_or_else(|| "unresolved".to_string(), |w| w.to_string())
+            );
+        }
+    }
+    if let Some(n) = budget {
+        let _ = writeln!(body, "budget={n}");
+    }
+
+    let engine = if flags.naive { "naive" } else { "fast" };
+    eprintln!("# engine={engine}");
+    eprintln!("# elapsed={:.3}s", elapsed.as_secs_f64());
+    Ok(body)
+}
+
+/// `superko separate`.
+///
+/// Every root of the board, solved under both repetition rules, looking for
+/// one whose value differs — the search behind claim C-17. The order
+/// minimality is taken in is fixed by `superko_solve::separate`: stones
+/// ascending, then position code, then Black to move first.
+fn separate(flags: &Flags) -> Result<String, String> {
+    flags.reject(&[
+        "--rule",
+        "--threads",
+        "--depth-cap",
+        "--naive",
+        "--root",
+        "--to-move",
+        "--komi-floor",
+    ])?;
+    let dims = flags.board()?;
+    let suicide = flags.suicide()?;
+    let budget = flags.budget()?;
+    let min_stones = flags.min_stones()?;
+    // Both rules are swept, so both rules' divergences are in force, and the
+    // witness verdicts are decided at a komi floor.
+    let under = solver_divergences(false, Repetition::Psk, suicide, true);
+
+    let table = RuleTable::build(dims, suicide).map_err(|e| e.to_string())?;
+    let started = Instant::now();
+    let report = sep::sweep_on_above(&table, budget, min_stones);
+    let elapsed = started.elapsed();
+
+    let mut body = String::new();
+    let _ = writeln!(body, "board={dims}");
+    let _ = writeln!(body, "suicide={suicide}");
+    let _ = writeln!(body, "divergences={}", divergences(&under));
+    for line in report.lines(&table, budget) {
+        let _ = writeln!(body, "{line}");
+    }
+    if let Some(n) = budget {
+        let _ = writeln!(body, "budget={n}");
+    }
+
+    eprintln!("# elapsed={:.3}s", elapsed.as_secs_f64());
+    eprintln!("# nodes={}", report.nodes);
     Ok(body)
 }
 
