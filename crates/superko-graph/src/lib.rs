@@ -60,8 +60,14 @@
 //! observable in a game count from 1×4 upward, which experiment 004's
 //! hypothesis expected it not to be.
 //!
-//! What it does not establish: anything about 2×2 at full depth, which no test
-//! runs, and anything at all about `Defs.lean` beyond what `superko-rules`
+//! On 2×2 the runs of 2026-09-11 and 2026-09-12 gave 386 356 909 593 games
+//! under both conventions, Tromp's published figure, with identical node
+//! counts (`computed`; `results/count-games-2x2-psk-*.txt`, ledger C-38 and
+//! C-39). No test runs 2×2 at full depth: each run is hours on seven threads.
+//!
+//! What it does not establish: anything the runs' own tests do not reach —
+//! the naive arbiter has matched the fast enumerator on 2×2 only to a depth
+//! cap — and anything at all about `Defs.lean` beyond what `superko-rules`
 //! tests already claim. In particular, reproducing a published count under the
 //! publication's own convention is evidence that this workspace computes what
 //! that publication computed — not that either is a correct account of Go.

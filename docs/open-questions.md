@@ -24,20 +24,23 @@ The grounding for every complexity claim is settled:
 Termination is proved (C-13), with the game-length bound of C-26 alongside it;
 so are determinacy (C-28), the correctness of a fuel-indexed archive decider
 against `WinsFor` (C-29), the komi normalization (C-27) and the string
-encoding with its length bounds (C-31). What remains is the acceptance suite.
-C-9 validates the definitions against a number Tromp computed independently;
-the decider of C-29 cannot help there — a winner is not a game count, and
-kernel evaluation of it reaches only small boards — so Rust remains the only
-candidate. C-11
-settles a disagreement between two published sources about the 1×9 minimax
-score, which is a small real contribution and a sharp test of the kernel.
+encoding with its length bounds (C-31). The first row of the acceptance suite
+is in: the Rust mirror reproduces Tromp's 2×2 count under `Defs.lean`'s
+rules (C-39, `computed`), and along the way found the suicide convention
+observable at 1×4 (C-36). The decider of C-29 had no part in it — a winner
+is not a game count, and kernel evaluation of it reaches only small boards.
+C-11 settles a disagreement between two published sources about the 1×9
+minimax score, which is a small real contribution and a sharp test of the
+kernel, and is the row still open.
 
-C-13 and its successors show the formalization pipeline works. They say
-nothing about whether the definitions describe Go, which is what C-9 is for —
-and until C-9 reproduces, every theorem here is a theorem about `Defs.lean`
-rather than about Go.
+C-13 and its successors show the formalization pipeline works. C-39 is the
+evidence that the definitions describe Go, and it is `computed` evidence on
+one board about one quantity: it sees neither komi nor scoring, and no
+kernel has checked a count. Every theorem here is still a theorem about
+`Defs.lean`; what changed is that `Defs.lean` now agrees with Tromp where
+the two can be compared.
 
-**Closable in weeks**, and closing it is what makes any later claim credible.
+**The 1×n scores are closable in weeks**; the 2×2 row is closed.
 
 ## 3. Positional versus situational superko (C-12, C-17, C-8)
 

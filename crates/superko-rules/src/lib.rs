@@ -71,10 +71,11 @@
 //! What they do not establish: that this crate agrees with `Defs.lean` on
 //! anything larger than the boards those tests and fixtures cover. Of the
 //! acceptance suite above, `superko-graph` has reproduced the legal-position
-//! table `L(m, n)` and, on 1x4 under positional superko, Tromp-Farnebäck's
-//! published game count under that publication's own suicide convention (both
-//! `computed`, and recorded there, not here); the 2x2 game count and the 1xn
-//! minimax scores are unrun.
+//! table `L(m, n)`, the 1xn game counts under the publication's own suicide
+//! convention, and the 2x2 game count under both conventions (all
+//! `computed`, recorded under `results/`, and cited by the ledger's C-23,
+//! C-38 and C-39); on 1x4 the no-suicide rule gives a different count
+//! (C-36). The 1xn minimax scores are unrun.
 
 pub mod archive;
 pub mod code;

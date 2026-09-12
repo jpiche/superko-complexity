@@ -2,9 +2,10 @@
 
 **Author:** Joseph J. Piché
 **Models:** Claude Fable 5.1 (`claude-fable-5-1`)
-**Status:** running
+**Status:** done
+**Closed:** 2026-09-12
 **Opened:** 2026-09-11
-**Claims touched:** C-9, C-23, C-36, C-37, C-38; the trusted base's definitional validation
+**Claims touched:** C-9, C-23, C-36, C-37, C-38, C-39; the trusted base's definitional validation
 
 ## Question
 
@@ -57,8 +58,8 @@ reading as well.
 
 ## Result
 
-Interim, 2026-09-11, at commit `dbeac39`; the 2×2 runs are in progress.
-Every value is `computed` by the Rust mirror
+Runs of 2026-09-11 and 2026-09-12 at commit `dbeac39`. Every value is
+`computed` by the Rust mirror
 ([`../../docs/plans/rules-mirror-plan.md`](../../docs/plans/rules-mirror-plan.md)),
 from the empty board with Black to move, root archived, passes exempt, and
 the game ended at the second consecutive pass. Bodies with their witness
@@ -71,6 +72,7 @@ commands are under `results/`.
 | 1×3 | PSK | 907 | 907 | 907 |
 | 1×4 | PSK | **719 178 893** | 2 098 407 841 | 2 098 407 841 |
 | 1×4 | SSK | 1 359 471 437 | not run | none |
+| 2×2 | PSK | **386 356 909 593** | 386 356 909 593 | 386 356 909 593 |
 
 The legal-position counts `L(1,1..8)`, `L(2,2)`, `L(2,3)` and `L(3,3)`
 reproduce the published table, and the position-graph census reproduces
@@ -80,8 +82,14 @@ Figures 1 and 2 under the paper's convention and gives 8 and 36 edges under
 The 1×4 runs took 36 s, 107 s and 65 s single-threaded at about
 6 × 10⁷ nodes per second (`data/`, not committed; wall time is not part of a
 witness body). The 1×4 run under the paper's convention explores
-6.3 × 10⁹ nodes for 2.1 × 10⁹ games, a ratio of three; the 2×2 projection
-from that ratio is about 1.2 × 10¹² nodes per run.
+6.3 × 10⁹ nodes for 2.1 × 10⁹ games, a ratio of three, which projected
+1.2 × 10¹² nodes for 2×2; the two 2×2 runs each explored 1 159 070 728 779
+nodes, 5790 s and 5842 s on seven threads at 2.0 × 10⁸ nodes per second.
+They agree on every field of the body. Under the no-suicide rule
+153 930 578 384 plays are refused as suicide; under suicide removal none is,
+and the repetition refusals rise by exactly that number, which is the
+mechanism of C-38 seen in the census: every such play returns to the
+archived empty board.
 
 ## Verdict
 
@@ -95,14 +103,24 @@ one side and the edge on the other, the white stone keeps its liberty, and
 under suicide removal the result is `.O..`, a position the game need not
 have visited.
 
+**Row 3 holds on 2×2.** Both conventions give Tromp's 386 356 909 593 from
+the empty 2×2 board, so the definitions of `Defs.lean` reproduce the one
+game count another person computed from an independent formalization. That
+is the definitional validation of `docs/trusted-base.md`, and it lands at
+`computed`: an untrusted mirror agreeing with an untrusted program, on one
+board, about one quantity.
+
 Consequences, applied: C-23 now states its ruleset; C-36 and C-37 record the
 1×4 counts under `Defs.lean`'s rules as `computed`; `formal-model.md` §3
 records that the suicide choice is observable at four points; C-38 records
-why 2×2 is expected to agree under both conventions. Row 3, the definitional
-validation this experiment exists for, waits on the 2×2 runs.
+why 2×2 agrees under both conventions, now `computed`; C-39 records the 2×2
+count under `Defs.lean`'s rules; C-9 moves to `computed`.
 
 What this does not establish: that the mirror agrees with `Defs.lean` on
-1×4 beyond what its tests reach (the naive arbiter has matched the fast
-enumerator on 1×4 to twelve plies, and the Lean oracle covers no game tree
-past two plies there); that 719 178 893 is right, which has no independent
-source; or anything about 2×2.
+1×4 or 2×2 beyond what its tests reach (the naive arbiter has matched the
+fast enumerator to twelve plies on 1×4 and ten on 2×2, and the Lean oracle
+covers no game tree past two plies on either); that 719 178 893 or
+1 359 471 437 is right, neither having an independent source; that the
+definitions describe Go in any respect the 2×2 count does not see, komi and
+scoring among them; or anything `proved`, since no kernel has checked a
+count.

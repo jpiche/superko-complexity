@@ -58,12 +58,24 @@ machine-checked on the three standard axioms, under
 [`lean/SuperkoComplexity/Results/`](lean/SuperkoComplexity/Results/) and
 [`lean/SuperkoComplexity/Encoding.lean`](lean/SuperkoComplexity/Encoding.lean).
 
-**What that is not.** It is no evidence that the definitions describe Go. The
-sanity checks are hand-computed and so can only catch errors already imagined;
-the definitional validation this project actually rests on — reproducing
-counts other people computed — has not been done, and the decider cannot do
-it: a winner is not a game count, and kernel evaluation of the decider reaches
-only small boards. Nor is any of
+**What is computed.** A Rust mirror of `Defs.lean`, not trusted, reproduces
+the one game count another person computed from an independent
+formalization: 386,356,909,593 games on 2×2 under positional superko, under
+this project's rules and under Tromp's (C-39, C-38), together with the
+smaller published counts and the legal-position table (experiment 004). The
+same run found the suicide convention observable from four points on a line
+(C-36). Every such number is `computed`: an untrusted program agreeing with
+another untrusted program, checked by no kernel. The mirror is held to the
+Lean by a second reading of the definitions at every position of every
+board with at most six points, evaluated by the Lean compiler and graded
+`observed`.
+
+**What that is not.** The sanity checks are hand-computed and so can only
+catch errors already imagined. The reproduced count is the independent
+agreement the trusted base asks for and no more: it says the definitions
+agree with Tromp's on one quantity, on one board, and it sees neither komi
+nor scoring. The decider cannot do this work — a winner is not a game count,
+and kernel evaluation of the decider reaches only small boards. Nor is any of
 it a complexity result: the classes are grounded in prose, cited to Hearn
 2006, and the one sentence that turns the decider into an EXPSPACE membership
 — that a Turing machine iterating its step uses space polynomial in the

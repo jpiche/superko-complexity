@@ -123,17 +123,22 @@ still under debate are marked **OPEN** there.
 are made to reproduce quantities that other people computed, independently,
 from their own formalizations:
 
-| Quantity | Published value | Source |
-|---|---|---|
-| 2×2 games under positional superko | 386,356,909,593 | Tromp |
-| Legal positions `L(m,n)` | table | Tromp–Farnebäck |
-| 1×n minimax scores under PSK | table | Weninger–Hayward |
+| Quantity | Published value | Source | Status |
+|---|---|---|---|
+| 2×2 games under positional superko | 386,356,909,593 | Tromp | reproduced under this project's rules and under Tromp's (C-39, C-38, `computed`) |
+| Legal positions `L(m,n)` | table | Tromp–Farnebäck | reproduced to 3×3 (`cargo test -p superko-graph --test census`, `computed`) |
+| 1×n minimax scores under PSK | table | Weninger–Hayward | not attempted |
 
 A definition of Go that is subtly wrong will not produce 386,356,909,593. The
 argument is not airtight — a definition could be wrong in a way these
-quantities do not see — but it converts "trust my reading of the rules" into
-"check that my reading yields the number three other researchers published",
-which is a claim a reader can verify in a minute.
+quantities do not see, and this one sees neither komi nor scoring — but it
+converts "trust my reading of the rules" into "check that my reading yields
+the number three other researchers published". The smaller rows a reader can
+verify in minutes; the 2×2 count is hours on one machine
+([`../results/`](../results/) records each witness command). The mirror
+that produces them is not trusted; it is held to `Defs.lean` by the Lean
+oracle fixtures, which the Lean compiler evaluated and which are graded
+`observed`, and by nothing the kernel has checked.
 
 ## The `native_decide` hazard
 

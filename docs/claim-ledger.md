@@ -55,7 +55,7 @@ matching `C-<digits>`, `depends-on` comma-separated or `-`.
 | C-6 | Robson's EXPTIME construction, played under superko, stays in EXPTIME via undirected vertex geography | folklore | infra-gap | C-21 | Demaine–Hearn, Playing Games with Algorithms |
 | C-7 | Under PSK, games correspond one-to-one with simple paths from the empty position in the situation graph | cited | formalizable | - | Tromp–Farnebäck 2006, Lemma 2 |
 | C-8 | Under SSK the corresponding paths need not be simple; a position may be visited twice | cited | formalizable | C-7 | Tromp–Farnebäck 2006, Lemma 2 remark |
-| C-9 | The number of 2x2 games under PSK from the empty board is 386356909593, under Tromp–Farnebäck's rules | cited | formalizable | - | Tromp–Farnebäck 2016 Table 7, held; test_data/literature/game-counts.toml; the source's evidence is enumeration by Tromp's `2x2.c`, not a proof; reproduction under both suicide conventions in progress (experiment 004) |
+| C-9 | The number of 2x2 games under PSK from the empty board is 386356909593, under Tromp–Farnebäck's rules | computed | formalizable | - | Tromp–Farnebäck 2016 Table 7, held, whose evidence is enumeration by Tromp's `2x2.c`; reproduced exactly by the Rust mirror under the paper's suicide convention, results/count-games-2x2-psk-remove-own.txt (experiment 004) |
 | C-10 | Repetition-free games exist whose length is exponential in the board size | cited | formalizable | - | Walraet–Tromp 2016 |
 | C-11 | The 1x9 empty-board minimax score under PSK is 0 | open | formalizable | - | disputed: 0 vs 4 across sources |
 | C-12 | SUPERKO-GO under PSK and under SSK lie in the same complexity class | open | infra-gap | C-1 | no published separation or equivalence |
@@ -84,7 +84,8 @@ matching `C-<digits>`, `depends-on` comma-separated or `-`.
 | C-35 | BlackWins depends on komi only through floor(komi) clamped to the interval from −(m·n)−1 to m·n | open | formalizable | C-29 | winner-level lemmas proved in lean/SuperkoComplexity/Results/C27_Komi.lean; the lift through WinsFor is not attempted |
 | C-36 | From the empty 1x4 board under PSK, Defs.lean's rules give 719178893 games, not the published 2098407841; the suicide convention is observable in the count from four points on a line | computed | formalizable | - | results/count-games-1x4-psk-forbid.txt against results/count-games-1x4-psk-remove-own.txt, experiment 004; the witness play is Black at the end of `.OX.`, a two-stone self-capture to `.O..` |
 | C-37 | From the empty 1x4 board under SSK, Defs.lean's rules give 1359471437 games | computed | formalizable | - | results/count-games-1x4-ssk-forbid.txt; no independent source exists for any SSK count |
-| C-38 | From the empty 2x2 board under PSK the game count is the same under both suicide conventions, because every position-changing self-capture on 2x2 returns to the empty board, which the root archives | conjecture | formalizable | - | scratch census 2026-09-11: eight such plays on 2x2, all to the empty board (notebook/2026-09-11-experiment-004.md); becomes computed when the two 2x2 runs of experiment 004 agree |
+| C-38 | From the empty 2x2 board under PSK the game count is the same under both suicide conventions, because every position-changing self-capture on 2x2 returns to the empty board, which the root archives | computed | formalizable | - | results/count-games-2x2-psk-forbid.txt and results/count-games-2x2-psk-remove-own.txt agree on every field, and the suicide refusals of the first equal the extra repetition refusals of the second; the census of the eight plays is in notebook/2026-09-11-experiment-004.md |
+| C-39 | From the empty 2x2 board under PSK, Defs.lean's rules give 386356909593 games, the number Tromp computed under his own rules from his own definitions | computed | formalizable | - | results/count-games-2x2-psk-forbid.txt, experiment 004; the independent-agreement validation of docs/trusted-base.md, at computed and not above |
 
 ## Detail
 
@@ -279,11 +280,14 @@ The paper's ruleset permits multi-stone suicide where `Defs.lean` forbids
 it, and experiment 004 found the difference observable at four points: the
 Rust mirror reproduces all four 1×n counts exactly under the paper's
 convention and gives a different 1×4 count under `Defs.lean`'s (C-36,
-`computed`). C-23 is therefore stated with its ruleset. For 2×2 the
-difference is expected to vanish, because every position-changing
-self-capture there returns to the archived empty board (C-38, `conjecture`
-until both 2×2 runs finish); Tromp's own program rejects suicide outright
-and its comment says none arises on 2×2, which is consistent.
+`computed`). C-23 is therefore stated with its ruleset. On 2×2 the
+difference vanishes, as the census predicted: every position-changing
+self-capture there returns to the archived empty board, and the two 2×2
+runs agree on every field (C-38, `computed`). The 2×2 count under
+`Defs.lean`'s own rules is C-39, and it is the definitional validation the
+trusted base asks for, at `computed`: the mirror is not trusted, the kernel
+has checked no count, and the number says the definitions agree with
+Tromp's on the one quantity both can compute, not that they describe Go.
 
 C-24's 1×n scores are still copied from Hayward's course table, with
 Weninger–Hayward `sought`, so a failure to reproduce them has three possible
