@@ -129,11 +129,15 @@ is:
   made to encode computation appears to be unposed in print.
 - **Geography variants** (C-21, C-22). Undirected vertex geography is
   polynomial (Fraenkel–Scheinerman–Ullman 1993); directed vertex, directed edge
-  and undirected edge geography are PSPACE-complete. Under superko a Go game is
-  a self-avoiding walk in situation space, which makes these the right
-  analogues, and the directed/undirected line is precisely what separates
-  polynomial from PSPACE-hard for the reachability core. C-21 is what C-6 rests
-  on.
+  and undirected edge geography are PSPACE-complete. Under *positional*
+  superko a Go game is a self-avoiding walk in situation space — that is C-7,
+  and it is what makes these the right analogues. Under SSK it is not: a pass
+  is exempt from the repetition rule and re-enters a situation already seen
+  (C-8, C-18), so the walk is self-avoiding in its play edges only. The
+  directed/undirected line is what separates polynomial from PSPACE-hard for
+  the reachability core, and C-21 is what C-6 rests on — but C-21 is a
+  normal-play theorem and a superko Go game is neither immobile at its end nor
+  scored by immobility, which is C-49, `open`.
 
 ## The counting numbers
 
@@ -187,7 +191,16 @@ written up.
   Tromp–Farnebäck's border-state automaton, which is a Myhill–Nerode-style
   compression of the *static legality predicate*, not of outcomes over
   histories. The `H(n)` index and the fooling-set direction (C-15) appear to be
-  new.
+  new — **and this absence is the weakest one on the list.** It was searched
+  for the word "congruence" and its formal neighbors, and the
+  graph-history-interaction line was not examined: Kishimoto and Müller treat
+  exactly this question operationally, for Go under superko, and the whole GHI
+  literature is about when two histories at one position may be identified.
+  Nobody should read the novelty claim above until those are `held`
+  ([`../references/README.md`](../references/README.md), added 2026-09-12).
+  What a search-heuristic answer would not supply is a *bound* on the index,
+  which is what C-15 needs — but that is a reason to read them, not a reason to
+  keep asserting the absence.
 - **No dedicated literature on "trail games" or "self-avoiding walk games"**
   beyond the Geography family, under those names.
 - **No published PSK/SSK complexity separation or equivalence** (C-12). Both

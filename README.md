@@ -53,10 +53,15 @@ From every state exactly one color has a winning strategy (C-28). A
 fuel-indexed archive decider, run at the floor of the komi with that
 game-length bound as its fuel, decides `BlackWins` (C-29); every komi is
 equivalent to a half-integer one (C-27); and the string encoding of an
-instance is injective, with the board linear in its length (C-31). All are
-machine-checked on the three standard axioms, under
-[`lean/SuperkoComplexity/Results/`](lean/SuperkoComplexity/Results/) and
-[`lean/SuperkoComplexity/Encoding.lean`](lean/SuperkoComplexity/Encoding.lean).
+instance is injective, with the board linear in its length (C-31). On the
+upper-bound side: the game value reads the archive only inside the forward
+cone of the current situation, so entries outside it may be dropped (C-42),
+by a transfer schema parametric in the repetition rule (C-41); and no play
+ever produces the empty board, because the played stone survives its own move
+(C-44). All are machine-checked on the three standard axioms, under
+[`lean/SuperkoComplexity/Results/`](lean/SuperkoComplexity/Results/),
+[`lean/SuperkoComplexity/Encoding.lean`](lean/SuperkoComplexity/Encoding.lean)
+and [`lean/SuperkoComplexity/Compress.lean`](lean/SuperkoComplexity/Compress.lean).
 
 **What is computed.** A Rust mirror of `Defs.lean`, not trusted, reproduces
 the one game count another person computed from an independent
@@ -69,6 +74,13 @@ another untrusted program, checked by no kernel. The mirror is held to the
 Lean by a second reading of the definitions at every position of every
 board with at most six points, evaluated by the Lean compiler and graded
 `observed`.
+
+The same mirror censuses the situation graph, and the census refutes the
+theorem's usefulness rather than its truth: above the empty board the graph is
+a single mutually reachable component on every board through `m·n = 12`
+(C-45), so C-42's prune removes at most two entries from an archive of up to
+2·3^(m·n) (C-46). Pruning the archive to a subset of itself is closed as a
+route to a smaller state.
 
 **What that is not.** The sanity checks are hand-computed and so can only
 catch errors already imagined. The reproduced count is the independent

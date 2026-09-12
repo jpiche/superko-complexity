@@ -40,6 +40,9 @@ an error propagates.
 | Crasmaru & Tromp, *Ladders are PSPACE-complete*, CG 2000 | sought | follows Lichtenstein–Sipser, avoids pipes and crossovers |
 | Wolfe, *Go endgames are PSPACE-hard*, More Games of No Chance, 2002 | sought | sums of small endgames |
 | Crasmaru, *On the complexity of Tsume-Go*, CG 1998 | sought | a restricted life-and-death class is NP-complete |
+| Chandra, Kozen & Stockmeyer, *Alternation*, JACM 28(1), 1981 | sought | APSPACE = EXPTIME and APTIME(poly) = PSPACE (C-48); held only through Hearn 2006's uncited restatement, and open-questions.md §5 consumes it |
+| Kishimoto & Müller, on the graph-history-interaction problem for DF-PN search, and its application to Go under superko | sought | the one line of work that has answered this project's question operationally — how to key a transposition table soundly when legality depends on the history. Identified 2026-09-12; bears directly on C-15 and on state-of-the-art.md's "no prior formalization of a history congruence" |
+| Breuker, Uiterwijk & van den Herik, on the graph-history-interaction problem in game-tree search | sought | the earlier GHI literature Kishimoto and Müller build on; Campbell 1985 is the origin |
 
 ## Open-problem lists and folklore
 
