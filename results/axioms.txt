@@ -1,6 +1,6 @@
 # witness: cd lean && lake env lean Axioms.lean
-# commit: c2c9c39
-# date: 2026-09-11
+# commit: 4fdfe58
+# date: 2026-09-12
 #
 'Superko.mem_chain_iff_reachable' depends on axioms: [propext, Classical.choice, Quot.sound]
 'Superko.reaches_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -125,3 +125,10 @@
 'Superko.not_blackWins_12_six_half' depends on axioms: [propext, Classical.choice, Quot.sound]
 'Superko.blackWins_12_neg_half' depends on axioms: [propext, Classical.choice, Quot.sound]
 'Superko.not_blackWinsPSK_12_half' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.resolve_self' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Compress.winsFor_transfer' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Compress.winsFor_cone_congr' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Compress.winsFor_seen_inter_cone' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Compress.winsFor_insert_unreachable' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Compress.decideWins_iff_winsFor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Superko.Compress.sitStep_empty_board' depends on axioms: [propext, Classical.choice, Quot.sound]

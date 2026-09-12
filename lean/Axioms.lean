@@ -159,3 +159,12 @@ open Superko
 #print axioms Superko.not_blackWins_12_six_half
 #print axioms Superko.blackWins_12_neg_half
 #print axioms Superko.not_blackWinsPSK_12_half
+
+-- C-41 to C-44, what the value sees of the archive (Compress.lean).
+#print axioms Superko.resolve_self
+#print axioms Superko.Compress.winsFor_transfer
+#print axioms Superko.Compress.winsFor_cone_congr
+#print axioms Superko.Compress.winsFor_seen_inter_cone
+#print axioms Superko.Compress.winsFor_insert_unreachable
+#print axioms Superko.Compress.decideWins_iff_winsFor
+#print axioms Superko.Compress.sitStep_empty_board

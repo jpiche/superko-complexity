@@ -225,6 +225,18 @@ lemma resolve'_eq_resolve {m n : ℕ} (b : Position m n) (c : Color)
     (p : Point m n) : resolve' b c p = resolve b c p := by
   unfold resolve' resolve; exact clear'_eq_clear _ _
 
+/-- The played stone survives its own move. `resolve` clears `c.other` only, so
+whatever else a play removes, the point played to carries a `c` stone after it.
+
+This is the whole reason the empty position has no incoming play edge, which is
+what `Compress.sitStep_empty_board` records and what makes the situation graph's
+condensation nontrivial (C-45). -/
+lemma resolve_self {m n : ℕ} (b : Position m n) (c : Color) (p : Point m n) :
+    resolve b c p p = some c := by
+  have hne : c ≠ c.other := by cases c <;> simp [Color.other]
+  unfold resolve clear
+  simp [hne]
+
 /-- The computable counterpart of `PlayableAt`. -/
 def PlayableAt' {m n : ℕ} (b : Position m n) (c : Color) (p : Point m n) : Prop :=
   b p = none ∧ HasLiberty (resolve' b c p) p
