@@ -21,12 +21,15 @@ is the ledger of every claim and its evidence.
 
 ## Why
 
-Fun. I find Go and computational complexity theory interesting. I have no
-affiliation nor relevant credentials.
+Curiosity. Go provides an interesting problem space to explore unanswered
+questions in computational complexity theory.
+
+The author is unaffiliated and does not hold any relevant academic
+credentials; this project is being pursued for fun.
 
 ## AI Usage
 
-Joseph J Piché is acting as armchair mathematician, with AI models assisting.
+Joseph J. Piché is the author and maintainer, with AI models assisting.
 Claude Code is the primary harness used. The model used per task is recorded
 in the relevant notebook or experiment file.
 
