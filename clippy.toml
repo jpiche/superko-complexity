@@ -1,0 +1,4 @@
+disallowed-types = [
+  { path = "std::collections::HashMap", reason = "iteration order is per-process random; determinism is a hard requirement (docs/plans/rules-mirror-plan.md)" },
+  { path = "std::collections::HashSet", reason = "iteration order is per-process random; determinism is a hard requirement (docs/plans/rules-mirror-plan.md)" },
+]
