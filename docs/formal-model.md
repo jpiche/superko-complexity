@@ -100,12 +100,6 @@ two stones and whose outer plays remove one between them, is the shape this
 project has called "sending two, returning one"; no source for the name is
 held.
 
-The `SSK` docstring in `Defs.lean` says the pass exemption is the parity
-resource separating the rules, which C-50 and C-52 contradict. It is pending
-correction: a change to that file, comments included, invalidates the digest
-every Lean oracle fixture records (`tools/check-oracle.sh`), so it changes when
-the fixtures are next regenerated.
-
 One reading the texts do not make for us: AGA Rule 6 names the *situation*
 (position with the same player to play) and so is situational superko;
 Tromp–Taylor Rule 6 names the grid coloring alone and so is positional. The

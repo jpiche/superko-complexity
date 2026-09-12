@@ -2,7 +2,7 @@
 # board: 6 1
 # generated-by: tools/gen-oracle.sh
 # lean-toolchain: leanprover/lean4:v4.34.0-rc2
-# defs-sha256: 04d2dfe6001aa46ee10f524bddaadcb1de16e215a2c0dec21d8b1591bfcc3c54
+# defs-sha256: 138d4db1478ad02260746095d6ef3ed05dc410c7699c57b1c79e0b0c662d92e1
 # basic-sha256: 1f4bc003da624d64dbb2765b3c6a7ca2f7cf5a392ff31233caf9cffbe844abfb
 # decide-sha256: 560805b65a1aca76afaa0543c395e0879601b0473ee1b3d836d669ee601519ab
 # grade: observed

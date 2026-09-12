@@ -620,11 +620,7 @@ before the play.
 
 The pass exemption is not the parity resource separating the rules. A pass at
 the recurring board closes it to both rules; separating plays occur in games
-with no pass; a pass at another board can sit inside a walk. The `SSK`
-docstring in `Defs.lean` says otherwise and is pending correction: any change to
-that file, comments included, invalidates the digest every Lean oracle fixture
-records (`tools/check-oracle.sh`), so it changes when the fixtures are next
-regenerated.
+with no pass; a pass at another board can sit inside a walk.
 
 C-52 is `proved` with formalization `formalizable`: a hand proof in
 [`../proofs/C-52.md`](../proofs/C-52.md), and the first `proved` row no kernel

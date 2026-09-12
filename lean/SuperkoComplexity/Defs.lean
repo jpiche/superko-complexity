@@ -201,9 +201,14 @@ def PlayableAt {m n : ℕ} (st : State m n) (p : Point m n) : Prop :=
 /-- **Situational superko** — AGA Rule 6. A play may not recreate a situation
 that has occurred: a position with the same player to move.
 
-A pass is always legal. That reading is OPEN-1 in `docs/formal-model.md` and
-claim C-18; it is what lets a pass re-enter a situation no play could reach,
-which is the parity resource separating SSK from PSK. -/
+A pass is always legal, even when the situation it leads to has occurred. That
+reading is OPEN-1 in `docs/formal-model.md` and claim C-18.
+
+The difference from `PSK` does not rest on that reading. Of the plays meeting
+`PlayableAt`, SSK permits and PSK refuses exactly those whose position has
+stood with the mover to move and never with the opponent to move, and such
+plays occur in games with no pass (C-52, `proved` by hand in `proofs/C-52.md`,
+and see `docs/formal-model.md` §3). -/
 def SSK {m n : ℕ} : Repetition m n
   | _, .pass => True
   | st, .play p => PlayableAt st p ∧ st.now.after (.play p) ∉ st.seen
