@@ -5,7 +5,7 @@
 **Status:** done
 **Closed:** 2026-09-12
 **Opened:** 2026-09-11
-**Claims touched:** C-9, C-23, C-36, C-37, C-38, C-39; the trusted base's definitional validation
+**Claims touched:** C-9, C-23, C-36, C-37, C-38, C-39, C-40; the trusted base's definitional validation
 
 ## Question
 
@@ -73,6 +73,7 @@ commands are under `results/`.
 | 1×4 | PSK | **719 178 893** | 2 098 407 841 | 2 098 407 841 |
 | 1×4 | SSK | 1 359 471 437 | not run | none |
 | 2×2 | PSK | **386 356 909 593** | 386 356 909 593 | 386 356 909 593 |
+| 2×2 | SSK | 1 391 718 029 753 | not run | none |
 
 The legal-position counts `L(1,1..8)`, `L(2,2)`, `L(2,3)` and `L(3,3)`
 reproduce the published table, and the position-graph census reproduces
@@ -89,7 +90,10 @@ They agree on every field of the body. Under the no-suicide rule
 153 930 578 384 plays are refused as suicide; under suicide removal none is,
 and the repetition refusals rise by exactly that number, which is the
 mechanism of C-38 seen in the census: every such play returns to the
-archived empty board.
+archived empty board. The 2×2 run under situational superko, launched
+afterwards, explored 4 175 154 089 259 nodes in 11 431 s on fourteen threads
+and gives 1 391 718 029 753 games, 3.6 times the PSK figure (C-40); the
+ratio on 1×4 was 1.9.
 
 ## Verdict
 
@@ -120,7 +124,8 @@ What this does not establish: that the mirror agrees with `Defs.lean` on
 1×4 or 2×2 beyond what its tests reach (the naive arbiter has matched the
 fast enumerator to twelve plies on 1×4 and ten on 2×2, and the Lean oracle
 covers no game tree past two plies on either); that 719 178 893 or
-1 359 471 437 is right, neither having an independent source; that the
+1 359 471 437 or 1 391 718 029 753 is right, none having an independent
+source; that the
 definitions describe Go in any respect the 2×2 count does not see, komi and
 scoring among them; or anything `proved`, since no kernel has checked a
 count.

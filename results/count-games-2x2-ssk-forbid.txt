@@ -1,0 +1,19 @@
+# witness: cargo run --release -q -p superko-cli -- count-games --board 2x2 --rule ssk --suicide forbid 2>/dev/null
+# commit: dbeac39
+# date: 2026-09-12
+# defs-blob: 9f7554402827c94c8689dea639e05f295e80b5a2
+# slow: 3.2 hours on 14 threads (11431 s); the witness runs single-threaded, roughly a day
+# produced-with: --threads 14, started 2026-09-12 00:59 CDT, finished 2026-09-12 04:09 CDT, 3.7e8 nodes/s; the body is thread-independent (crates/superko-graph/tests/determinism.rs)
+#
+board=2x2
+rule=ssk
+suicide=forbid
+divergences=dims-are-runtime:unlicensed,rule-table-memo:unlicensed
+root=../..
+games=1391718029753
+nodes=4175154089259
+max-depth=65
+max-archive=65
+refused-occupied=7122018567216
+refused-suicide=517286378144
+refused-repetition=2102721262912

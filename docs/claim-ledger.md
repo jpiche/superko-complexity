@@ -86,6 +86,7 @@ matching `C-<digits>`, `depends-on` comma-separated or `-`.
 | C-37 | From the empty 1x4 board under SSK, Defs.lean's rules give 1359471437 games | computed | formalizable | - | results/count-games-1x4-ssk-forbid.txt; no independent source exists for any SSK count |
 | C-38 | From the empty 2x2 board under PSK the game count is the same under both suicide conventions, because every position-changing self-capture on 2x2 returns to the empty board, which the root archives | computed | formalizable | - | results/count-games-2x2-psk-forbid.txt and results/count-games-2x2-psk-remove-own.txt agree on every field, and the suicide refusals of the first equal the extra repetition refusals of the second; the census of the eight plays is in notebook/2026-09-11-experiment-004.md |
 | C-39 | From the empty 2x2 board under PSK, Defs.lean's rules give 386356909593 games, the number Tromp computed under his own rules from his own definitions | computed | formalizable | - | results/count-games-2x2-psk-forbid.txt, experiment 004; the independent-agreement validation of docs/trusted-base.md, at computed and not above |
+| C-40 | From the empty 2x2 board under SSK, Defs.lean's rules give 1391718029753 games, 3.6 times the PSK count | computed | formalizable | - | results/count-games-2x2-ssk-forbid.txt, experiment 004; no SSK count has been published at any size, so nothing independent checks it |
 
 ## Detail
 
