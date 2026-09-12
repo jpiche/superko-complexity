@@ -1,28 +1,80 @@
-//! Exact solvers over history-carrying states, and the history congruence.
+//! Exact solvers over history-carrying states: who wins, and by how much.
 //!
-//! Two jobs:
+//! Three jobs, of which two are done:
 //!
-//! 1. **Solve.** Minimax over states that carry their history, under both
-//!    repetition rules. Weninger and Hayward's Positional Linear Go solver
-//!    carries exactly this state — (player to move, position, set of earlier
-//!    positions, whether the previous move was a pass) — and reaches 1x9.
-//!    Their published table is an acceptance test, and its disputed 1x9 entry
-//!    (C-11) is an early target.
+//! 1. **Decide.** [`naive::wins_for`] and [`search::decide`] answer the
+//!    question `Superko.WinsFor` asks — does a named color have a winning
+//!    strategy from this state under this repetition rule — by the same
+//!    recursion `Superko.decideWins` uses.
 //!
-//! 2. **Quotient.** Compute the Myhill-Nerode congruence on histories: two
-//!    histories are equivalent when no continuation distinguishes them. Its
-//!    index `H(n)` is claim C-15, and the growth rate decides which bound is
-//!    worth attacking — see `docs/open-questions.md` §4 for the threshold,
-//!    fixed in advance.
+//! 2. **Score.** [`naive::value`] and [`search::solve`] return the minimax
+//!    **area difference** of the finished game: Black maximizes Black's area
+//!    less White's, White minimizes it. `Defs.lean` has no counterpart —
+//!    `WinsFor` is a two-valued game at a fixed komi — so the score is a
+//!    notion of this crate, and what ties it back to `Defs.lean` is the
+//!    threshold agreement of the next paragraph.
 //!
-//! The graph-history-interaction problem is unavoidable here: a transposition
-//! table keyed on position alone is unsound when legality depends on history.
-//! MIGOS handles it by putting situational properties in the hash. Whatever
-//! this crate does, it does deliberately and documents.
+//! 3. **Quotient.** The Myhill-Nerode congruence on histories, claim C-15.
+//!    Not started.
 //!
-//! Not trusted. A solver result is `computed`; it becomes `proved` when a
-//! strategy certificate checks in Lean.
+//! # The threshold agreement, and its status
+//!
+//! Black wins at komi floor `k` exactly when the minimax score exceeds `k`.
+//! That is a short induction over the game tree and it is **not proved here
+//! or in Lean**: it is `computed`, checked by `tests/agreement.rs` at every
+//! komi floor of every root position of every board with `m · n <= 3` under
+//! both rules and both suicide conventions.
+//!
+//! Nothing this crate reports as a headline rests on it. A separation claim is
+//! stated as two verdicts at one named komi, each produced by the decision
+//! recursion of job 1, which mirrors `Superko.decideWins` and needs no
+//! threshold argument. The score is the search order and the summary, not the
+//! evidence.
+//!
+//! # Two engines, one of them the arbiter
+//!
+//! [`naive`] recurses over `superko_rules::reference::State`, cloning a state
+//! and its archive at every node, running the rule predicates themselves and
+//! pruning nothing. It is the arbiter, and it is unusable past about four
+//! points.
+//!
+//! [`search`] is the fast path: alpha-beta over the transition table with make
+//! and unmake on a dense archive, sharing no control flow with the naive one.
+//! Alpha-beta returns the minimax value of the tree it searches whatever order
+//! it visits moves in, so the value is engine-independent and the node count
+//! is not.
+//!
+//! There is **no transposition table and no memoization**, deliberately. Two
+//! states with the same position and different archives do not have the same
+//! continuations, so a table keyed on less than the whole archive is the
+//! graph-history-interaction error, and a table keyed on the whole archive is
+//! about the size of the tree it would prune (`superko_graph::enumerate`).
+//!
+//! # Not trusted
+//!
+//! Nothing here establishes anything. A number this crate produces is a
+//! `computed` ledger row; it becomes `proved` when Lean checks a certificate,
+//! which for a verdict means kernel evaluation of `Superko.decideWins` at the
+//! same position, rule and komi.
 //!
 //! # Status
 //!
-//! Empty.
+//! The two engines and the separation sweep exist. What the tests establish is
+//! `computed` and bounded: the two engines agree on the value and on both
+//! colors' verdicts at every komi floor, at every root position, on every
+//! board with `m · n <= 3` under both rules and both suicide conventions; the
+//! verdicts satisfy determinacy (C-28, `proved`) and the threshold agreement
+//! over that same range; and the 1×n empty-board scores under positional
+//! superko reproduce the published table of C-24 as far as the tests run.
+//!
+//! What they do not establish: agreement with `Defs.lean` on any board those
+//! tests do not reach, or anything at all about a board the sweep did not
+//! resolve within its node budget — a budget the sweep reports rather than
+//! absorbs.
+
+pub mod naive;
+pub mod search;
+pub mod separate;
+
+pub use search::{Decision, Solution, decide, solve};
+pub use separate::{Separating, Sweep, sweep};
