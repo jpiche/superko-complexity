@@ -5,8 +5,7 @@ describes the project and is the place to start; this file says what an agent
 is expected to *do* differently.
 
 This is a research repository; the deliverable is a set of claims with
-evidence. The failure mode that matters is not a bug — it
-is a claim that is believed more strongly than its evidence supports.
+trustable evidence.
 
 ## The one rule
 
@@ -84,7 +83,7 @@ that changes a claim's status says so in the subject.
 
 ## Rust
 
-Rust is search tooling and is not trusted. It may be fast, heuristic and ugly.
+Rust is search tooling and is not trusted.
 
 What it may **not** be is a source of claims. A Rust computation produces a
 `computed` ledger entry and a certificate under `certificates/`; it produces a
@@ -104,14 +103,13 @@ accountable and the specific model or models used, with exact ids:
 **Models:** Claude Opus 5 (`claude-opus-5`)
 ```
 
-`**Models:** none` when no model was involved. List every model that did
-substantive work, not just the last one.
+`**Models:** none` when no model was involved. List each model that did
+substantive work. If more than one, outline who did what.
 
-This is not a disclaimer. The README discloses that AI assists the project;
-what they can act on is which model produced *which* artifact: model behavior
-differs enough between versions that a result's provenance is part of
-reproducing it, and a reader assessing machine-assisted work in a field where
-such work is now common needs the specific claim, not the general one.
+This is not a disclaimer. The README discloses that AI assists the project.
+Model behavior differs enough between versions that a result's provenance is
+part of reproducing it, and a reader assessing machine-assisted work needs the
+specific claim, not the general one.
 
 The same reasoning applies as to the rest of the project — the reader is being
 asked to check rather than to trust, so tell them exactly what they are
