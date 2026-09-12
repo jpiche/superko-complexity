@@ -1,0 +1,42 @@
+# superko-oracle 1
+# board: 1 1
+# generated-by: tools/gen-oracle.sh
+# lean-toolchain: leanprover/lean4:v4.34.0-rc2
+# defs-sha256: 04d2dfe6001aa46ee10f524bddaadcb1de16e215a2c0dec21d8b1591bfcc3c54
+# basic-sha256: e47484647932cee85f3ccd213fbdd3630069adf367b252df3d621dd727ee7f60
+# decide-sha256: 560805b65a1aca76afaa0543c395e0879601b0473ee1b3d836d669ee601519ab
+# grade: observed
+# note: evaluated by the Lean compiler (#eval), not the kernel; a test oracle, evidence for no ledger row
+# run-by: lake env lean --run lean/Oracle.lean 1 1
+# play-depth: 6
+# positions: 3
+# count-table: yes
+resolve . b 0,0 X
+resolve . w 0,0 O
+resolve X b 0,0 X
+resolve X w 0,0 O
+resolve O b 0,0 X
+resolve O w 0,0 O
+playable . b 0,0 1 0
+playable . w 0,0 1 0
+playable X b 0,0 0 0
+playable X w 0,0 0 0
+playable O b 0,0 0 0
+playable O w 0,0 0 0
+area . 0 0
+area X 1 0
+area O 0 1
+play ssk 0 root . b pass 1 0 1
+play ssk 0 root . b 0,0 0 0 1
+play ssk 1 pass . w pass 1 1 2
+play ssk 1 pass . w 0,0 0 1 2
+play ssk 2 pass;pass . b pass 1 2 2
+play ssk 2 pass;pass . b 0,0 0 2 2
+play psk 0 root . b pass 1 0 1
+play psk 0 root . b 0,0 0 0 1
+play psk 1 pass . w pass 1 1 2
+play psk 1 pass . w 0,0 0 1 2
+play psk 2 pass;pass . b pass 1 2 2
+play psk 2 pass;pass . b 0,0 0 2 2
+count ssk 1
+count psk 1

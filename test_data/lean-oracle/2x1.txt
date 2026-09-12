@@ -1,0 +1,258 @@
+# superko-oracle 1
+# board: 2 1
+# generated-by: tools/gen-oracle.sh
+# lean-toolchain: leanprover/lean4:v4.34.0-rc2
+# defs-sha256: 04d2dfe6001aa46ee10f524bddaadcb1de16e215a2c0dec21d8b1591bfcc3c54
+# basic-sha256: e47484647932cee85f3ccd213fbdd3630069adf367b252df3d621dd727ee7f60
+# decide-sha256: 560805b65a1aca76afaa0543c395e0879601b0473ee1b3d836d669ee601519ab
+# grade: observed
+# note: evaluated by the Lean compiler (#eval), not the kernel; a test oracle, evidence for no ledger row
+# run-by: lake env lean --run lean/Oracle.lean 2 1
+# play-depth: 6
+# positions: 9
+# count-table: yes
+resolve ./. b 0,0 X/.
+resolve ./. b 1,0 ./X
+resolve ./. w 0,0 O/.
+resolve ./. w 1,0 ./O
+resolve X/. b 0,0 X/.
+resolve X/. b 1,0 X/X
+resolve X/. w 0,0 O/.
+resolve X/. w 1,0 ./O
+resolve O/. b 0,0 X/.
+resolve O/. b 1,0 ./X
+resolve O/. w 0,0 O/.
+resolve O/. w 1,0 O/O
+resolve ./X b 0,0 X/X
+resolve ./X b 1,0 ./X
+resolve ./X w 0,0 O/.
+resolve ./X w 1,0 ./O
+resolve X/X b 0,0 X/X
+resolve X/X b 1,0 X/X
+resolve X/X w 0,0 O/.
+resolve X/X w 1,0 ./O
+resolve O/X b 0,0 X/X
+resolve O/X b 1,0 ./X
+resolve O/X w 0,0 O/.
+resolve O/X w 1,0 O/O
+resolve ./O b 0,0 X/.
+resolve ./O b 1,0 ./X
+resolve ./O w 0,0 O/O
+resolve ./O w 1,0 ./O
+resolve X/O b 0,0 X/.
+resolve X/O b 1,0 X/X
+resolve X/O w 0,0 O/O
+resolve X/O w 1,0 ./O
+resolve O/O b 0,0 X/.
+resolve O/O b 1,0 ./X
+resolve O/O w 0,0 O/O
+resolve O/O w 1,0 O/O
+playable ./. b 0,0 1 1
+playable ./. b 1,0 1 1
+playable ./. w 0,0 1 1
+playable ./. w 1,0 1 1
+playable X/. b 0,0 0 1
+playable X/. b 1,0 1 0
+playable X/. w 0,0 0 1
+playable X/. w 1,0 1 1
+playable O/. b 0,0 0 1
+playable O/. b 1,0 1 1
+playable O/. w 0,0 0 1
+playable O/. w 1,0 1 0
+playable ./X b 0,0 1 0
+playable ./X b 1,0 0 1
+playable ./X w 0,0 1 1
+playable ./X w 1,0 0 1
+playable X/X b 0,0 0 0
+playable X/X b 1,0 0 0
+playable X/X w 0,0 0 1
+playable X/X w 1,0 0 1
+playable O/X b 0,0 0 0
+playable O/X b 1,0 0 1
+playable O/X w 0,0 0 1
+playable O/X w 1,0 0 0
+playable ./O b 0,0 1 1
+playable ./O b 1,0 0 1
+playable ./O w 0,0 1 0
+playable ./O w 1,0 0 1
+playable X/O b 0,0 0 1
+playable X/O b 1,0 0 0
+playable X/O w 0,0 0 0
+playable X/O w 1,0 0 1
+playable O/O b 0,0 0 1
+playable O/O b 1,0 0 1
+playable O/O w 0,0 0 0
+playable O/O w 1,0 0 0
+area ./. 0 0
+area X/. 2 0
+area O/. 0 2
+area ./X 2 0
+area X/X 2 0
+area O/X 1 1
+area ./O 0 2
+area X/O 1 1
+area O/O 0 2
+play ssk 0 root ./. b pass 1 0 1
+play ssk 0 root ./. b 0,0 1 0 1
+play ssk 0 root ./. b 1,0 1 0 1
+play ssk 1 pass ./. w pass 1 1 2
+play ssk 1 pass ./. w 0,0 1 1 2
+play ssk 1 pass ./. w 1,0 1 1 2
+play ssk 1 0,0 X/. w pass 1 0 2
+play ssk 1 0,0 X/. w 0,0 0 0 2
+play ssk 1 0,0 X/. w 1,0 1 0 2
+play ssk 1 1,0 ./X w pass 1 0 2
+play ssk 1 1,0 ./X w 0,0 1 0 2
+play ssk 1 1,0 ./X w 1,0 0 0 2
+play ssk 2 pass;pass ./. b pass 1 2 2
+play ssk 2 pass;pass ./. b 0,0 1 2 2
+play ssk 2 pass;pass ./. b 1,0 1 2 2
+play ssk 2 pass;0,0 O/. b pass 1 0 3
+play ssk 2 pass;0,0 O/. b 0,0 0 0 3
+play ssk 2 pass;0,0 O/. b 1,0 1 0 3
+play ssk 2 pass;1,0 ./O b pass 1 0 3
+play ssk 2 pass;1,0 ./O b 0,0 1 0 3
+play ssk 2 pass;1,0 ./O b 1,0 0 0 3
+play ssk 2 0,0;pass X/. b pass 1 1 3
+play ssk 2 0,0;pass X/. b 0,0 0 1 3
+play ssk 2 0,0;pass X/. b 1,0 0 1 3
+play ssk 2 0,0;1,0 ./O b pass 1 0 3
+play ssk 2 0,0;1,0 ./O b 0,0 0 0 3
+play ssk 2 0,0;1,0 ./O b 1,0 0 0 3
+play ssk 2 1,0;pass ./X b pass 1 1 3
+play ssk 2 1,0;pass ./X b 0,0 0 1 3
+play ssk 2 1,0;pass ./X b 1,0 0 1 3
+play ssk 2 1,0;0,0 O/. b pass 1 0 3
+play ssk 2 1,0;0,0 O/. b 0,0 0 0 3
+play ssk 2 1,0;0,0 O/. b 1,0 0 0 3
+play ssk 3 pass;0,0;pass O/. w pass 1 1 4
+play ssk 3 pass;0,0;pass O/. w 0,0 0 1 4
+play ssk 3 pass;0,0;pass O/. w 1,0 0 1 4
+play ssk 3 pass;0,0;1,0 ./X w pass 1 0 4
+play ssk 3 pass;0,0;1,0 ./X w 0,0 0 0 4
+play ssk 3 pass;0,0;1,0 ./X w 1,0 0 0 4
+play ssk 3 pass;1,0;pass ./O w pass 1 1 4
+play ssk 3 pass;1,0;pass ./O w 0,0 0 1 4
+play ssk 3 pass;1,0;pass ./O w 1,0 0 1 4
+play ssk 3 pass;1,0;0,0 X/. w pass 1 0 4
+play ssk 3 pass;1,0;0,0 X/. w 0,0 0 0 4
+play ssk 3 pass;1,0;0,0 X/. w 1,0 0 0 4
+play ssk 3 0,0;pass;pass X/. w pass 1 2 3
+play ssk 3 0,0;pass;pass X/. w 0,0 0 2 3
+play ssk 3 0,0;pass;pass X/. w 1,0 1 2 3
+play ssk 3 0,0;1,0;pass ./O w pass 1 1 4
+play ssk 3 0,0;1,0;pass ./O w 0,0 0 1 4
+play ssk 3 0,0;1,0;pass ./O w 1,0 0 1 4
+play ssk 3 1,0;pass;pass ./X w pass 1 2 3
+play ssk 3 1,0;pass;pass ./X w 0,0 1 2 3
+play ssk 3 1,0;pass;pass ./X w 1,0 0 2 3
+play ssk 3 1,0;0,0;pass O/. w pass 1 1 4
+play ssk 3 1,0;0,0;pass O/. w 0,0 0 1 4
+play ssk 3 1,0;0,0;pass O/. w 1,0 0 1 4
+play ssk 4 pass;0,0;pass;pass O/. b pass 1 2 4
+play ssk 4 pass;0,0;pass;pass O/. b 0,0 0 2 4
+play ssk 4 pass;0,0;pass;pass O/. b 1,0 1 2 4
+play ssk 4 pass;0,0;1,0;pass ./X b pass 1 1 5
+play ssk 4 pass;0,0;1,0;pass ./X b 0,0 0 1 5
+play ssk 4 pass;0,0;1,0;pass ./X b 1,0 0 1 5
+play ssk 4 pass;1,0;pass;pass ./O b pass 1 2 4
+play ssk 4 pass;1,0;pass;pass ./O b 0,0 1 2 4
+play ssk 4 pass;1,0;pass;pass ./O b 1,0 0 2 4
+play ssk 4 pass;1,0;0,0;pass X/. b pass 1 1 5
+play ssk 4 pass;1,0;0,0;pass X/. b 0,0 0 1 5
+play ssk 4 pass;1,0;0,0;pass X/. b 1,0 0 1 5
+play ssk 4 0,0;1,0;pass;pass ./O b pass 1 2 4
+play ssk 4 0,0;1,0;pass;pass ./O b 0,0 0 2 4
+play ssk 4 0,0;1,0;pass;pass ./O b 1,0 0 2 4
+play ssk 4 1,0;0,0;pass;pass O/. b pass 1 2 4
+play ssk 4 1,0;0,0;pass;pass O/. b 0,0 0 2 4
+play ssk 4 1,0;0,0;pass;pass O/. b 1,0 0 2 4
+play ssk 5 pass;0,0;1,0;pass;pass ./X w pass 1 2 5
+play ssk 5 pass;0,0;1,0;pass;pass ./X w 0,0 0 2 5
+play ssk 5 pass;0,0;1,0;pass;pass ./X w 1,0 0 2 5
+play ssk 5 pass;1,0;0,0;pass;pass X/. w pass 1 2 5
+play ssk 5 pass;1,0;0,0;pass;pass X/. w 0,0 0 2 5
+play ssk 5 pass;1,0;0,0;pass;pass X/. w 1,0 0 2 5
+play psk 0 root ./. b pass 1 0 1
+play psk 0 root ./. b 0,0 1 0 1
+play psk 0 root ./. b 1,0 1 0 1
+play psk 1 pass ./. w pass 1 1 2
+play psk 1 pass ./. w 0,0 1 1 2
+play psk 1 pass ./. w 1,0 1 1 2
+play psk 1 0,0 X/. w pass 1 0 2
+play psk 1 0,0 X/. w 0,0 0 0 2
+play psk 1 0,0 X/. w 1,0 1 0 2
+play psk 1 1,0 ./X w pass 1 0 2
+play psk 1 1,0 ./X w 0,0 1 0 2
+play psk 1 1,0 ./X w 1,0 0 0 2
+play psk 2 pass;pass ./. b pass 1 2 2
+play psk 2 pass;pass ./. b 0,0 1 2 2
+play psk 2 pass;pass ./. b 1,0 1 2 2
+play psk 2 pass;0,0 O/. b pass 1 0 3
+play psk 2 pass;0,0 O/. b 0,0 0 0 3
+play psk 2 pass;0,0 O/. b 1,0 1 0 3
+play psk 2 pass;1,0 ./O b pass 1 0 3
+play psk 2 pass;1,0 ./O b 0,0 1 0 3
+play psk 2 pass;1,0 ./O b 1,0 0 0 3
+play psk 2 0,0;pass X/. b pass 1 1 3
+play psk 2 0,0;pass X/. b 0,0 0 1 3
+play psk 2 0,0;pass X/. b 1,0 0 1 3
+play psk 2 0,0;1,0 ./O b pass 1 0 3
+play psk 2 0,0;1,0 ./O b 0,0 0 0 3
+play psk 2 0,0;1,0 ./O b 1,0 0 0 3
+play psk 2 1,0;pass ./X b pass 1 1 3
+play psk 2 1,0;pass ./X b 0,0 0 1 3
+play psk 2 1,0;pass ./X b 1,0 0 1 3
+play psk 2 1,0;0,0 O/. b pass 1 0 3
+play psk 2 1,0;0,0 O/. b 0,0 0 0 3
+play psk 2 1,0;0,0 O/. b 1,0 0 0 3
+play psk 3 pass;0,0;pass O/. w pass 1 1 4
+play psk 3 pass;0,0;pass O/. w 0,0 0 1 4
+play psk 3 pass;0,0;pass O/. w 1,0 0 1 4
+play psk 3 pass;0,0;1,0 ./X w pass 1 0 4
+play psk 3 pass;0,0;1,0 ./X w 0,0 0 0 4
+play psk 3 pass;0,0;1,0 ./X w 1,0 0 0 4
+play psk 3 pass;1,0;pass ./O w pass 1 1 4
+play psk 3 pass;1,0;pass ./O w 0,0 0 1 4
+play psk 3 pass;1,0;pass ./O w 1,0 0 1 4
+play psk 3 pass;1,0;0,0 X/. w pass 1 0 4
+play psk 3 pass;1,0;0,0 X/. w 0,0 0 0 4
+play psk 3 pass;1,0;0,0 X/. w 1,0 0 0 4
+play psk 3 0,0;pass;pass X/. w pass 1 2 3
+play psk 3 0,0;pass;pass X/. w 0,0 0 2 3
+play psk 3 0,0;pass;pass X/. w 1,0 1 2 3
+play psk 3 0,0;1,0;pass ./O w pass 1 1 4
+play psk 3 0,0;1,0;pass ./O w 0,0 0 1 4
+play psk 3 0,0;1,0;pass ./O w 1,0 0 1 4
+play psk 3 1,0;pass;pass ./X w pass 1 2 3
+play psk 3 1,0;pass;pass ./X w 0,0 1 2 3
+play psk 3 1,0;pass;pass ./X w 1,0 0 2 3
+play psk 3 1,0;0,0;pass O/. w pass 1 1 4
+play psk 3 1,0;0,0;pass O/. w 0,0 0 1 4
+play psk 3 1,0;0,0;pass O/. w 1,0 0 1 4
+play psk 4 pass;0,0;pass;pass O/. b pass 1 2 4
+play psk 4 pass;0,0;pass;pass O/. b 0,0 0 2 4
+play psk 4 pass;0,0;pass;pass O/. b 1,0 1 2 4
+play psk 4 pass;0,0;1,0;pass ./X b pass 1 1 5
+play psk 4 pass;0,0;1,0;pass ./X b 0,0 0 1 5
+play psk 4 pass;0,0;1,0;pass ./X b 1,0 0 1 5
+play psk 4 pass;1,0;pass;pass ./O b pass 1 2 4
+play psk 4 pass;1,0;pass;pass ./O b 0,0 1 2 4
+play psk 4 pass;1,0;pass;pass ./O b 1,0 0 2 4
+play psk 4 pass;1,0;0,0;pass X/. b pass 1 1 5
+play psk 4 pass;1,0;0,0;pass X/. b 0,0 0 1 5
+play psk 4 pass;1,0;0,0;pass X/. b 1,0 0 1 5
+play psk 4 0,0;1,0;pass;pass ./O b pass 1 2 4
+play psk 4 0,0;1,0;pass;pass ./O b 0,0 0 2 4
+play psk 4 0,0;1,0;pass;pass ./O b 1,0 0 2 4
+play psk 4 1,0;0,0;pass;pass O/. b pass 1 2 4
+play psk 4 1,0;0,0;pass;pass O/. b 0,0 0 2 4
+play psk 4 1,0;0,0;pass;pass O/. b 1,0 0 2 4
+play psk 5 pass;0,0;1,0;pass;pass ./X w pass 1 2 5
+play psk 5 pass;0,0;1,0;pass;pass ./X w 0,0 0 2 5
+play psk 5 pass;0,0;1,0;pass;pass ./X w 1,0 0 2 5
+play psk 5 pass;1,0;0,0;pass;pass X/. w pass 1 2 5
+play psk 5 pass;1,0;0,0;pass;pass X/. w 0,0 0 2 5
+play psk 5 pass;1,0;0,0;pass;pass X/. w 1,0 0 2 5
+count ssk 9
+count psk 9

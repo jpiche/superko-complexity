@@ -1,0 +1,5200 @@
+# superko-oracle 1
+# board: 1 5
+# generated-by: tools/gen-oracle.sh
+# lean-toolchain: leanprover/lean4:v4.34.0-rc2
+# defs-sha256: 04d2dfe6001aa46ee10f524bddaadcb1de16e215a2c0dec21d8b1591bfcc3c54
+# basic-sha256: e47484647932cee85f3ccd213fbdd3630069adf367b252df3d621dd727ee7f60
+# decide-sha256: 560805b65a1aca76afaa0543c395e0879601b0473ee1b3d836d669ee601519ab
+# grade: observed
+# note: evaluated by the Lean compiler (#eval), not the kernel; a test oracle, evidence for no ledger row
+# run-by: lake env lean --run lean/Oracle.lean 1 5
+# play-depth: 1
+# positions: 243
+# count-table: no (measured out of reach at 5 points; see the README)
+resolve ..... b 0,0 X....
+resolve ..... b 0,1 .X...
+resolve ..... b 0,2 ..X..
+resolve ..... b 0,3 ...X.
+resolve ..... b 0,4 ....X
+resolve ..... w 0,0 O....
+resolve ..... w 0,1 .O...
+resolve ..... w 0,2 ..O..
+resolve ..... w 0,3 ...O.
+resolve ..... w 0,4 ....O
+resolve X.... b 0,0 X....
+resolve X.... b 0,1 XX...
+resolve X.... b 0,2 X.X..
+resolve X.... b 0,3 X..X.
+resolve X.... b 0,4 X...X
+resolve X.... w 0,0 O....
+resolve X.... w 0,1 .O...
+resolve X.... w 0,2 X.O..
+resolve X.... w 0,3 X..O.
+resolve X.... w 0,4 X...O
+resolve O.... b 0,0 X....
+resolve O.... b 0,1 .X...
+resolve O.... b 0,2 O.X..
+resolve O.... b 0,3 O..X.
+resolve O.... b 0,4 O...X
+resolve O.... w 0,0 O....
+resolve O.... w 0,1 OO...
+resolve O.... w 0,2 O.O..
+resolve O.... w 0,3 O..O.
+resolve O.... w 0,4 O...O
+resolve .X... b 0,0 XX...
+resolve .X... b 0,1 .X...
+resolve .X... b 0,2 .XX..
+resolve .X... b 0,3 .X.X.
+resolve .X... b 0,4 .X..X
+resolve .X... w 0,0 OX...
+resolve .X... w 0,1 .O...
+resolve .X... w 0,2 .XO..
+resolve .X... w 0,3 .X.O.
+resolve .X... w 0,4 .X..O
+resolve XX... b 0,0 XX...
+resolve XX... b 0,1 XX...
+resolve XX... b 0,2 XXX..
+resolve XX... b 0,3 XX.X.
+resolve XX... b 0,4 XX..X
+resolve XX... w 0,0 OX...
+resolve XX... w 0,1 .O...
+resolve XX... w 0,2 ..O..
+resolve XX... w 0,3 XX.O.
+resolve XX... w 0,4 XX..O
+resolve OX... b 0,0 XX...
+resolve OX... b 0,1 .X...
+resolve OX... b 0,2 .XX..
+resolve OX... b 0,3 .X.X.
+resolve OX... b 0,4 .X..X
+resolve OX... w 0,0 OX...
+resolve OX... w 0,1 OO...
+resolve OX... w 0,2 O.O..
+resolve OX... w 0,3 OX.O.
+resolve OX... w 0,4 OX..O
+resolve .O... b 0,0 XO...
+resolve .O... b 0,1 .X...
+resolve .O... b 0,2 .OX..
+resolve .O... b 0,3 .O.X.
+resolve .O... b 0,4 .O..X
+resolve .O... w 0,0 OO...
+resolve .O... w 0,1 .O...
+resolve .O... w 0,2 .OO..
+resolve .O... w 0,3 .O.O.
+resolve .O... w 0,4 .O..O
+resolve XO... b 0,0 XO...
+resolve XO... b 0,1 XX...
+resolve XO... b 0,2 X.X..
+resolve XO... b 0,3 XO.X.
+resolve XO... b 0,4 XO..X
+resolve XO... w 0,0 OO...
+resolve XO... w 0,1 .O...
+resolve XO... w 0,2 .OO..
+resolve XO... w 0,3 .O.O.
+resolve XO... w 0,4 .O..O
+resolve OO... b 0,0 XO...
+resolve OO... b 0,1 .X...
+resolve OO... b 0,2 ..X..
+resolve OO... b 0,3 OO.X.
+resolve OO... b 0,4 OO..X
+resolve OO... w 0,0 OO...
+resolve OO... w 0,1 OO...
+resolve OO... w 0,2 OOO..
+resolve OO... w 0,3 OO.O.
+resolve OO... w 0,4 OO..O
+resolve ..X.. b 0,0 X.X..
+resolve ..X.. b 0,1 .XX..
+resolve ..X.. b 0,2 ..X..
+resolve ..X.. b 0,3 ..XX.
+resolve ..X.. b 0,4 ..X.X
+resolve ..X.. w 0,0 O.X..
+resolve ..X.. w 0,1 .OX..
+resolve ..X.. w 0,2 ..O..
+resolve ..X.. w 0,3 ..XO.
+resolve ..X.. w 0,4 ..X.O
+resolve X.X.. b 0,0 X.X..
+resolve X.X.. b 0,1 XXX..
+resolve X.X.. b 0,2 X.X..
+resolve X.X.. b 0,3 X.XX.
+resolve X.X.. b 0,4 X.X.X
+resolve X.X.. w 0,0 O.X..
+resolve X.X.. w 0,1 .OX..
+resolve X.X.. w 0,2 X.O..
+resolve X.X.. w 0,3 X.XO.
+resolve X.X.. w 0,4 X.X.O
+resolve O.X.. b 0,0 X.X..
+resolve O.X.. b 0,1 .XX..
+resolve O.X.. b 0,2 O.X..
+resolve O.X.. b 0,3 O.XX.
+resolve O.X.. b 0,4 O.X.X
+resolve O.X.. w 0,0 O.X..
+resolve O.X.. w 0,1 OOX..
+resolve O.X.. w 0,2 O.O..
+resolve O.X.. w 0,3 O.XO.
+resolve O.X.. w 0,4 O.X.O
+resolve .XX.. b 0,0 XXX..
+resolve .XX.. b 0,1 .XX..
+resolve .XX.. b 0,2 .XX..
+resolve .XX.. b 0,3 .XXX.
+resolve .XX.. b 0,4 .XX.X
+resolve .XX.. w 0,0 OXX..
+resolve .XX.. w 0,1 .OX..
+resolve .XX.. w 0,2 .XO..
+resolve .XX.. w 0,3 .XXO.
+resolve .XX.. w 0,4 .XX.O
+resolve XXX.. b 0,0 XXX..
+resolve XXX.. b 0,1 XXX..
+resolve XXX.. b 0,2 XXX..
+resolve XXX.. b 0,3 XXXX.
+resolve XXX.. b 0,4 XXX.X
+resolve XXX.. w 0,0 OXX..
+resolve XXX.. w 0,1 .OX..
+resolve XXX.. w 0,2 ..O..
+resolve XXX.. w 0,3 ...O.
+resolve XXX.. w 0,4 XXX.O
+resolve OXX.. b 0,0 XXX..
+resolve OXX.. b 0,1 .XX..
+resolve OXX.. b 0,2 .XX..
+resolve OXX.. b 0,3 .XXX.
+resolve OXX.. b 0,4 .XX.X
+resolve OXX.. w 0,0 OXX..
+resolve OXX.. w 0,1 OOX..
+resolve OXX.. w 0,2 O.O..
+resolve OXX.. w 0,3 O..O.
+resolve OXX.. w 0,4 OXX.O
+resolve .OX.. b 0,0 X.X..
+resolve .OX.. b 0,1 .XX..
+resolve .OX.. b 0,2 .OX..
+resolve .OX.. b 0,3 .OXX.
+resolve .OX.. b 0,4 .OX.X
+resolve .OX.. w 0,0 OOX..
+resolve .OX.. w 0,1 .OX..
+resolve .OX.. w 0,2 .OO..
+resolve .OX.. w 0,3 .O.O.
+resolve .OX.. w 0,4 .OX.O
+resolve XOX.. b 0,0 X.X..
+resolve XOX.. b 0,1 XXX..
+resolve XOX.. b 0,2 X.X..
+resolve XOX.. b 0,3 X.XX.
+resolve XOX.. b 0,4 X.X.X
+resolve XOX.. w 0,0 OOX..
+resolve XOX.. w 0,1 .OX..
+resolve XOX.. w 0,2 .OO..
+resolve XOX.. w 0,3 .O.O.
+resolve XOX.. w 0,4 .OX.O
+resolve OOX.. b 0,0 X.X..
+resolve OOX.. b 0,1 .XX..
+resolve OOX.. b 0,2 ..X..
+resolve OOX.. b 0,3 ..XX.
+resolve OOX.. b 0,4 ..X.X
+resolve OOX.. w 0,0 OOX..
+resolve OOX.. w 0,1 OOX..
+resolve OOX.. w 0,2 OOO..
+resolve OOX.. w 0,3 OO.O.
+resolve OOX.. w 0,4 OOX.O
+resolve ..O.. b 0,0 X.O..
+resolve ..O.. b 0,1 .XO..
+resolve ..O.. b 0,2 ..X..
+resolve ..O.. b 0,3 ..OX.
+resolve ..O.. b 0,4 ..O.X
+resolve ..O.. w 0,0 O.O..
+resolve ..O.. w 0,1 .OO..
+resolve ..O.. w 0,2 ..O..
+resolve ..O.. w 0,3 ..OO.
+resolve ..O.. w 0,4 ..O.O
+resolve X.O.. b 0,0 X.O..
+resolve X.O.. b 0,1 XXO..
+resolve X.O.. b 0,2 X.X..
+resolve X.O.. b 0,3 X.OX.
+resolve X.O.. b 0,4 X.O.X
+resolve X.O.. w 0,0 O.O..
+resolve X.O.. w 0,1 .OO..
+resolve X.O.. w 0,2 X.O..
+resolve X.O.. w 0,3 X.OO.
+resolve X.O.. w 0,4 X.O.O
+resolve O.O.. b 0,0 X.O..
+resolve O.O.. b 0,1 .XO..
+resolve O.O.. b 0,2 O.X..
+resolve O.O.. b 0,3 O.OX.
+resolve O.O.. b 0,4 O.O.X
+resolve O.O.. w 0,0 O.O..
+resolve O.O.. w 0,1 OOO..
+resolve O.O.. w 0,2 O.O..
+resolve O.O.. w 0,3 O.OO.
+resolve O.O.. w 0,4 O.O.O
+resolve .XO.. b 0,0 XXO..
+resolve .XO.. b 0,1 .XO..
+resolve .XO.. b 0,2 .XX..
+resolve .XO.. b 0,3 .X.X.
+resolve .XO.. b 0,4 .XO.X
+resolve .XO.. w 0,0 O.O..
+resolve .XO.. w 0,1 .OO..
+resolve .XO.. w 0,2 .XO..
+resolve .XO.. w 0,3 .XOO.
+resolve .XO.. w 0,4 .XO.O
+resolve XXO.. b 0,0 XXO..
+resolve XXO.. b 0,1 XXO..
+resolve XXO.. b 0,2 XXX..
+resolve XXO.. b 0,3 XX.X.
+resolve XXO.. b 0,4 XXO.X
+resolve XXO.. w 0,0 O.O..
+resolve XXO.. w 0,1 .OO..
+resolve XXO.. w 0,2 ..O..
+resolve XXO.. w 0,3 ..OO.
+resolve XXO.. w 0,4 ..O.O
+resolve OXO.. b 0,0 XXO..
+resolve OXO.. b 0,1 .XO..
+resolve OXO.. b 0,2 .XX..
+resolve OXO.. b 0,3 .X.X.
+resolve OXO.. b 0,4 .XO.X
+resolve OXO.. w 0,0 O.O..
+resolve OXO.. w 0,1 OOO..
+resolve OXO.. w 0,2 O.O..
+resolve OXO.. w 0,3 O.OO.
+resolve OXO.. w 0,4 O.O.O
+resolve .OO.. b 0,0 XOO..
+resolve .OO.. b 0,1 .XO..
+resolve .OO.. b 0,2 .OX..
+resolve .OO.. b 0,3 .OOX.
+resolve .OO.. b 0,4 .OO.X
+resolve .OO.. w 0,0 OOO..
+resolve .OO.. w 0,1 .OO..
+resolve .OO.. w 0,2 .OO..
+resolve .OO.. w 0,3 .OOO.
+resolve .OO.. w 0,4 .OO.O
+resolve XOO.. b 0,0 XOO..
+resolve XOO.. b 0,1 XXO..
+resolve XOO.. b 0,2 X.X..
+resolve XOO.. b 0,3 X..X.
+resolve XOO.. b 0,4 XOO.X
+resolve XOO.. w 0,0 OOO..
+resolve XOO.. w 0,1 .OO..
+resolve XOO.. w 0,2 .OO..
+resolve XOO.. w 0,3 .OOO.
+resolve XOO.. w 0,4 .OO.O
+resolve OOO.. b 0,0 XOO..
+resolve OOO.. b 0,1 .XO..
+resolve OOO.. b 0,2 ..X..
+resolve OOO.. b 0,3 ...X.
+resolve OOO.. b 0,4 OOO.X
+resolve OOO.. w 0,0 OOO..
+resolve OOO.. w 0,1 OOO..
+resolve OOO.. w 0,2 OOO..
+resolve OOO.. w 0,3 OOOO.
+resolve OOO.. w 0,4 OOO.O
+resolve ...X. b 0,0 X..X.
+resolve ...X. b 0,1 .X.X.
+resolve ...X. b 0,2 ..XX.
+resolve ...X. b 0,3 ...X.
+resolve ...X. b 0,4 ...XX
+resolve ...X. w 0,0 O..X.
+resolve ...X. w 0,1 .O.X.
+resolve ...X. w 0,2 ..OX.
+resolve ...X. w 0,3 ...O.
+resolve ...X. w 0,4 ...XO
+resolve X..X. b 0,0 X..X.
+resolve X..X. b 0,1 XX.X.
+resolve X..X. b 0,2 X.XX.
+resolve X..X. b 0,3 X..X.
+resolve X..X. b 0,4 X..XX
+resolve X..X. w 0,0 O..X.
+resolve X..X. w 0,1 .O.X.
+resolve X..X. w 0,2 X.OX.
+resolve X..X. w 0,3 X..O.
+resolve X..X. w 0,4 X..XO
+resolve O..X. b 0,0 X..X.
+resolve O..X. b 0,1 .X.X.
+resolve O..X. b 0,2 O.XX.
+resolve O..X. b 0,3 O..X.
+resolve O..X. b 0,4 O..XX
+resolve O..X. w 0,0 O..X.
+resolve O..X. w 0,1 OO.X.
+resolve O..X. w 0,2 O.OX.
+resolve O..X. w 0,3 O..O.
+resolve O..X. w 0,4 O..XO
+resolve .X.X. b 0,0 XX.X.
+resolve .X.X. b 0,1 .X.X.
+resolve .X.X. b 0,2 .XXX.
+resolve .X.X. b 0,3 .X.X.
+resolve .X.X. b 0,4 .X.XX
+resolve .X.X. w 0,0 OX.X.
+resolve .X.X. w 0,1 .O.X.
+resolve .X.X. w 0,2 .XOX.
+resolve .X.X. w 0,3 .X.O.
+resolve .X.X. w 0,4 .X.XO
+resolve XX.X. b 0,0 XX.X.
+resolve XX.X. b 0,1 XX.X.
+resolve XX.X. b 0,2 XXXX.
+resolve XX.X. b 0,3 XX.X.
+resolve XX.X. b 0,4 XX.XX
+resolve XX.X. w 0,0 OX.X.
+resolve XX.X. w 0,1 .O.X.
+resolve XX.X. w 0,2 ..OX.
+resolve XX.X. w 0,3 XX.O.
+resolve XX.X. w 0,4 XX.XO
+resolve OX.X. b 0,0 XX.X.
+resolve OX.X. b 0,1 .X.X.
+resolve OX.X. b 0,2 .XXX.
+resolve OX.X. b 0,3 .X.X.
+resolve OX.X. b 0,4 .X.XX
+resolve OX.X. w 0,0 OX.X.
+resolve OX.X. w 0,1 OO.X.
+resolve OX.X. w 0,2 O.OX.
+resolve OX.X. w 0,3 OX.O.
+resolve OX.X. w 0,4 OX.XO
+resolve .O.X. b 0,0 XO.X.
+resolve .O.X. b 0,1 .X.X.
+resolve .O.X. b 0,2 .OXX.
+resolve .O.X. b 0,3 .O.X.
+resolve .O.X. b 0,4 .O.XX
+resolve .O.X. w 0,0 OO.X.
+resolve .O.X. w 0,1 .O.X.
+resolve .O.X. w 0,2 .OOX.
+resolve .O.X. w 0,3 .O.O.
+resolve .O.X. w 0,4 .O.XO
+resolve XO.X. b 0,0 XO.X.
+resolve XO.X. b 0,1 XX.X.
+resolve XO.X. b 0,2 X.XX.
+resolve XO.X. b 0,3 XO.X.
+resolve XO.X. b 0,4 XO.XX
+resolve XO.X. w 0,0 OO.X.
+resolve XO.X. w 0,1 .O.X.
+resolve XO.X. w 0,2 .OOX.
+resolve XO.X. w 0,3 .O.O.
+resolve XO.X. w 0,4 .O.XO
+resolve OO.X. b 0,0 XO.X.
+resolve OO.X. b 0,1 .X.X.
+resolve OO.X. b 0,2 ..XX.
+resolve OO.X. b 0,3 OO.X.
+resolve OO.X. b 0,4 OO.XX
+resolve OO.X. w 0,0 OO.X.
+resolve OO.X. w 0,1 OO.X.
+resolve OO.X. w 0,2 OOOX.
+resolve OO.X. w 0,3 OO.O.
+resolve OO.X. w 0,4 OO.XO
+resolve ..XX. b 0,0 X.XX.
+resolve ..XX. b 0,1 .XXX.
+resolve ..XX. b 0,2 ..XX.
+resolve ..XX. b 0,3 ..XX.
+resolve ..XX. b 0,4 ..XXX
+resolve ..XX. w 0,0 O.XX.
+resolve ..XX. w 0,1 .OXX.
+resolve ..XX. w 0,2 ..OX.
+resolve ..XX. w 0,3 ..XO.
+resolve ..XX. w 0,4 ..XXO
+resolve X.XX. b 0,0 X.XX.
+resolve X.XX. b 0,1 XXXX.
+resolve X.XX. b 0,2 X.XX.
+resolve X.XX. b 0,3 X.XX.
+resolve X.XX. b 0,4 X.XXX
+resolve X.XX. w 0,0 O.XX.
+resolve X.XX. w 0,1 .OXX.
+resolve X.XX. w 0,2 X.OX.
+resolve X.XX. w 0,3 X.XO.
+resolve X.XX. w 0,4 X.XXO
+resolve O.XX. b 0,0 X.XX.
+resolve O.XX. b 0,1 .XXX.
+resolve O.XX. b 0,2 O.XX.
+resolve O.XX. b 0,3 O.XX.
+resolve O.XX. b 0,4 O.XXX
+resolve O.XX. w 0,0 O.XX.
+resolve O.XX. w 0,1 OOXX.
+resolve O.XX. w 0,2 O.OX.
+resolve O.XX. w 0,3 O.XO.
+resolve O.XX. w 0,4 O.XXO
+resolve .XXX. b 0,0 XXXX.
+resolve .XXX. b 0,1 .XXX.
+resolve .XXX. b 0,2 .XXX.
+resolve .XXX. b 0,3 .XXX.
+resolve .XXX. b 0,4 .XXXX
+resolve .XXX. w 0,0 OXXX.
+resolve .XXX. w 0,1 .OXX.
+resolve .XXX. w 0,2 .XOX.
+resolve .XXX. w 0,3 .XXO.
+resolve .XXX. w 0,4 .XXXO
+resolve XXXX. b 0,0 XXXX.
+resolve XXXX. b 0,1 XXXX.
+resolve XXXX. b 0,2 XXXX.
+resolve XXXX. b 0,3 XXXX.
+resolve XXXX. b 0,4 XXXXX
+resolve XXXX. w 0,0 OXXX.
+resolve XXXX. w 0,1 .OXX.
+resolve XXXX. w 0,2 ..OX.
+resolve XXXX. w 0,3 ...O.
+resolve XXXX. w 0,4 ....O
+resolve OXXX. b 0,0 XXXX.
+resolve OXXX. b 0,1 .XXX.
+resolve OXXX. b 0,2 .XXX.
+resolve OXXX. b 0,3 .XXX.
+resolve OXXX. b 0,4 .XXXX
+resolve OXXX. w 0,0 OXXX.
+resolve OXXX. w 0,1 OOXX.
+resolve OXXX. w 0,2 O.OX.
+resolve OXXX. w 0,3 O..O.
+resolve OXXX. w 0,4 O...O
+resolve .OXX. b 0,0 X.XX.
+resolve .OXX. b 0,1 .XXX.
+resolve .OXX. b 0,2 .OXX.
+resolve .OXX. b 0,3 .OXX.
+resolve .OXX. b 0,4 .OXXX
+resolve .OXX. w 0,0 OOXX.
+resolve .OXX. w 0,1 .OXX.
+resolve .OXX. w 0,2 .OOX.
+resolve .OXX. w 0,3 .O.O.
+resolve .OXX. w 0,4 .O..O
+resolve XOXX. b 0,0 X.XX.
+resolve XOXX. b 0,1 XXXX.
+resolve XOXX. b 0,2 X.XX.
+resolve XOXX. b 0,3 X.XX.
+resolve XOXX. b 0,4 X.XXX
+resolve XOXX. w 0,0 OOXX.
+resolve XOXX. w 0,1 .OXX.
+resolve XOXX. w 0,2 .OOX.
+resolve XOXX. w 0,3 .O.O.
+resolve XOXX. w 0,4 .O..O
+resolve OOXX. b 0,0 X.XX.
+resolve OOXX. b 0,1 .XXX.
+resolve OOXX. b 0,2 ..XX.
+resolve OOXX. b 0,3 ..XX.
+resolve OOXX. b 0,4 ..XXX
+resolve OOXX. w 0,0 OOXX.
+resolve OOXX. w 0,1 OOXX.
+resolve OOXX. w 0,2 OOOX.
+resolve OOXX. w 0,3 OO.O.
+resolve OOXX. w 0,4 OO..O
+resolve ..OX. b 0,0 X.OX.
+resolve ..OX. b 0,1 .X.X.
+resolve ..OX. b 0,2 ..XX.
+resolve ..OX. b 0,3 ..OX.
+resolve ..OX. b 0,4 ..OXX
+resolve ..OX. w 0,0 O.OX.
+resolve ..OX. w 0,1 .OOX.
+resolve ..OX. w 0,2 ..OX.
+resolve ..OX. w 0,3 ..OO.
+resolve ..OX. w 0,4 ..O.O
+resolve X.OX. b 0,0 X.OX.
+resolve X.OX. b 0,1 XX.X.
+resolve X.OX. b 0,2 X.XX.
+resolve X.OX. b 0,3 X.OX.
+resolve X.OX. b 0,4 X.OXX
+resolve X.OX. w 0,0 O.OX.
+resolve X.OX. w 0,1 .OOX.
+resolve X.OX. w 0,2 X.OX.
+resolve X.OX. w 0,3 X.OO.
+resolve X.OX. w 0,4 X.O.O
+resolve O.OX. b 0,0 X.OX.
+resolve O.OX. b 0,1 .X.X.
+resolve O.OX. b 0,2 O.XX.
+resolve O.OX. b 0,3 O.OX.
+resolve O.OX. b 0,4 O.OXX
+resolve O.OX. w 0,0 O.OX.
+resolve O.OX. w 0,1 OOOX.
+resolve O.OX. w 0,2 O.OX.
+resolve O.OX. w 0,3 O.OO.
+resolve O.OX. w 0,4 O.O.O
+resolve .XOX. b 0,0 XX.X.
+resolve .XOX. b 0,1 .X.X.
+resolve .XOX. b 0,2 .XXX.
+resolve .XOX. b 0,3 .X.X.
+resolve .XOX. b 0,4 .X.XX
+resolve .XOX. w 0,0 O.OX.
+resolve .XOX. w 0,1 .OOX.
+resolve .XOX. w 0,2 .XOX.
+resolve .XOX. w 0,3 .XOO.
+resolve .XOX. w 0,4 .XO.O
+resolve XXOX. b 0,0 XX.X.
+resolve XXOX. b 0,1 XX.X.
+resolve XXOX. b 0,2 XXXX.
+resolve XXOX. b 0,3 XX.X.
+resolve XXOX. b 0,4 XX.XX
+resolve XXOX. w 0,0 O.OX.
+resolve XXOX. w 0,1 .OOX.
+resolve XXOX. w 0,2 ..OX.
+resolve XXOX. w 0,3 ..OO.
+resolve XXOX. w 0,4 ..O.O
+resolve OXOX. b 0,0 XX.X.
+resolve OXOX. b 0,1 .X.X.
+resolve OXOX. b 0,2 .XXX.
+resolve OXOX. b 0,3 .X.X.
+resolve OXOX. b 0,4 .X.XX
+resolve OXOX. w 0,0 O.OX.
+resolve OXOX. w 0,1 OOOX.
+resolve OXOX. w 0,2 O.OX.
+resolve OXOX. w 0,3 O.OO.
+resolve OXOX. w 0,4 O.O.O
+resolve .OOX. b 0,0 X..X.
+resolve .OOX. b 0,1 .X.X.
+resolve .OOX. b 0,2 .OXX.
+resolve .OOX. b 0,3 .OOX.
+resolve .OOX. b 0,4 .OOXX
+resolve .OOX. w 0,0 OOOX.
+resolve .OOX. w 0,1 .OOX.
+resolve .OOX. w 0,2 .OOX.
+resolve .OOX. w 0,3 .OOO.
+resolve .OOX. w 0,4 .OO.O
+resolve XOOX. b 0,0 X..X.
+resolve XOOX. b 0,1 XX.X.
+resolve XOOX. b 0,2 X.XX.
+resolve XOOX. b 0,3 X..X.
+resolve XOOX. b 0,4 X..XX
+resolve XOOX. w 0,0 OOOX.
+resolve XOOX. w 0,1 .OOX.
+resolve XOOX. w 0,2 .OOX.
+resolve XOOX. w 0,3 .OOO.
+resolve XOOX. w 0,4 .OO.O
+resolve OOOX. b 0,0 X..X.
+resolve OOOX. b 0,1 .X.X.
+resolve OOOX. b 0,2 ..XX.
+resolve OOOX. b 0,3 ...X.
+resolve OOOX. b 0,4 ...XX
+resolve OOOX. w 0,0 OOOX.
+resolve OOOX. w 0,1 OOOX.
+resolve OOOX. w 0,2 OOOX.
+resolve OOOX. w 0,3 OOOO.
+resolve OOOX. w 0,4 OOO.O
+resolve ...O. b 0,0 X..O.
+resolve ...O. b 0,1 .X.O.
+resolve ...O. b 0,2 ..XO.
+resolve ...O. b 0,3 ...X.
+resolve ...O. b 0,4 ...OX
+resolve ...O. w 0,0 O..O.
+resolve ...O. w 0,1 .O.O.
+resolve ...O. w 0,2 ..OO.
+resolve ...O. w 0,3 ...O.
+resolve ...O. w 0,4 ...OO
+resolve X..O. b 0,0 X..O.
+resolve X..O. b 0,1 XX.O.
+resolve X..O. b 0,2 X.XO.
+resolve X..O. b 0,3 X..X.
+resolve X..O. b 0,4 X..OX
+resolve X..O. w 0,0 O..O.
+resolve X..O. w 0,1 .O.O.
+resolve X..O. w 0,2 X.OO.
+resolve X..O. w 0,3 X..O.
+resolve X..O. w 0,4 X..OO
+resolve O..O. b 0,0 X..O.
+resolve O..O. b 0,1 .X.O.
+resolve O..O. b 0,2 O.XO.
+resolve O..O. b 0,3 O..X.
+resolve O..O. b 0,4 O..OX
+resolve O..O. w 0,0 O..O.
+resolve O..O. w 0,1 OO.O.
+resolve O..O. w 0,2 O.OO.
+resolve O..O. w 0,3 O..O.
+resolve O..O. w 0,4 O..OO
+resolve .X.O. b 0,0 XX.O.
+resolve .X.O. b 0,1 .X.O.
+resolve .X.O. b 0,2 .XXO.
+resolve .X.O. b 0,3 .X.X.
+resolve .X.O. b 0,4 .X.OX
+resolve .X.O. w 0,0 OX.O.
+resolve .X.O. w 0,1 .O.O.
+resolve .X.O. w 0,2 .XOO.
+resolve .X.O. w 0,3 .X.O.
+resolve .X.O. w 0,4 .X.OO
+resolve XX.O. b 0,0 XX.O.
+resolve XX.O. b 0,1 XX.O.
+resolve XX.O. b 0,2 XXXO.
+resolve XX.O. b 0,3 XX.X.
+resolve XX.O. b 0,4 XX.OX
+resolve XX.O. w 0,0 OX.O.
+resolve XX.O. w 0,1 .O.O.
+resolve XX.O. w 0,2 ..OO.
+resolve XX.O. w 0,3 XX.O.
+resolve XX.O. w 0,4 XX.OO
+resolve OX.O. b 0,0 XX.O.
+resolve OX.O. b 0,1 .X.O.
+resolve OX.O. b 0,2 .XXO.
+resolve OX.O. b 0,3 .X.X.
+resolve OX.O. b 0,4 .X.OX
+resolve OX.O. w 0,0 OX.O.
+resolve OX.O. w 0,1 OO.O.
+resolve OX.O. w 0,2 O.OO.
+resolve OX.O. w 0,3 OX.O.
+resolve OX.O. w 0,4 OX.OO
+resolve .O.O. b 0,0 XO.O.
+resolve .O.O. b 0,1 .X.O.
+resolve .O.O. b 0,2 .OXO.
+resolve .O.O. b 0,3 .O.X.
+resolve .O.O. b 0,4 .O.OX
+resolve .O.O. w 0,0 OO.O.
+resolve .O.O. w 0,1 .O.O.
+resolve .O.O. w 0,2 .OOO.
+resolve .O.O. w 0,3 .O.O.
+resolve .O.O. w 0,4 .O.OO
+resolve XO.O. b 0,0 XO.O.
+resolve XO.O. b 0,1 XX.O.
+resolve XO.O. b 0,2 X.XO.
+resolve XO.O. b 0,3 XO.X.
+resolve XO.O. b 0,4 XO.OX
+resolve XO.O. w 0,0 OO.O.
+resolve XO.O. w 0,1 .O.O.
+resolve XO.O. w 0,2 .OOO.
+resolve XO.O. w 0,3 .O.O.
+resolve XO.O. w 0,4 .O.OO
+resolve OO.O. b 0,0 XO.O.
+resolve OO.O. b 0,1 .X.O.
+resolve OO.O. b 0,2 ..XO.
+resolve OO.O. b 0,3 OO.X.
+resolve OO.O. b 0,4 OO.OX
+resolve OO.O. w 0,0 OO.O.
+resolve OO.O. w 0,1 OO.O.
+resolve OO.O. w 0,2 OOOO.
+resolve OO.O. w 0,3 OO.O.
+resolve OO.O. w 0,4 OO.OO
+resolve ..XO. b 0,0 X.XO.
+resolve ..XO. b 0,1 .XXO.
+resolve ..XO. b 0,2 ..XO.
+resolve ..XO. b 0,3 ..XX.
+resolve ..XO. b 0,4 ..X.X
+resolve ..XO. w 0,0 O.XO.
+resolve ..XO. w 0,1 .O.O.
+resolve ..XO. w 0,2 ..OO.
+resolve ..XO. w 0,3 ..XO.
+resolve ..XO. w 0,4 ..XOO
+resolve X.XO. b 0,0 X.XO.
+resolve X.XO. b 0,1 XXXO.
+resolve X.XO. b 0,2 X.XO.
+resolve X.XO. b 0,3 X.XX.
+resolve X.XO. b 0,4 X.X.X
+resolve X.XO. w 0,0 O.XO.
+resolve X.XO. w 0,1 .O.O.
+resolve X.XO. w 0,2 X.OO.
+resolve X.XO. w 0,3 X.XO.
+resolve X.XO. w 0,4 X.XOO
+resolve O.XO. b 0,0 X.XO.
+resolve O.XO. b 0,1 .XXO.
+resolve O.XO. b 0,2 O.XO.
+resolve O.XO. b 0,3 O.XX.
+resolve O.XO. b 0,4 O.X.X
+resolve O.XO. w 0,0 O.XO.
+resolve O.XO. w 0,1 OO.O.
+resolve O.XO. w 0,2 O.OO.
+resolve O.XO. w 0,3 O.XO.
+resolve O.XO. w 0,4 O.XOO
+resolve .XXO. b 0,0 XXXO.
+resolve .XXO. b 0,1 .XXO.
+resolve .XXO. b 0,2 .XXO.
+resolve .XXO. b 0,3 .XXX.
+resolve .XXO. b 0,4 .XX.X
+resolve .XXO. w 0,0 O..O.
+resolve .XXO. w 0,1 .O.O.
+resolve .XXO. w 0,2 .XOO.
+resolve .XXO. w 0,3 .XXO.
+resolve .XXO. w 0,4 .XXOO
+resolve XXXO. b 0,0 XXXO.
+resolve XXXO. b 0,1 XXXO.
+resolve XXXO. b 0,2 XXXO.
+resolve XXXO. b 0,3 XXXX.
+resolve XXXO. b 0,4 XXX.X
+resolve XXXO. w 0,0 O..O.
+resolve XXXO. w 0,1 .O.O.
+resolve XXXO. w 0,2 ..OO.
+resolve XXXO. w 0,3 ...O.
+resolve XXXO. w 0,4 ...OO
+resolve OXXO. b 0,0 XXXO.
+resolve OXXO. b 0,1 .XXO.
+resolve OXXO. b 0,2 .XXO.
+resolve OXXO. b 0,3 .XXX.
+resolve OXXO. b 0,4 .XX.X
+resolve OXXO. w 0,0 O..O.
+resolve OXXO. w 0,1 OO.O.
+resolve OXXO. w 0,2 O.OO.
+resolve OXXO. w 0,3 O..O.
+resolve OXXO. w 0,4 O..OO
+resolve .OXO. b 0,0 X.XO.
+resolve .OXO. b 0,1 .XXO.
+resolve .OXO. b 0,2 .OXO.
+resolve .OXO. b 0,3 .OXX.
+resolve .OXO. b 0,4 .OX.X
+resolve .OXO. w 0,0 OO.O.
+resolve .OXO. w 0,1 .O.O.
+resolve .OXO. w 0,2 .OOO.
+resolve .OXO. w 0,3 .O.O.
+resolve .OXO. w 0,4 .O.OO
+resolve XOXO. b 0,0 X.XO.
+resolve XOXO. b 0,1 XXXO.
+resolve XOXO. b 0,2 X.XO.
+resolve XOXO. b 0,3 X.XX.
+resolve XOXO. b 0,4 X.X.X
+resolve XOXO. w 0,0 OO.O.
+resolve XOXO. w 0,1 .O.O.
+resolve XOXO. w 0,2 .OOO.
+resolve XOXO. w 0,3 .O.O.
+resolve XOXO. w 0,4 .O.OO
+resolve OOXO. b 0,0 X.XO.
+resolve OOXO. b 0,1 .XXO.
+resolve OOXO. b 0,2 ..XO.
+resolve OOXO. b 0,3 ..XX.
+resolve OOXO. b 0,4 ..X.X
+resolve OOXO. w 0,0 OO.O.
+resolve OOXO. w 0,1 OO.O.
+resolve OOXO. w 0,2 OOOO.
+resolve OOXO. w 0,3 OO.O.
+resolve OOXO. w 0,4 OO.OO
+resolve ..OO. b 0,0 X.OO.
+resolve ..OO. b 0,1 .XOO.
+resolve ..OO. b 0,2 ..XO.
+resolve ..OO. b 0,3 ..OX.
+resolve ..OO. b 0,4 ..OOX
+resolve ..OO. w 0,0 O.OO.
+resolve ..OO. w 0,1 .OOO.
+resolve ..OO. w 0,2 ..OO.
+resolve ..OO. w 0,3 ..OO.
+resolve ..OO. w 0,4 ..OOO
+resolve X.OO. b 0,0 X.OO.
+resolve X.OO. b 0,1 XXOO.
+resolve X.OO. b 0,2 X.XO.
+resolve X.OO. b 0,3 X.OX.
+resolve X.OO. b 0,4 X.OOX
+resolve X.OO. w 0,0 O.OO.
+resolve X.OO. w 0,1 .OOO.
+resolve X.OO. w 0,2 X.OO.
+resolve X.OO. w 0,3 X.OO.
+resolve X.OO. w 0,4 X.OOO
+resolve O.OO. b 0,0 X.OO.
+resolve O.OO. b 0,1 .XOO.
+resolve O.OO. b 0,2 O.XO.
+resolve O.OO. b 0,3 O.OX.
+resolve O.OO. b 0,4 O.OOX
+resolve O.OO. w 0,0 O.OO.
+resolve O.OO. w 0,1 OOOO.
+resolve O.OO. w 0,2 O.OO.
+resolve O.OO. w 0,3 O.OO.
+resolve O.OO. w 0,4 O.OOO
+resolve .XOO. b 0,0 XXOO.
+resolve .XOO. b 0,1 .XOO.
+resolve .XOO. b 0,2 .XXO.
+resolve .XOO. b 0,3 .X.X.
+resolve .XOO. b 0,4 .X..X
+resolve .XOO. w 0,0 O.OO.
+resolve .XOO. w 0,1 .OOO.
+resolve .XOO. w 0,2 .XOO.
+resolve .XOO. w 0,3 .XOO.
+resolve .XOO. w 0,4 .XOOO
+resolve XXOO. b 0,0 XXOO.
+resolve XXOO. b 0,1 XXOO.
+resolve XXOO. b 0,2 XXXO.
+resolve XXOO. b 0,3 XX.X.
+resolve XXOO. b 0,4 XX..X
+resolve XXOO. w 0,0 O.OO.
+resolve XXOO. w 0,1 .OOO.
+resolve XXOO. w 0,2 ..OO.
+resolve XXOO. w 0,3 ..OO.
+resolve XXOO. w 0,4 ..OOO
+resolve OXOO. b 0,0 XXOO.
+resolve OXOO. b 0,1 .XOO.
+resolve OXOO. b 0,2 .XXO.
+resolve OXOO. b 0,3 .X.X.
+resolve OXOO. b 0,4 .X..X
+resolve OXOO. w 0,0 O.OO.
+resolve OXOO. w 0,1 OOOO.
+resolve OXOO. w 0,2 O.OO.
+resolve OXOO. w 0,3 O.OO.
+resolve OXOO. w 0,4 O.OOO
+resolve .OOO. b 0,0 XOOO.
+resolve .OOO. b 0,1 .XOO.
+resolve .OOO. b 0,2 .OXO.
+resolve .OOO. b 0,3 .OOX.
+resolve .OOO. b 0,4 .OOOX
+resolve .OOO. w 0,0 OOOO.
+resolve .OOO. w 0,1 .OOO.
+resolve .OOO. w 0,2 .OOO.
+resolve .OOO. w 0,3 .OOO.
+resolve .OOO. w 0,4 .OOOO
+resolve XOOO. b 0,0 XOOO.
+resolve XOOO. b 0,1 XXOO.
+resolve XOOO. b 0,2 X.XO.
+resolve XOOO. b 0,3 X..X.
+resolve XOOO. b 0,4 X...X
+resolve XOOO. w 0,0 OOOO.
+resolve XOOO. w 0,1 .OOO.
+resolve XOOO. w 0,2 .OOO.
+resolve XOOO. w 0,3 .OOO.
+resolve XOOO. w 0,4 .OOOO
+resolve OOOO. b 0,0 XOOO.
+resolve OOOO. b 0,1 .XOO.
+resolve OOOO. b 0,2 ..XO.
+resolve OOOO. b 0,3 ...X.
+resolve OOOO. b 0,4 ....X
+resolve OOOO. w 0,0 OOOO.
+resolve OOOO. w 0,1 OOOO.
+resolve OOOO. w 0,2 OOOO.
+resolve OOOO. w 0,3 OOOO.
+resolve OOOO. w 0,4 OOOOO
+resolve ....X b 0,0 X...X
+resolve ....X b 0,1 .X..X
+resolve ....X b 0,2 ..X.X
+resolve ....X b 0,3 ...XX
+resolve ....X b 0,4 ....X
+resolve ....X w 0,0 O...X
+resolve ....X w 0,1 .O..X
+resolve ....X w 0,2 ..O.X
+resolve ....X w 0,3 ...O.
+resolve ....X w 0,4 ....O
+resolve X...X b 0,0 X...X
+resolve X...X b 0,1 XX..X
+resolve X...X b 0,2 X.X.X
+resolve X...X b 0,3 X..XX
+resolve X...X b 0,4 X...X
+resolve X...X w 0,0 O...X
+resolve X...X w 0,1 .O..X
+resolve X...X w 0,2 X.O.X
+resolve X...X w 0,3 X..O.
+resolve X...X w 0,4 X...O
+resolve O...X b 0,0 X...X
+resolve O...X b 0,1 .X..X
+resolve O...X b 0,2 O.X.X
+resolve O...X b 0,3 O..XX
+resolve O...X b 0,4 O...X
+resolve O...X w 0,0 O...X
+resolve O...X w 0,1 OO..X
+resolve O...X w 0,2 O.O.X
+resolve O...X w 0,3 O..O.
+resolve O...X w 0,4 O...O
+resolve .X..X b 0,0 XX..X
+resolve .X..X b 0,1 .X..X
+resolve .X..X b 0,2 .XX.X
+resolve .X..X b 0,3 .X.XX
+resolve .X..X b 0,4 .X..X
+resolve .X..X w 0,0 OX..X
+resolve .X..X w 0,1 .O..X
+resolve .X..X w 0,2 .XO.X
+resolve .X..X w 0,3 .X.O.
+resolve .X..X w 0,4 .X..O
+resolve XX..X b 0,0 XX..X
+resolve XX..X b 0,1 XX..X
+resolve XX..X b 0,2 XXX.X
+resolve XX..X b 0,3 XX.XX
+resolve XX..X b 0,4 XX..X
+resolve XX..X w 0,0 OX..X
+resolve XX..X w 0,1 .O..X
+resolve XX..X w 0,2 ..O.X
+resolve XX..X w 0,3 XX.O.
+resolve XX..X w 0,4 XX..O
+resolve OX..X b 0,0 XX..X
+resolve OX..X b 0,1 .X..X
+resolve OX..X b 0,2 .XX.X
+resolve OX..X b 0,3 .X.XX
+resolve OX..X b 0,4 .X..X
+resolve OX..X w 0,0 OX..X
+resolve OX..X w 0,1 OO..X
+resolve OX..X w 0,2 O.O.X
+resolve OX..X w 0,3 OX.O.
+resolve OX..X w 0,4 OX..O
+resolve .O..X b 0,0 XO..X
+resolve .O..X b 0,1 .X..X
+resolve .O..X b 0,2 .OX.X
+resolve .O..X b 0,3 .O.XX
+resolve .O..X b 0,4 .O..X
+resolve .O..X w 0,0 OO..X
+resolve .O..X w 0,1 .O..X
+resolve .O..X w 0,2 .OO.X
+resolve .O..X w 0,3 .O.O.
+resolve .O..X w 0,4 .O..O
+resolve XO..X b 0,0 XO..X
+resolve XO..X b 0,1 XX..X
+resolve XO..X b 0,2 X.X.X
+resolve XO..X b 0,3 XO.XX
+resolve XO..X b 0,4 XO..X
+resolve XO..X w 0,0 OO..X
+resolve XO..X w 0,1 .O..X
+resolve XO..X w 0,2 .OO.X
+resolve XO..X w 0,3 .O.O.
+resolve XO..X w 0,4 .O..O
+resolve OO..X b 0,0 XO..X
+resolve OO..X b 0,1 .X..X
+resolve OO..X b 0,2 ..X.X
+resolve OO..X b 0,3 OO.XX
+resolve OO..X b 0,4 OO..X
+resolve OO..X w 0,0 OO..X
+resolve OO..X w 0,1 OO..X
+resolve OO..X w 0,2 OOO.X
+resolve OO..X w 0,3 OO.O.
+resolve OO..X w 0,4 OO..O
+resolve ..X.X b 0,0 X.X.X
+resolve ..X.X b 0,1 .XX.X
+resolve ..X.X b 0,2 ..X.X
+resolve ..X.X b 0,3 ..XXX
+resolve ..X.X b 0,4 ..X.X
+resolve ..X.X w 0,0 O.X.X
+resolve ..X.X w 0,1 .OX.X
+resolve ..X.X w 0,2 ..O.X
+resolve ..X.X w 0,3 ..XO.
+resolve ..X.X w 0,4 ..X.O
+resolve X.X.X b 0,0 X.X.X
+resolve X.X.X b 0,1 XXX.X
+resolve X.X.X b 0,2 X.X.X
+resolve X.X.X b 0,3 X.XXX
+resolve X.X.X b 0,4 X.X.X
+resolve X.X.X w 0,0 O.X.X
+resolve X.X.X w 0,1 .OX.X
+resolve X.X.X w 0,2 X.O.X
+resolve X.X.X w 0,3 X.XO.
+resolve X.X.X w 0,4 X.X.O
+resolve O.X.X b 0,0 X.X.X
+resolve O.X.X b 0,1 .XX.X
+resolve O.X.X b 0,2 O.X.X
+resolve O.X.X b 0,3 O.XXX
+resolve O.X.X b 0,4 O.X.X
+resolve O.X.X w 0,0 O.X.X
+resolve O.X.X w 0,1 OOX.X
+resolve O.X.X w 0,2 O.O.X
+resolve O.X.X w 0,3 O.XO.
+resolve O.X.X w 0,4 O.X.O
+resolve .XX.X b 0,0 XXX.X
+resolve .XX.X b 0,1 .XX.X
+resolve .XX.X b 0,2 .XX.X
+resolve .XX.X b 0,3 .XXXX
+resolve .XX.X b 0,4 .XX.X
+resolve .XX.X w 0,0 OXX.X
+resolve .XX.X w 0,1 .OX.X
+resolve .XX.X w 0,2 .XO.X
+resolve .XX.X w 0,3 .XXO.
+resolve .XX.X w 0,4 .XX.O
+resolve XXX.X b 0,0 XXX.X
+resolve XXX.X b 0,1 XXX.X
+resolve XXX.X b 0,2 XXX.X
+resolve XXX.X b 0,3 XXXXX
+resolve XXX.X b 0,4 XXX.X
+resolve XXX.X w 0,0 OXX.X
+resolve XXX.X w 0,1 .OX.X
+resolve XXX.X w 0,2 ..O.X
+resolve XXX.X w 0,3 ...O.
+resolve XXX.X w 0,4 XXX.O
+resolve OXX.X b 0,0 XXX.X
+resolve OXX.X b 0,1 .XX.X
+resolve OXX.X b 0,2 .XX.X
+resolve OXX.X b 0,3 .XXXX
+resolve OXX.X b 0,4 .XX.X
+resolve OXX.X w 0,0 OXX.X
+resolve OXX.X w 0,1 OOX.X
+resolve OXX.X w 0,2 O.O.X
+resolve OXX.X w 0,3 O..O.
+resolve OXX.X w 0,4 OXX.O
+resolve .OX.X b 0,0 X.X.X
+resolve .OX.X b 0,1 .XX.X
+resolve .OX.X b 0,2 .OX.X
+resolve .OX.X b 0,3 .OXXX
+resolve .OX.X b 0,4 .OX.X
+resolve .OX.X w 0,0 OOX.X
+resolve .OX.X w 0,1 .OX.X
+resolve .OX.X w 0,2 .OO.X
+resolve .OX.X w 0,3 .O.O.
+resolve .OX.X w 0,4 .OX.O
+resolve XOX.X b 0,0 X.X.X
+resolve XOX.X b 0,1 XXX.X
+resolve XOX.X b 0,2 X.X.X
+resolve XOX.X b 0,3 X.XXX
+resolve XOX.X b 0,4 X.X.X
+resolve XOX.X w 0,0 OOX.X
+resolve XOX.X w 0,1 .OX.X
+resolve XOX.X w 0,2 .OO.X
+resolve XOX.X w 0,3 .O.O.
+resolve XOX.X w 0,4 .OX.O
+resolve OOX.X b 0,0 X.X.X
+resolve OOX.X b 0,1 .XX.X
+resolve OOX.X b 0,2 ..X.X
+resolve OOX.X b 0,3 ..XXX
+resolve OOX.X b 0,4 ..X.X
+resolve OOX.X w 0,0 OOX.X
+resolve OOX.X w 0,1 OOX.X
+resolve OOX.X w 0,2 OOO.X
+resolve OOX.X w 0,3 OO.O.
+resolve OOX.X w 0,4 OOX.O
+resolve ..O.X b 0,0 X.O.X
+resolve ..O.X b 0,1 .XO.X
+resolve ..O.X b 0,2 ..X.X
+resolve ..O.X b 0,3 ..OXX
+resolve ..O.X b 0,4 ..O.X
+resolve ..O.X w 0,0 O.O.X
+resolve ..O.X w 0,1 .OO.X
+resolve ..O.X w 0,2 ..O.X
+resolve ..O.X w 0,3 ..OO.
+resolve ..O.X w 0,4 ..O.O
+resolve X.O.X b 0,0 X.O.X
+resolve X.O.X b 0,1 XXO.X
+resolve X.O.X b 0,2 X.X.X
+resolve X.O.X b 0,3 X.OXX
+resolve X.O.X b 0,4 X.O.X
+resolve X.O.X w 0,0 O.O.X
+resolve X.O.X w 0,1 .OO.X
+resolve X.O.X w 0,2 X.O.X
+resolve X.O.X w 0,3 X.OO.
+resolve X.O.X w 0,4 X.O.O
+resolve O.O.X b 0,0 X.O.X
+resolve O.O.X b 0,1 .XO.X
+resolve O.O.X b 0,2 O.X.X
+resolve O.O.X b 0,3 O.OXX
+resolve O.O.X b 0,4 O.O.X
+resolve O.O.X w 0,0 O.O.X
+resolve O.O.X w 0,1 OOO.X
+resolve O.O.X w 0,2 O.O.X
+resolve O.O.X w 0,3 O.OO.
+resolve O.O.X w 0,4 O.O.O
+resolve .XO.X b 0,0 XXO.X
+resolve .XO.X b 0,1 .XO.X
+resolve .XO.X b 0,2 .XX.X
+resolve .XO.X b 0,3 .X.XX
+resolve .XO.X b 0,4 .XO.X
+resolve .XO.X w 0,0 O.O.X
+resolve .XO.X w 0,1 .OO.X
+resolve .XO.X w 0,2 .XO.X
+resolve .XO.X w 0,3 .XOO.
+resolve .XO.X w 0,4 .XO.O
+resolve XXO.X b 0,0 XXO.X
+resolve XXO.X b 0,1 XXO.X
+resolve XXO.X b 0,2 XXX.X
+resolve XXO.X b 0,3 XX.XX
+resolve XXO.X b 0,4 XXO.X
+resolve XXO.X w 0,0 O.O.X
+resolve XXO.X w 0,1 .OO.X
+resolve XXO.X w 0,2 ..O.X
+resolve XXO.X w 0,3 ..OO.
+resolve XXO.X w 0,4 ..O.O
+resolve OXO.X b 0,0 XXO.X
+resolve OXO.X b 0,1 .XO.X
+resolve OXO.X b 0,2 .XX.X
+resolve OXO.X b 0,3 .X.XX
+resolve OXO.X b 0,4 .XO.X
+resolve OXO.X w 0,0 O.O.X
+resolve OXO.X w 0,1 OOO.X
+resolve OXO.X w 0,2 O.O.X
+resolve OXO.X w 0,3 O.OO.
+resolve OXO.X w 0,4 O.O.O
+resolve .OO.X b 0,0 XOO.X
+resolve .OO.X b 0,1 .XO.X
+resolve .OO.X b 0,2 .OX.X
+resolve .OO.X b 0,3 .OOXX
+resolve .OO.X b 0,4 .OO.X
+resolve .OO.X w 0,0 OOO.X
+resolve .OO.X w 0,1 .OO.X
+resolve .OO.X w 0,2 .OO.X
+resolve .OO.X w 0,3 .OOO.
+resolve .OO.X w 0,4 .OO.O
+resolve XOO.X b 0,0 XOO.X
+resolve XOO.X b 0,1 XXO.X
+resolve XOO.X b 0,2 X.X.X
+resolve XOO.X b 0,3 X..XX
+resolve XOO.X b 0,4 XOO.X
+resolve XOO.X w 0,0 OOO.X
+resolve XOO.X w 0,1 .OO.X
+resolve XOO.X w 0,2 .OO.X
+resolve XOO.X w 0,3 .OOO.
+resolve XOO.X w 0,4 .OO.O
+resolve OOO.X b 0,0 XOO.X
+resolve OOO.X b 0,1 .XO.X
+resolve OOO.X b 0,2 ..X.X
+resolve OOO.X b 0,3 ...XX
+resolve OOO.X b 0,4 OOO.X
+resolve OOO.X w 0,0 OOO.X
+resolve OOO.X w 0,1 OOO.X
+resolve OOO.X w 0,2 OOO.X
+resolve OOO.X w 0,3 OOOO.
+resolve OOO.X w 0,4 OOO.O
+resolve ...XX b 0,0 X..XX
+resolve ...XX b 0,1 .X.XX
+resolve ...XX b 0,2 ..XXX
+resolve ...XX b 0,3 ...XX
+resolve ...XX b 0,4 ...XX
+resolve ...XX w 0,0 O..XX
+resolve ...XX w 0,1 .O.XX
+resolve ...XX w 0,2 ..O..
+resolve ...XX w 0,3 ...O.
+resolve ...XX w 0,4 ...XO
+resolve X..XX b 0,0 X..XX
+resolve X..XX b 0,1 XX.XX
+resolve X..XX b 0,2 X.XXX
+resolve X..XX b 0,3 X..XX
+resolve X..XX b 0,4 X..XX
+resolve X..XX w 0,0 O..XX
+resolve X..XX w 0,1 .O.XX
+resolve X..XX w 0,2 X.O..
+resolve X..XX w 0,3 X..O.
+resolve X..XX w 0,4 X..XO
+resolve O..XX b 0,0 X..XX
+resolve O..XX b 0,1 .X.XX
+resolve O..XX b 0,2 O.XXX
+resolve O..XX b 0,3 O..XX
+resolve O..XX b 0,4 O..XX
+resolve O..XX w 0,0 O..XX
+resolve O..XX w 0,1 OO.XX
+resolve O..XX w 0,2 O.O..
+resolve O..XX w 0,3 O..O.
+resolve O..XX w 0,4 O..XO
+resolve .X.XX b 0,0 XX.XX
+resolve .X.XX b 0,1 .X.XX
+resolve .X.XX b 0,2 .XXXX
+resolve .X.XX b 0,3 .X.XX
+resolve .X.XX b 0,4 .X.XX
+resolve .X.XX w 0,0 OX.XX
+resolve .X.XX w 0,1 .O.XX
+resolve .X.XX w 0,2 .XO..
+resolve .X.XX w 0,3 .X.O.
+resolve .X.XX w 0,4 .X.XO
+resolve XX.XX b 0,0 XX.XX
+resolve XX.XX b 0,1 XX.XX
+resolve XX.XX b 0,2 XXXXX
+resolve XX.XX b 0,3 XX.XX
+resolve XX.XX b 0,4 XX.XX
+resolve XX.XX w 0,0 OX.XX
+resolve XX.XX w 0,1 .O.XX
+resolve XX.XX w 0,2 ..O..
+resolve XX.XX w 0,3 XX.O.
+resolve XX.XX w 0,4 XX.XO
+resolve OX.XX b 0,0 XX.XX
+resolve OX.XX b 0,1 .X.XX
+resolve OX.XX b 0,2 .XXXX
+resolve OX.XX b 0,3 .X.XX
+resolve OX.XX b 0,4 .X.XX
+resolve OX.XX w 0,0 OX.XX
+resolve OX.XX w 0,1 OO.XX
+resolve OX.XX w 0,2 O.O..
+resolve OX.XX w 0,3 OX.O.
+resolve OX.XX w 0,4 OX.XO
+resolve .O.XX b 0,0 XO.XX
+resolve .O.XX b 0,1 .X.XX
+resolve .O.XX b 0,2 .OXXX
+resolve .O.XX b 0,3 .O.XX
+resolve .O.XX b 0,4 .O.XX
+resolve .O.XX w 0,0 OO.XX
+resolve .O.XX w 0,1 .O.XX
+resolve .O.XX w 0,2 .OO..
+resolve .O.XX w 0,3 .O.O.
+resolve .O.XX w 0,4 .O.XO
+resolve XO.XX b 0,0 XO.XX
+resolve XO.XX b 0,1 XX.XX
+resolve XO.XX b 0,2 X.XXX
+resolve XO.XX b 0,3 XO.XX
+resolve XO.XX b 0,4 XO.XX
+resolve XO.XX w 0,0 OO.XX
+resolve XO.XX w 0,1 .O.XX
+resolve XO.XX w 0,2 .OO..
+resolve XO.XX w 0,3 .O.O.
+resolve XO.XX w 0,4 .O.XO
+resolve OO.XX b 0,0 XO.XX
+resolve OO.XX b 0,1 .X.XX
+resolve OO.XX b 0,2 ..XXX
+resolve OO.XX b 0,3 OO.XX
+resolve OO.XX b 0,4 OO.XX
+resolve OO.XX w 0,0 OO.XX
+resolve OO.XX w 0,1 OO.XX
+resolve OO.XX w 0,2 OOO..
+resolve OO.XX w 0,3 OO.O.
+resolve OO.XX w 0,4 OO.XO
+resolve ..XXX b 0,0 X.XXX
+resolve ..XXX b 0,1 .XXXX
+resolve ..XXX b 0,2 ..XXX
+resolve ..XXX b 0,3 ..XXX
+resolve ..XXX b 0,4 ..XXX
+resolve ..XXX w 0,0 O.XXX
+resolve ..XXX w 0,1 .O...
+resolve ..XXX w 0,2 ..O..
+resolve ..XXX w 0,3 ..XO.
+resolve ..XXX w 0,4 ..XXO
+resolve X.XXX b 0,0 X.XXX
+resolve X.XXX b 0,1 XXXXX
+resolve X.XXX b 0,2 X.XXX
+resolve X.XXX b 0,3 X.XXX
+resolve X.XXX b 0,4 X.XXX
+resolve X.XXX w 0,0 O.XXX
+resolve X.XXX w 0,1 .O...
+resolve X.XXX w 0,2 X.O..
+resolve X.XXX w 0,3 X.XO.
+resolve X.XXX w 0,4 X.XXO
+resolve O.XXX b 0,0 X.XXX
+resolve O.XXX b 0,1 .XXXX
+resolve O.XXX b 0,2 O.XXX
+resolve O.XXX b 0,3 O.XXX
+resolve O.XXX b 0,4 O.XXX
+resolve O.XXX w 0,0 O.XXX
+resolve O.XXX w 0,1 OO...
+resolve O.XXX w 0,2 O.O..
+resolve O.XXX w 0,3 O.XO.
+resolve O.XXX w 0,4 O.XXO
+resolve .XXXX b 0,0 XXXXX
+resolve .XXXX b 0,1 .XXXX
+resolve .XXXX b 0,2 .XXXX
+resolve .XXXX b 0,3 .XXXX
+resolve .XXXX b 0,4 .XXXX
+resolve .XXXX w 0,0 O....
+resolve .XXXX w 0,1 .O...
+resolve .XXXX w 0,2 .XO..
+resolve .XXXX w 0,3 .XXO.
+resolve .XXXX w 0,4 .XXXO
+resolve XXXXX b 0,0 XXXXX
+resolve XXXXX b 0,1 XXXXX
+resolve XXXXX b 0,2 XXXXX
+resolve XXXXX b 0,3 XXXXX
+resolve XXXXX b 0,4 XXXXX
+resolve XXXXX w 0,0 O....
+resolve XXXXX w 0,1 .O...
+resolve XXXXX w 0,2 ..O..
+resolve XXXXX w 0,3 ...O.
+resolve XXXXX w 0,4 ....O
+resolve OXXXX b 0,0 XXXXX
+resolve OXXXX b 0,1 .XXXX
+resolve OXXXX b 0,2 .XXXX
+resolve OXXXX b 0,3 .XXXX
+resolve OXXXX b 0,4 .XXXX
+resolve OXXXX w 0,0 O....
+resolve OXXXX w 0,1 OO...
+resolve OXXXX w 0,2 O.O..
+resolve OXXXX w 0,3 O..O.
+resolve OXXXX w 0,4 O...O
+resolve .OXXX b 0,0 X.XXX
+resolve .OXXX b 0,1 .XXXX
+resolve .OXXX b 0,2 .OXXX
+resolve .OXXX b 0,3 .OXXX
+resolve .OXXX b 0,4 .OXXX
+resolve .OXXX w 0,0 OO...
+resolve .OXXX w 0,1 .O...
+resolve .OXXX w 0,2 .OO..
+resolve .OXXX w 0,3 .O.O.
+resolve .OXXX w 0,4 .O..O
+resolve XOXXX b 0,0 X.XXX
+resolve XOXXX b 0,1 XXXXX
+resolve XOXXX b 0,2 X.XXX
+resolve XOXXX b 0,3 X.XXX
+resolve XOXXX b 0,4 X.XXX
+resolve XOXXX w 0,0 OO...
+resolve XOXXX w 0,1 .O...
+resolve XOXXX w 0,2 .OO..
+resolve XOXXX w 0,3 .O.O.
+resolve XOXXX w 0,4 .O..O
+resolve OOXXX b 0,0 X.XXX
+resolve OOXXX b 0,1 .XXXX
+resolve OOXXX b 0,2 ..XXX
+resolve OOXXX b 0,3 ..XXX
+resolve OOXXX b 0,4 ..XXX
+resolve OOXXX w 0,0 OO...
+resolve OOXXX w 0,1 OO...
+resolve OOXXX w 0,2 OOO..
+resolve OOXXX w 0,3 OO.O.
+resolve OOXXX w 0,4 OO..O
+resolve ..OXX b 0,0 X.OXX
+resolve ..OXX b 0,1 .X.XX
+resolve ..OXX b 0,2 ..XXX
+resolve ..OXX b 0,3 ..OXX
+resolve ..OXX b 0,4 ..OXX
+resolve ..OXX w 0,0 O.O..
+resolve ..OXX w 0,1 .OO..
+resolve ..OXX w 0,2 ..O..
+resolve ..OXX w 0,3 ..OO.
+resolve ..OXX w 0,4 ..O.O
+resolve X.OXX b 0,0 X.OXX
+resolve X.OXX b 0,1 XX.XX
+resolve X.OXX b 0,2 X.XXX
+resolve X.OXX b 0,3 X.OXX
+resolve X.OXX b 0,4 X.OXX
+resolve X.OXX w 0,0 O.O..
+resolve X.OXX w 0,1 .OO..
+resolve X.OXX w 0,2 X.O..
+resolve X.OXX w 0,3 X.OO.
+resolve X.OXX w 0,4 X.O.O
+resolve O.OXX b 0,0 X.OXX
+resolve O.OXX b 0,1 .X.XX
+resolve O.OXX b 0,2 O.XXX
+resolve O.OXX b 0,3 O.OXX
+resolve O.OXX b 0,4 O.OXX
+resolve O.OXX w 0,0 O.O..
+resolve O.OXX w 0,1 OOO..
+resolve O.OXX w 0,2 O.O..
+resolve O.OXX w 0,3 O.OO.
+resolve O.OXX w 0,4 O.O.O
+resolve .XOXX b 0,0 XX.XX
+resolve .XOXX b 0,1 .X.XX
+resolve .XOXX b 0,2 .XXXX
+resolve .XOXX b 0,3 .X.XX
+resolve .XOXX b 0,4 .X.XX
+resolve .XOXX w 0,0 O.O..
+resolve .XOXX w 0,1 .OO..
+resolve .XOXX w 0,2 .XO..
+resolve .XOXX w 0,3 .XOO.
+resolve .XOXX w 0,4 .XO.O
+resolve XXOXX b 0,0 XX.XX
+resolve XXOXX b 0,1 XX.XX
+resolve XXOXX b 0,2 XXXXX
+resolve XXOXX b 0,3 XX.XX
+resolve XXOXX b 0,4 XX.XX
+resolve XXOXX w 0,0 O.O..
+resolve XXOXX w 0,1 .OO..
+resolve XXOXX w 0,2 ..O..
+resolve XXOXX w 0,3 ..OO.
+resolve XXOXX w 0,4 ..O.O
+resolve OXOXX b 0,0 XX.XX
+resolve OXOXX b 0,1 .X.XX
+resolve OXOXX b 0,2 .XXXX
+resolve OXOXX b 0,3 .X.XX
+resolve OXOXX b 0,4 .X.XX
+resolve OXOXX w 0,0 O.O..
+resolve OXOXX w 0,1 OOO..
+resolve OXOXX w 0,2 O.O..
+resolve OXOXX w 0,3 O.OO.
+resolve OXOXX w 0,4 O.O.O
+resolve .OOXX b 0,0 X..XX
+resolve .OOXX b 0,1 .X.XX
+resolve .OOXX b 0,2 .OXXX
+resolve .OOXX b 0,3 .OOXX
+resolve .OOXX b 0,4 .OOXX
+resolve .OOXX w 0,0 OOO..
+resolve .OOXX w 0,1 .OO..
+resolve .OOXX w 0,2 .OO..
+resolve .OOXX w 0,3 .OOO.
+resolve .OOXX w 0,4 .OO.O
+resolve XOOXX b 0,0 X..XX
+resolve XOOXX b 0,1 XX.XX
+resolve XOOXX b 0,2 X.XXX
+resolve XOOXX b 0,3 X..XX
+resolve XOOXX b 0,4 X..XX
+resolve XOOXX w 0,0 OOO..
+resolve XOOXX w 0,1 .OO..
+resolve XOOXX w 0,2 .OO..
+resolve XOOXX w 0,3 .OOO.
+resolve XOOXX w 0,4 .OO.O
+resolve OOOXX b 0,0 X..XX
+resolve OOOXX b 0,1 .X.XX
+resolve OOOXX b 0,2 ..XXX
+resolve OOOXX b 0,3 ...XX
+resolve OOOXX b 0,4 ...XX
+resolve OOOXX w 0,0 OOO..
+resolve OOOXX w 0,1 OOO..
+resolve OOOXX w 0,2 OOO..
+resolve OOOXX w 0,3 OOOO.
+resolve OOOXX w 0,4 OOO.O
+resolve ...OX b 0,0 X..OX
+resolve ...OX b 0,1 .X.OX
+resolve ...OX b 0,2 ..X.X
+resolve ...OX b 0,3 ...XX
+resolve ...OX b 0,4 ...OX
+resolve ...OX w 0,0 O..O.
+resolve ...OX w 0,1 .O.O.
+resolve ...OX w 0,2 ..OO.
+resolve ...OX w 0,3 ...O.
+resolve ...OX w 0,4 ...OO
+resolve X..OX b 0,0 X..OX
+resolve X..OX b 0,1 XX.OX
+resolve X..OX b 0,2 X.X.X
+resolve X..OX b 0,3 X..XX
+resolve X..OX b 0,4 X..OX
+resolve X..OX w 0,0 O..O.
+resolve X..OX w 0,1 .O.O.
+resolve X..OX w 0,2 X.OO.
+resolve X..OX w 0,3 X..O.
+resolve X..OX w 0,4 X..OO
+resolve O..OX b 0,0 X..OX
+resolve O..OX b 0,1 .X.OX
+resolve O..OX b 0,2 O.X.X
+resolve O..OX b 0,3 O..XX
+resolve O..OX b 0,4 O..OX
+resolve O..OX w 0,0 O..O.
+resolve O..OX w 0,1 OO.O.
+resolve O..OX w 0,2 O.OO.
+resolve O..OX w 0,3 O..O.
+resolve O..OX w 0,4 O..OO
+resolve .X.OX b 0,0 XX.OX
+resolve .X.OX b 0,1 .X.OX
+resolve .X.OX b 0,2 .XX.X
+resolve .X.OX b 0,3 .X.XX
+resolve .X.OX b 0,4 .X.OX
+resolve .X.OX w 0,0 OX.O.
+resolve .X.OX w 0,1 .O.O.
+resolve .X.OX w 0,2 .XOO.
+resolve .X.OX w 0,3 .X.O.
+resolve .X.OX w 0,4 .X.OO
+resolve XX.OX b 0,0 XX.OX
+resolve XX.OX b 0,1 XX.OX
+resolve XX.OX b 0,2 XXX.X
+resolve XX.OX b 0,3 XX.XX
+resolve XX.OX b 0,4 XX.OX
+resolve XX.OX w 0,0 OX.O.
+resolve XX.OX w 0,1 .O.O.
+resolve XX.OX w 0,2 ..OO.
+resolve XX.OX w 0,3 XX.O.
+resolve XX.OX w 0,4 XX.OO
+resolve OX.OX b 0,0 XX.OX
+resolve OX.OX b 0,1 .X.OX
+resolve OX.OX b 0,2 .XX.X
+resolve OX.OX b 0,3 .X.XX
+resolve OX.OX b 0,4 .X.OX
+resolve OX.OX w 0,0 OX.O.
+resolve OX.OX w 0,1 OO.O.
+resolve OX.OX w 0,2 O.OO.
+resolve OX.OX w 0,3 OX.O.
+resolve OX.OX w 0,4 OX.OO
+resolve .O.OX b 0,0 XO.OX
+resolve .O.OX b 0,1 .X.OX
+resolve .O.OX b 0,2 .OX.X
+resolve .O.OX b 0,3 .O.XX
+resolve .O.OX b 0,4 .O.OX
+resolve .O.OX w 0,0 OO.O.
+resolve .O.OX w 0,1 .O.O.
+resolve .O.OX w 0,2 .OOO.
+resolve .O.OX w 0,3 .O.O.
+resolve .O.OX w 0,4 .O.OO
+resolve XO.OX b 0,0 XO.OX
+resolve XO.OX b 0,1 XX.OX
+resolve XO.OX b 0,2 X.X.X
+resolve XO.OX b 0,3 XO.XX
+resolve XO.OX b 0,4 XO.OX
+resolve XO.OX w 0,0 OO.O.
+resolve XO.OX w 0,1 .O.O.
+resolve XO.OX w 0,2 .OOO.
+resolve XO.OX w 0,3 .O.O.
+resolve XO.OX w 0,4 .O.OO
+resolve OO.OX b 0,0 XO.OX
+resolve OO.OX b 0,1 .X.OX
+resolve OO.OX b 0,2 ..X.X
+resolve OO.OX b 0,3 OO.XX
+resolve OO.OX b 0,4 OO.OX
+resolve OO.OX w 0,0 OO.O.
+resolve OO.OX w 0,1 OO.O.
+resolve OO.OX w 0,2 OOOO.
+resolve OO.OX w 0,3 OO.O.
+resolve OO.OX w 0,4 OO.OO
+resolve ..XOX b 0,0 X.X.X
+resolve ..XOX b 0,1 .XX.X
+resolve ..XOX b 0,2 ..X.X
+resolve ..XOX b 0,3 ..XXX
+resolve ..XOX b 0,4 ..X.X
+resolve ..XOX w 0,0 O.XO.
+resolve ..XOX w 0,1 .O.O.
+resolve ..XOX w 0,2 ..OO.
+resolve ..XOX w 0,3 ..XO.
+resolve ..XOX w 0,4 ..XOO
+resolve X.XOX b 0,0 X.X.X
+resolve X.XOX b 0,1 XXX.X
+resolve X.XOX b 0,2 X.X.X
+resolve X.XOX b 0,3 X.XXX
+resolve X.XOX b 0,4 X.X.X
+resolve X.XOX w 0,0 O.XO.
+resolve X.XOX w 0,1 .O.O.
+resolve X.XOX w 0,2 X.OO.
+resolve X.XOX w 0,3 X.XO.
+resolve X.XOX w 0,4 X.XOO
+resolve O.XOX b 0,0 X.X.X
+resolve O.XOX b 0,1 .XX.X
+resolve O.XOX b 0,2 O.X.X
+resolve O.XOX b 0,3 O.XXX
+resolve O.XOX b 0,4 O.X.X
+resolve O.XOX w 0,0 O.XO.
+resolve O.XOX w 0,1 OO.O.
+resolve O.XOX w 0,2 O.OO.
+resolve O.XOX w 0,3 O.XO.
+resolve O.XOX w 0,4 O.XOO
+resolve .XXOX b 0,0 XXX.X
+resolve .XXOX b 0,1 .XX.X
+resolve .XXOX b 0,2 .XX.X
+resolve .XXOX b 0,3 .XXXX
+resolve .XXOX b 0,4 .XX.X
+resolve .XXOX w 0,0 O..O.
+resolve .XXOX w 0,1 .O.O.
+resolve .XXOX w 0,2 .XOO.
+resolve .XXOX w 0,3 .XXO.
+resolve .XXOX w 0,4 .XXOO
+resolve XXXOX b 0,0 XXX.X
+resolve XXXOX b 0,1 XXX.X
+resolve XXXOX b 0,2 XXX.X
+resolve XXXOX b 0,3 XXXXX
+resolve XXXOX b 0,4 XXX.X
+resolve XXXOX w 0,0 O..O.
+resolve XXXOX w 0,1 .O.O.
+resolve XXXOX w 0,2 ..OO.
+resolve XXXOX w 0,3 ...O.
+resolve XXXOX w 0,4 ...OO
+resolve OXXOX b 0,0 XXX.X
+resolve OXXOX b 0,1 .XX.X
+resolve OXXOX b 0,2 .XX.X
+resolve OXXOX b 0,3 .XXXX
+resolve OXXOX b 0,4 .XX.X
+resolve OXXOX w 0,0 O..O.
+resolve OXXOX w 0,1 OO.O.
+resolve OXXOX w 0,2 O.OO.
+resolve OXXOX w 0,3 O..O.
+resolve OXXOX w 0,4 O..OO
+resolve .OXOX b 0,0 X.X.X
+resolve .OXOX b 0,1 .XX.X
+resolve .OXOX b 0,2 .OX.X
+resolve .OXOX b 0,3 .OXXX
+resolve .OXOX b 0,4 .OX.X
+resolve .OXOX w 0,0 OO.O.
+resolve .OXOX w 0,1 .O.O.
+resolve .OXOX w 0,2 .OOO.
+resolve .OXOX w 0,3 .O.O.
+resolve .OXOX w 0,4 .O.OO
+resolve XOXOX b 0,0 X.X.X
+resolve XOXOX b 0,1 XXX.X
+resolve XOXOX b 0,2 X.X.X
+resolve XOXOX b 0,3 X.XXX
+resolve XOXOX b 0,4 X.X.X
+resolve XOXOX w 0,0 OO.O.
+resolve XOXOX w 0,1 .O.O.
+resolve XOXOX w 0,2 .OOO.
+resolve XOXOX w 0,3 .O.O.
+resolve XOXOX w 0,4 .O.OO
+resolve OOXOX b 0,0 X.X.X
+resolve OOXOX b 0,1 .XX.X
+resolve OOXOX b 0,2 ..X.X
+resolve OOXOX b 0,3 ..XXX
+resolve OOXOX b 0,4 ..X.X
+resolve OOXOX w 0,0 OO.O.
+resolve OOXOX w 0,1 OO.O.
+resolve OOXOX w 0,2 OOOO.
+resolve OOXOX w 0,3 OO.O.
+resolve OOXOX w 0,4 OO.OO
+resolve ..OOX b 0,0 X.OOX
+resolve ..OOX b 0,1 .X..X
+resolve ..OOX b 0,2 ..X.X
+resolve ..OOX b 0,3 ..OXX
+resolve ..OOX b 0,4 ..OOX
+resolve ..OOX w 0,0 O.OO.
+resolve ..OOX w 0,1 .OOO.
+resolve ..OOX w 0,2 ..OO.
+resolve ..OOX w 0,3 ..OO.
+resolve ..OOX w 0,4 ..OOO
+resolve X.OOX b 0,0 X.OOX
+resolve X.OOX b 0,1 XX..X
+resolve X.OOX b 0,2 X.X.X
+resolve X.OOX b 0,3 X.OXX
+resolve X.OOX b 0,4 X.OOX
+resolve X.OOX w 0,0 O.OO.
+resolve X.OOX w 0,1 .OOO.
+resolve X.OOX w 0,2 X.OO.
+resolve X.OOX w 0,3 X.OO.
+resolve X.OOX w 0,4 X.OOO
+resolve O.OOX b 0,0 X.OOX
+resolve O.OOX b 0,1 .X..X
+resolve O.OOX b 0,2 O.X.X
+resolve O.OOX b 0,3 O.OXX
+resolve O.OOX b 0,4 O.OOX
+resolve O.OOX w 0,0 O.OO.
+resolve O.OOX w 0,1 OOOO.
+resolve O.OOX w 0,2 O.OO.
+resolve O.OOX w 0,3 O.OO.
+resolve O.OOX w 0,4 O.OOO
+resolve .XOOX b 0,0 XX..X
+resolve .XOOX b 0,1 .X..X
+resolve .XOOX b 0,2 .XX.X
+resolve .XOOX b 0,3 .X.XX
+resolve .XOOX b 0,4 .X..X
+resolve .XOOX w 0,0 O.OO.
+resolve .XOOX w 0,1 .OOO.
+resolve .XOOX w 0,2 .XOO.
+resolve .XOOX w 0,3 .XOO.
+resolve .XOOX w 0,4 .XOOO
+resolve XXOOX b 0,0 XX..X
+resolve XXOOX b 0,1 XX..X
+resolve XXOOX b 0,2 XXX.X
+resolve XXOOX b 0,3 XX.XX
+resolve XXOOX b 0,4 XX..X
+resolve XXOOX w 0,0 O.OO.
+resolve XXOOX w 0,1 .OOO.
+resolve XXOOX w 0,2 ..OO.
+resolve XXOOX w 0,3 ..OO.
+resolve XXOOX w 0,4 ..OOO
+resolve OXOOX b 0,0 XX..X
+resolve OXOOX b 0,1 .X..X
+resolve OXOOX b 0,2 .XX.X
+resolve OXOOX b 0,3 .X.XX
+resolve OXOOX b 0,4 .X..X
+resolve OXOOX w 0,0 O.OO.
+resolve OXOOX w 0,1 OOOO.
+resolve OXOOX w 0,2 O.OO.
+resolve OXOOX w 0,3 O.OO.
+resolve OXOOX w 0,4 O.OOO
+resolve .OOOX b 0,0 X...X
+resolve .OOOX b 0,1 .X..X
+resolve .OOOX b 0,2 .OX.X
+resolve .OOOX b 0,3 .OOXX
+resolve .OOOX b 0,4 .OOOX
+resolve .OOOX w 0,0 OOOO.
+resolve .OOOX w 0,1 .OOO.
+resolve .OOOX w 0,2 .OOO.
+resolve .OOOX w 0,3 .OOO.
+resolve .OOOX w 0,4 .OOOO
+resolve XOOOX b 0,0 X...X
+resolve XOOOX b 0,1 XX..X
+resolve XOOOX b 0,2 X.X.X
+resolve XOOOX b 0,3 X..XX
+resolve XOOOX b 0,4 X...X
+resolve XOOOX w 0,0 OOOO.
+resolve XOOOX w 0,1 .OOO.
+resolve XOOOX w 0,2 .OOO.
+resolve XOOOX w 0,3 .OOO.
+resolve XOOOX w 0,4 .OOOO
+resolve OOOOX b 0,0 X...X
+resolve OOOOX b 0,1 .X..X
+resolve OOOOX b 0,2 ..X.X
+resolve OOOOX b 0,3 ...XX
+resolve OOOOX b 0,4 ....X
+resolve OOOOX w 0,0 OOOO.
+resolve OOOOX w 0,1 OOOO.
+resolve OOOOX w 0,2 OOOO.
+resolve OOOOX w 0,3 OOOO.
+resolve OOOOX w 0,4 OOOOO
+resolve ....O b 0,0 X...O
+resolve ....O b 0,1 .X..O
+resolve ....O b 0,2 ..X.O
+resolve ....O b 0,3 ...X.
+resolve ....O b 0,4 ....X
+resolve ....O w 0,0 O...O
+resolve ....O w 0,1 .O..O
+resolve ....O w 0,2 ..O.O
+resolve ....O w 0,3 ...OO
+resolve ....O w 0,4 ....O
+resolve X...O b 0,0 X...O
+resolve X...O b 0,1 XX..O
+resolve X...O b 0,2 X.X.O
+resolve X...O b 0,3 X..X.
+resolve X...O b 0,4 X...X
+resolve X...O w 0,0 O...O
+resolve X...O w 0,1 .O..O
+resolve X...O w 0,2 X.O.O
+resolve X...O w 0,3 X..OO
+resolve X...O w 0,4 X...O
+resolve O...O b 0,0 X...O
+resolve O...O b 0,1 .X..O
+resolve O...O b 0,2 O.X.O
+resolve O...O b 0,3 O..X.
+resolve O...O b 0,4 O...X
+resolve O...O w 0,0 O...O
+resolve O...O w 0,1 OO..O
+resolve O...O w 0,2 O.O.O
+resolve O...O w 0,3 O..OO
+resolve O...O w 0,4 O...O
+resolve .X..O b 0,0 XX..O
+resolve .X..O b 0,1 .X..O
+resolve .X..O b 0,2 .XX.O
+resolve .X..O b 0,3 .X.X.
+resolve .X..O b 0,4 .X..X
+resolve .X..O w 0,0 OX..O
+resolve .X..O w 0,1 .O..O
+resolve .X..O w 0,2 .XO.O
+resolve .X..O w 0,3 .X.OO
+resolve .X..O w 0,4 .X..O
+resolve XX..O b 0,0 XX..O
+resolve XX..O b 0,1 XX..O
+resolve XX..O b 0,2 XXX.O
+resolve XX..O b 0,3 XX.X.
+resolve XX..O b 0,4 XX..X
+resolve XX..O w 0,0 OX..O
+resolve XX..O w 0,1 .O..O
+resolve XX..O w 0,2 ..O.O
+resolve XX..O w 0,3 XX.OO
+resolve XX..O w 0,4 XX..O
+resolve OX..O b 0,0 XX..O
+resolve OX..O b 0,1 .X..O
+resolve OX..O b 0,2 .XX.O
+resolve OX..O b 0,3 .X.X.
+resolve OX..O b 0,4 .X..X
+resolve OX..O w 0,0 OX..O
+resolve OX..O w 0,1 OO..O
+resolve OX..O w 0,2 O.O.O
+resolve OX..O w 0,3 OX.OO
+resolve OX..O w 0,4 OX..O
+resolve .O..O b 0,0 XO..O
+resolve .O..O b 0,1 .X..O
+resolve .O..O b 0,2 .OX.O
+resolve .O..O b 0,3 .O.X.
+resolve .O..O b 0,4 .O..X
+resolve .O..O w 0,0 OO..O
+resolve .O..O w 0,1 .O..O
+resolve .O..O w 0,2 .OO.O
+resolve .O..O w 0,3 .O.OO
+resolve .O..O w 0,4 .O..O
+resolve XO..O b 0,0 XO..O
+resolve XO..O b 0,1 XX..O
+resolve XO..O b 0,2 X.X.O
+resolve XO..O b 0,3 XO.X.
+resolve XO..O b 0,4 XO..X
+resolve XO..O w 0,0 OO..O
+resolve XO..O w 0,1 .O..O
+resolve XO..O w 0,2 .OO.O
+resolve XO..O w 0,3 .O.OO
+resolve XO..O w 0,4 .O..O
+resolve OO..O b 0,0 XO..O
+resolve OO..O b 0,1 .X..O
+resolve OO..O b 0,2 ..X.O
+resolve OO..O b 0,3 OO.X.
+resolve OO..O b 0,4 OO..X
+resolve OO..O w 0,0 OO..O
+resolve OO..O w 0,1 OO..O
+resolve OO..O w 0,2 OOO.O
+resolve OO..O w 0,3 OO.OO
+resolve OO..O w 0,4 OO..O
+resolve ..X.O b 0,0 X.X.O
+resolve ..X.O b 0,1 .XX.O
+resolve ..X.O b 0,2 ..X.O
+resolve ..X.O b 0,3 ..XX.
+resolve ..X.O b 0,4 ..X.X
+resolve ..X.O w 0,0 O.X.O
+resolve ..X.O w 0,1 .OX.O
+resolve ..X.O w 0,2 ..O.O
+resolve ..X.O w 0,3 ..XOO
+resolve ..X.O w 0,4 ..X.O
+resolve X.X.O b 0,0 X.X.O
+resolve X.X.O b 0,1 XXX.O
+resolve X.X.O b 0,2 X.X.O
+resolve X.X.O b 0,3 X.XX.
+resolve X.X.O b 0,4 X.X.X
+resolve X.X.O w 0,0 O.X.O
+resolve X.X.O w 0,1 .OX.O
+resolve X.X.O w 0,2 X.O.O
+resolve X.X.O w 0,3 X.XOO
+resolve X.X.O w 0,4 X.X.O
+resolve O.X.O b 0,0 X.X.O
+resolve O.X.O b 0,1 .XX.O
+resolve O.X.O b 0,2 O.X.O
+resolve O.X.O b 0,3 O.XX.
+resolve O.X.O b 0,4 O.X.X
+resolve O.X.O w 0,0 O.X.O
+resolve O.X.O w 0,1 OOX.O
+resolve O.X.O w 0,2 O.O.O
+resolve O.X.O w 0,3 O.XOO
+resolve O.X.O w 0,4 O.X.O
+resolve .XX.O b 0,0 XXX.O
+resolve .XX.O b 0,1 .XX.O
+resolve .XX.O b 0,2 .XX.O
+resolve .XX.O b 0,3 .XXX.
+resolve .XX.O b 0,4 .XX.X
+resolve .XX.O w 0,0 OXX.O
+resolve .XX.O w 0,1 .OX.O
+resolve .XX.O w 0,2 .XO.O
+resolve .XX.O w 0,3 .XXOO
+resolve .XX.O w 0,4 .XX.O
+resolve XXX.O b 0,0 XXX.O
+resolve XXX.O b 0,1 XXX.O
+resolve XXX.O b 0,2 XXX.O
+resolve XXX.O b 0,3 XXXX.
+resolve XXX.O b 0,4 XXX.X
+resolve XXX.O w 0,0 OXX.O
+resolve XXX.O w 0,1 .OX.O
+resolve XXX.O w 0,2 ..O.O
+resolve XXX.O w 0,3 ...OO
+resolve XXX.O w 0,4 XXX.O
+resolve OXX.O b 0,0 XXX.O
+resolve OXX.O b 0,1 .XX.O
+resolve OXX.O b 0,2 .XX.O
+resolve OXX.O b 0,3 .XXX.
+resolve OXX.O b 0,4 .XX.X
+resolve OXX.O w 0,0 OXX.O
+resolve OXX.O w 0,1 OOX.O
+resolve OXX.O w 0,2 O.O.O
+resolve OXX.O w 0,3 O..OO
+resolve OXX.O w 0,4 OXX.O
+resolve .OX.O b 0,0 X.X.O
+resolve .OX.O b 0,1 .XX.O
+resolve .OX.O b 0,2 .OX.O
+resolve .OX.O b 0,3 .OXX.
+resolve .OX.O b 0,4 .OX.X
+resolve .OX.O w 0,0 OOX.O
+resolve .OX.O w 0,1 .OX.O
+resolve .OX.O w 0,2 .OO.O
+resolve .OX.O w 0,3 .O.OO
+resolve .OX.O w 0,4 .OX.O
+resolve XOX.O b 0,0 X.X.O
+resolve XOX.O b 0,1 XXX.O
+resolve XOX.O b 0,2 X.X.O
+resolve XOX.O b 0,3 X.XX.
+resolve XOX.O b 0,4 X.X.X
+resolve XOX.O w 0,0 OOX.O
+resolve XOX.O w 0,1 .OX.O
+resolve XOX.O w 0,2 .OO.O
+resolve XOX.O w 0,3 .O.OO
+resolve XOX.O w 0,4 .OX.O
+resolve OOX.O b 0,0 X.X.O
+resolve OOX.O b 0,1 .XX.O
+resolve OOX.O b 0,2 ..X.O
+resolve OOX.O b 0,3 ..XX.
+resolve OOX.O b 0,4 ..X.X
+resolve OOX.O w 0,0 OOX.O
+resolve OOX.O w 0,1 OOX.O
+resolve OOX.O w 0,2 OOO.O
+resolve OOX.O w 0,3 OO.OO
+resolve OOX.O w 0,4 OOX.O
+resolve ..O.O b 0,0 X.O.O
+resolve ..O.O b 0,1 .XO.O
+resolve ..O.O b 0,2 ..X.O
+resolve ..O.O b 0,3 ..OX.
+resolve ..O.O b 0,4 ..O.X
+resolve ..O.O w 0,0 O.O.O
+resolve ..O.O w 0,1 .OO.O
+resolve ..O.O w 0,2 ..O.O
+resolve ..O.O w 0,3 ..OOO
+resolve ..O.O w 0,4 ..O.O
+resolve X.O.O b 0,0 X.O.O
+resolve X.O.O b 0,1 XXO.O
+resolve X.O.O b 0,2 X.X.O
+resolve X.O.O b 0,3 X.OX.
+resolve X.O.O b 0,4 X.O.X
+resolve X.O.O w 0,0 O.O.O
+resolve X.O.O w 0,1 .OO.O
+resolve X.O.O w 0,2 X.O.O
+resolve X.O.O w 0,3 X.OOO
+resolve X.O.O w 0,4 X.O.O
+resolve O.O.O b 0,0 X.O.O
+resolve O.O.O b 0,1 .XO.O
+resolve O.O.O b 0,2 O.X.O
+resolve O.O.O b 0,3 O.OX.
+resolve O.O.O b 0,4 O.O.X
+resolve O.O.O w 0,0 O.O.O
+resolve O.O.O w 0,1 OOO.O
+resolve O.O.O w 0,2 O.O.O
+resolve O.O.O w 0,3 O.OOO
+resolve O.O.O w 0,4 O.O.O
+resolve .XO.O b 0,0 XXO.O
+resolve .XO.O b 0,1 .XO.O
+resolve .XO.O b 0,2 .XX.O
+resolve .XO.O b 0,3 .X.X.
+resolve .XO.O b 0,4 .XO.X
+resolve .XO.O w 0,0 O.O.O
+resolve .XO.O w 0,1 .OO.O
+resolve .XO.O w 0,2 .XO.O
+resolve .XO.O w 0,3 .XOOO
+resolve .XO.O w 0,4 .XO.O
+resolve XXO.O b 0,0 XXO.O
+resolve XXO.O b 0,1 XXO.O
+resolve XXO.O b 0,2 XXX.O
+resolve XXO.O b 0,3 XX.X.
+resolve XXO.O b 0,4 XXO.X
+resolve XXO.O w 0,0 O.O.O
+resolve XXO.O w 0,1 .OO.O
+resolve XXO.O w 0,2 ..O.O
+resolve XXO.O w 0,3 ..OOO
+resolve XXO.O w 0,4 ..O.O
+resolve OXO.O b 0,0 XXO.O
+resolve OXO.O b 0,1 .XO.O
+resolve OXO.O b 0,2 .XX.O
+resolve OXO.O b 0,3 .X.X.
+resolve OXO.O b 0,4 .XO.X
+resolve OXO.O w 0,0 O.O.O
+resolve OXO.O w 0,1 OOO.O
+resolve OXO.O w 0,2 O.O.O
+resolve OXO.O w 0,3 O.OOO
+resolve OXO.O w 0,4 O.O.O
+resolve .OO.O b 0,0 XOO.O
+resolve .OO.O b 0,1 .XO.O
+resolve .OO.O b 0,2 .OX.O
+resolve .OO.O b 0,3 .OOX.
+resolve .OO.O b 0,4 .OO.X
+resolve .OO.O w 0,0 OOO.O
+resolve .OO.O w 0,1 .OO.O
+resolve .OO.O w 0,2 .OO.O
+resolve .OO.O w 0,3 .OOOO
+resolve .OO.O w 0,4 .OO.O
+resolve XOO.O b 0,0 XOO.O
+resolve XOO.O b 0,1 XXO.O
+resolve XOO.O b 0,2 X.X.O
+resolve XOO.O b 0,3 X..X.
+resolve XOO.O b 0,4 XOO.X
+resolve XOO.O w 0,0 OOO.O
+resolve XOO.O w 0,1 .OO.O
+resolve XOO.O w 0,2 .OO.O
+resolve XOO.O w 0,3 .OOOO
+resolve XOO.O w 0,4 .OO.O
+resolve OOO.O b 0,0 XOO.O
+resolve OOO.O b 0,1 .XO.O
+resolve OOO.O b 0,2 ..X.O
+resolve OOO.O b 0,3 ...X.
+resolve OOO.O b 0,4 OOO.X
+resolve OOO.O w 0,0 OOO.O
+resolve OOO.O w 0,1 OOO.O
+resolve OOO.O w 0,2 OOO.O
+resolve OOO.O w 0,3 OOOOO
+resolve OOO.O w 0,4 OOO.O
+resolve ...XO b 0,0 X..X.
+resolve ...XO b 0,1 .X.X.
+resolve ...XO b 0,2 ..XX.
+resolve ...XO b 0,3 ...X.
+resolve ...XO b 0,4 ...XX
+resolve ...XO w 0,0 O..XO
+resolve ...XO w 0,1 .O.XO
+resolve ...XO w 0,2 ..O.O
+resolve ...XO w 0,3 ...OO
+resolve ...XO w 0,4 ...XO
+resolve X..XO b 0,0 X..X.
+resolve X..XO b 0,1 XX.X.
+resolve X..XO b 0,2 X.XX.
+resolve X..XO b 0,3 X..X.
+resolve X..XO b 0,4 X..XX
+resolve X..XO w 0,0 O..XO
+resolve X..XO w 0,1 .O.XO
+resolve X..XO w 0,2 X.O.O
+resolve X..XO w 0,3 X..OO
+resolve X..XO w 0,4 X..XO
+resolve O..XO b 0,0 X..X.
+resolve O..XO b 0,1 .X.X.
+resolve O..XO b 0,2 O.XX.
+resolve O..XO b 0,3 O..X.
+resolve O..XO b 0,4 O..XX
+resolve O..XO w 0,0 O..XO
+resolve O..XO w 0,1 OO.XO
+resolve O..XO w 0,2 O.O.O
+resolve O..XO w 0,3 O..OO
+resolve O..XO w 0,4 O..XO
+resolve .X.XO b 0,0 XX.X.
+resolve .X.XO b 0,1 .X.X.
+resolve .X.XO b 0,2 .XXX.
+resolve .X.XO b 0,3 .X.X.
+resolve .X.XO b 0,4 .X.XX
+resolve .X.XO w 0,0 OX.XO
+resolve .X.XO w 0,1 .O.XO
+resolve .X.XO w 0,2 .XO.O
+resolve .X.XO w 0,3 .X.OO
+resolve .X.XO w 0,4 .X.XO
+resolve XX.XO b 0,0 XX.X.
+resolve XX.XO b 0,1 XX.X.
+resolve XX.XO b 0,2 XXXX.
+resolve XX.XO b 0,3 XX.X.
+resolve XX.XO b 0,4 XX.XX
+resolve XX.XO w 0,0 OX.XO
+resolve XX.XO w 0,1 .O.XO
+resolve XX.XO w 0,2 ..O.O
+resolve XX.XO w 0,3 XX.OO
+resolve XX.XO w 0,4 XX.XO
+resolve OX.XO b 0,0 XX.X.
+resolve OX.XO b 0,1 .X.X.
+resolve OX.XO b 0,2 .XXX.
+resolve OX.XO b 0,3 .X.X.
+resolve OX.XO b 0,4 .X.XX
+resolve OX.XO w 0,0 OX.XO
+resolve OX.XO w 0,1 OO.XO
+resolve OX.XO w 0,2 O.O.O
+resolve OX.XO w 0,3 OX.OO
+resolve OX.XO w 0,4 OX.XO
+resolve .O.XO b 0,0 XO.X.
+resolve .O.XO b 0,1 .X.X.
+resolve .O.XO b 0,2 .OXX.
+resolve .O.XO b 0,3 .O.X.
+resolve .O.XO b 0,4 .O.XX
+resolve .O.XO w 0,0 OO.XO
+resolve .O.XO w 0,1 .O.XO
+resolve .O.XO w 0,2 .OO.O
+resolve .O.XO w 0,3 .O.OO
+resolve .O.XO w 0,4 .O.XO
+resolve XO.XO b 0,0 XO.X.
+resolve XO.XO b 0,1 XX.X.
+resolve XO.XO b 0,2 X.XX.
+resolve XO.XO b 0,3 XO.X.
+resolve XO.XO b 0,4 XO.XX
+resolve XO.XO w 0,0 OO.XO
+resolve XO.XO w 0,1 .O.XO
+resolve XO.XO w 0,2 .OO.O
+resolve XO.XO w 0,3 .O.OO
+resolve XO.XO w 0,4 .O.XO
+resolve OO.XO b 0,0 XO.X.
+resolve OO.XO b 0,1 .X.X.
+resolve OO.XO b 0,2 ..XX.
+resolve OO.XO b 0,3 OO.X.
+resolve OO.XO b 0,4 OO.XX
+resolve OO.XO w 0,0 OO.XO
+resolve OO.XO w 0,1 OO.XO
+resolve OO.XO w 0,2 OOO.O
+resolve OO.XO w 0,3 OO.OO
+resolve OO.XO w 0,4 OO.XO
+resolve ..XXO b 0,0 X.XX.
+resolve ..XXO b 0,1 .XXX.
+resolve ..XXO b 0,2 ..XX.
+resolve ..XXO b 0,3 ..XX.
+resolve ..XXO b 0,4 ..XXX
+resolve ..XXO w 0,0 O.XXO
+resolve ..XXO w 0,1 .O..O
+resolve ..XXO w 0,2 ..O.O
+resolve ..XXO w 0,3 ..XOO
+resolve ..XXO w 0,4 ..XXO
+resolve X.XXO b 0,0 X.XX.
+resolve X.XXO b 0,1 XXXX.
+resolve X.XXO b 0,2 X.XX.
+resolve X.XXO b 0,3 X.XX.
+resolve X.XXO b 0,4 X.XXX
+resolve X.XXO w 0,0 O.XXO
+resolve X.XXO w 0,1 .O..O
+resolve X.XXO w 0,2 X.O.O
+resolve X.XXO w 0,3 X.XOO
+resolve X.XXO w 0,4 X.XXO
+resolve O.XXO b 0,0 X.XX.
+resolve O.XXO b 0,1 .XXX.
+resolve O.XXO b 0,2 O.XX.
+resolve O.XXO b 0,3 O.XX.
+resolve O.XXO b 0,4 O.XXX
+resolve O.XXO w 0,0 O.XXO
+resolve O.XXO w 0,1 OO..O
+resolve O.XXO w 0,2 O.O.O
+resolve O.XXO w 0,3 O.XOO
+resolve O.XXO w 0,4 O.XXO
+resolve .XXXO b 0,0 XXXX.
+resolve .XXXO b 0,1 .XXX.
+resolve .XXXO b 0,2 .XXX.
+resolve .XXXO b 0,3 .XXX.
+resolve .XXXO b 0,4 .XXXX
+resolve .XXXO w 0,0 O...O
+resolve .XXXO w 0,1 .O..O
+resolve .XXXO w 0,2 .XO.O
+resolve .XXXO w 0,3 .XXOO
+resolve .XXXO w 0,4 .XXXO
+resolve XXXXO b 0,0 XXXX.
+resolve XXXXO b 0,1 XXXX.
+resolve XXXXO b 0,2 XXXX.
+resolve XXXXO b 0,3 XXXX.
+resolve XXXXO b 0,4 XXXXX
+resolve XXXXO w 0,0 O...O
+resolve XXXXO w 0,1 .O..O
+resolve XXXXO w 0,2 ..O.O
+resolve XXXXO w 0,3 ...OO
+resolve XXXXO w 0,4 ....O
+resolve OXXXO b 0,0 XXXX.
+resolve OXXXO b 0,1 .XXX.
+resolve OXXXO b 0,2 .XXX.
+resolve OXXXO b 0,3 .XXX.
+resolve OXXXO b 0,4 .XXXX
+resolve OXXXO w 0,0 O...O
+resolve OXXXO w 0,1 OO..O
+resolve OXXXO w 0,2 O.O.O
+resolve OXXXO w 0,3 O..OO
+resolve OXXXO w 0,4 O...O
+resolve .OXXO b 0,0 X.XX.
+resolve .OXXO b 0,1 .XXX.
+resolve .OXXO b 0,2 .OXX.
+resolve .OXXO b 0,3 .OXX.
+resolve .OXXO b 0,4 .OXXX
+resolve .OXXO w 0,0 OO..O
+resolve .OXXO w 0,1 .O..O
+resolve .OXXO w 0,2 .OO.O
+resolve .OXXO w 0,3 .O.OO
+resolve .OXXO w 0,4 .O..O
+resolve XOXXO b 0,0 X.XX.
+resolve XOXXO b 0,1 XXXX.
+resolve XOXXO b 0,2 X.XX.
+resolve XOXXO b 0,3 X.XX.
+resolve XOXXO b 0,4 X.XXX
+resolve XOXXO w 0,0 OO..O
+resolve XOXXO w 0,1 .O..O
+resolve XOXXO w 0,2 .OO.O
+resolve XOXXO w 0,3 .O.OO
+resolve XOXXO w 0,4 .O..O
+resolve OOXXO b 0,0 X.XX.
+resolve OOXXO b 0,1 .XXX.
+resolve OOXXO b 0,2 ..XX.
+resolve OOXXO b 0,3 ..XX.
+resolve OOXXO b 0,4 ..XXX
+resolve OOXXO w 0,0 OO..O
+resolve OOXXO w 0,1 OO..O
+resolve OOXXO w 0,2 OOO.O
+resolve OOXXO w 0,3 OO.OO
+resolve OOXXO w 0,4 OO..O
+resolve ..OXO b 0,0 X.OX.
+resolve ..OXO b 0,1 .X.X.
+resolve ..OXO b 0,2 ..XX.
+resolve ..OXO b 0,3 ..OX.
+resolve ..OXO b 0,4 ..OXX
+resolve ..OXO w 0,0 O.O.O
+resolve ..OXO w 0,1 .OO.O
+resolve ..OXO w 0,2 ..O.O
+resolve ..OXO w 0,3 ..OOO
+resolve ..OXO w 0,4 ..O.O
+resolve X.OXO b 0,0 X.OX.
+resolve X.OXO b 0,1 XX.X.
+resolve X.OXO b 0,2 X.XX.
+resolve X.OXO b 0,3 X.OX.
+resolve X.OXO b 0,4 X.OXX
+resolve X.OXO w 0,0 O.O.O
+resolve X.OXO w 0,1 .OO.O
+resolve X.OXO w 0,2 X.O.O
+resolve X.OXO w 0,3 X.OOO
+resolve X.OXO w 0,4 X.O.O
+resolve O.OXO b 0,0 X.OX.
+resolve O.OXO b 0,1 .X.X.
+resolve O.OXO b 0,2 O.XX.
+resolve O.OXO b 0,3 O.OX.
+resolve O.OXO b 0,4 O.OXX
+resolve O.OXO w 0,0 O.O.O
+resolve O.OXO w 0,1 OOO.O
+resolve O.OXO w 0,2 O.O.O
+resolve O.OXO w 0,3 O.OOO
+resolve O.OXO w 0,4 O.O.O
+resolve .XOXO b 0,0 XX.X.
+resolve .XOXO b 0,1 .X.X.
+resolve .XOXO b 0,2 .XXX.
+resolve .XOXO b 0,3 .X.X.
+resolve .XOXO b 0,4 .X.XX
+resolve .XOXO w 0,0 O.O.O
+resolve .XOXO w 0,1 .OO.O
+resolve .XOXO w 0,2 .XO.O
+resolve .XOXO w 0,3 .XOOO
+resolve .XOXO w 0,4 .XO.O
+resolve XXOXO b 0,0 XX.X.
+resolve XXOXO b 0,1 XX.X.
+resolve XXOXO b 0,2 XXXX.
+resolve XXOXO b 0,3 XX.X.
+resolve XXOXO b 0,4 XX.XX
+resolve XXOXO w 0,0 O.O.O
+resolve XXOXO w 0,1 .OO.O
+resolve XXOXO w 0,2 ..O.O
+resolve XXOXO w 0,3 ..OOO
+resolve XXOXO w 0,4 ..O.O
+resolve OXOXO b 0,0 XX.X.
+resolve OXOXO b 0,1 .X.X.
+resolve OXOXO b 0,2 .XXX.
+resolve OXOXO b 0,3 .X.X.
+resolve OXOXO b 0,4 .X.XX
+resolve OXOXO w 0,0 O.O.O
+resolve OXOXO w 0,1 OOO.O
+resolve OXOXO w 0,2 O.O.O
+resolve OXOXO w 0,3 O.OOO
+resolve OXOXO w 0,4 O.O.O
+resolve .OOXO b 0,0 X..X.
+resolve .OOXO b 0,1 .X.X.
+resolve .OOXO b 0,2 .OXX.
+resolve .OOXO b 0,3 .OOX.
+resolve .OOXO b 0,4 .OOXX
+resolve .OOXO w 0,0 OOO.O
+resolve .OOXO w 0,1 .OO.O
+resolve .OOXO w 0,2 .OO.O
+resolve .OOXO w 0,3 .OOOO
+resolve .OOXO w 0,4 .OO.O
+resolve XOOXO b 0,0 X..X.
+resolve XOOXO b 0,1 XX.X.
+resolve XOOXO b 0,2 X.XX.
+resolve XOOXO b 0,3 X..X.
+resolve XOOXO b 0,4 X..XX
+resolve XOOXO w 0,0 OOO.O
+resolve XOOXO w 0,1 .OO.O
+resolve XOOXO w 0,2 .OO.O
+resolve XOOXO w 0,3 .OOOO
+resolve XOOXO w 0,4 .OO.O
+resolve OOOXO b 0,0 X..X.
+resolve OOOXO b 0,1 .X.X.
+resolve OOOXO b 0,2 ..XX.
+resolve OOOXO b 0,3 ...X.
+resolve OOOXO b 0,4 ...XX
+resolve OOOXO w 0,0 OOO.O
+resolve OOOXO w 0,1 OOO.O
+resolve OOOXO w 0,2 OOO.O
+resolve OOOXO w 0,3 OOOOO
+resolve OOOXO w 0,4 OOO.O
+resolve ...OO b 0,0 X..OO
+resolve ...OO b 0,1 .X.OO
+resolve ...OO b 0,2 ..X..
+resolve ...OO b 0,3 ...X.
+resolve ...OO b 0,4 ...OX
+resolve ...OO w 0,0 O..OO
+resolve ...OO w 0,1 .O.OO
+resolve ...OO w 0,2 ..OOO
+resolve ...OO w 0,3 ...OO
+resolve ...OO w 0,4 ...OO
+resolve X..OO b 0,0 X..OO
+resolve X..OO b 0,1 XX.OO
+resolve X..OO b 0,2 X.X..
+resolve X..OO b 0,3 X..X.
+resolve X..OO b 0,4 X..OX
+resolve X..OO w 0,0 O..OO
+resolve X..OO w 0,1 .O.OO
+resolve X..OO w 0,2 X.OOO
+resolve X..OO w 0,3 X..OO
+resolve X..OO w 0,4 X..OO
+resolve O..OO b 0,0 X..OO
+resolve O..OO b 0,1 .X.OO
+resolve O..OO b 0,2 O.X..
+resolve O..OO b 0,3 O..X.
+resolve O..OO b 0,4 O..OX
+resolve O..OO w 0,0 O..OO
+resolve O..OO w 0,1 OO.OO
+resolve O..OO w 0,2 O.OOO
+resolve O..OO w 0,3 O..OO
+resolve O..OO w 0,4 O..OO
+resolve .X.OO b 0,0 XX.OO
+resolve .X.OO b 0,1 .X.OO
+resolve .X.OO b 0,2 .XX..
+resolve .X.OO b 0,3 .X.X.
+resolve .X.OO b 0,4 .X.OX
+resolve .X.OO w 0,0 OX.OO
+resolve .X.OO w 0,1 .O.OO
+resolve .X.OO w 0,2 .XOOO
+resolve .X.OO w 0,3 .X.OO
+resolve .X.OO w 0,4 .X.OO
+resolve XX.OO b 0,0 XX.OO
+resolve XX.OO b 0,1 XX.OO
+resolve XX.OO b 0,2 XXX..
+resolve XX.OO b 0,3 XX.X.
+resolve XX.OO b 0,4 XX.OX
+resolve XX.OO w 0,0 OX.OO
+resolve XX.OO w 0,1 .O.OO
+resolve XX.OO w 0,2 ..OOO
+resolve XX.OO w 0,3 XX.OO
+resolve XX.OO w 0,4 XX.OO
+resolve OX.OO b 0,0 XX.OO
+resolve OX.OO b 0,1 .X.OO
+resolve OX.OO b 0,2 .XX..
+resolve OX.OO b 0,3 .X.X.
+resolve OX.OO b 0,4 .X.OX
+resolve OX.OO w 0,0 OX.OO
+resolve OX.OO w 0,1 OO.OO
+resolve OX.OO w 0,2 O.OOO
+resolve OX.OO w 0,3 OX.OO
+resolve OX.OO w 0,4 OX.OO
+resolve .O.OO b 0,0 XO.OO
+resolve .O.OO b 0,1 .X.OO
+resolve .O.OO b 0,2 .OX..
+resolve .O.OO b 0,3 .O.X.
+resolve .O.OO b 0,4 .O.OX
+resolve .O.OO w 0,0 OO.OO
+resolve .O.OO w 0,1 .O.OO
+resolve .O.OO w 0,2 .OOOO
+resolve .O.OO w 0,3 .O.OO
+resolve .O.OO w 0,4 .O.OO
+resolve XO.OO b 0,0 XO.OO
+resolve XO.OO b 0,1 XX.OO
+resolve XO.OO b 0,2 X.X..
+resolve XO.OO b 0,3 XO.X.
+resolve XO.OO b 0,4 XO.OX
+resolve XO.OO w 0,0 OO.OO
+resolve XO.OO w 0,1 .O.OO
+resolve XO.OO w 0,2 .OOOO
+resolve XO.OO w 0,3 .O.OO
+resolve XO.OO w 0,4 .O.OO
+resolve OO.OO b 0,0 XO.OO
+resolve OO.OO b 0,1 .X.OO
+resolve OO.OO b 0,2 ..X..
+resolve OO.OO b 0,3 OO.X.
+resolve OO.OO b 0,4 OO.OX
+resolve OO.OO w 0,0 OO.OO
+resolve OO.OO w 0,1 OO.OO
+resolve OO.OO w 0,2 OOOOO
+resolve OO.OO w 0,3 OO.OO
+resolve OO.OO w 0,4 OO.OO
+resolve ..XOO b 0,0 X.X..
+resolve ..XOO b 0,1 .XX..
+resolve ..XOO b 0,2 ..X..
+resolve ..XOO b 0,3 ..XX.
+resolve ..XOO b 0,4 ..X.X
+resolve ..XOO w 0,0 O.XOO
+resolve ..XOO w 0,1 .O.OO
+resolve ..XOO w 0,2 ..OOO
+resolve ..XOO w 0,3 ..XOO
+resolve ..XOO w 0,4 ..XOO
+resolve X.XOO b 0,0 X.X..
+resolve X.XOO b 0,1 XXX..
+resolve X.XOO b 0,2 X.X..
+resolve X.XOO b 0,3 X.XX.
+resolve X.XOO b 0,4 X.X.X
+resolve X.XOO w 0,0 O.XOO
+resolve X.XOO w 0,1 .O.OO
+resolve X.XOO w 0,2 X.OOO
+resolve X.XOO w 0,3 X.XOO
+resolve X.XOO w 0,4 X.XOO
+resolve O.XOO b 0,0 X.X..
+resolve O.XOO b 0,1 .XX..
+resolve O.XOO b 0,2 O.X..
+resolve O.XOO b 0,3 O.XX.
+resolve O.XOO b 0,4 O.X.X
+resolve O.XOO w 0,0 O.XOO
+resolve O.XOO w 0,1 OO.OO
+resolve O.XOO w 0,2 O.OOO
+resolve O.XOO w 0,3 O.XOO
+resolve O.XOO w 0,4 O.XOO
+resolve .XXOO b 0,0 XXX..
+resolve .XXOO b 0,1 .XX..
+resolve .XXOO b 0,2 .XX..
+resolve .XXOO b 0,3 .XXX.
+resolve .XXOO b 0,4 .XX.X
+resolve .XXOO w 0,0 O..OO
+resolve .XXOO w 0,1 .O.OO
+resolve .XXOO w 0,2 .XOOO
+resolve .XXOO w 0,3 .XXOO
+resolve .XXOO w 0,4 .XXOO
+resolve XXXOO b 0,0 XXX..
+resolve XXXOO b 0,1 XXX..
+resolve XXXOO b 0,2 XXX..
+resolve XXXOO b 0,3 XXXX.
+resolve XXXOO b 0,4 XXX.X
+resolve XXXOO w 0,0 O..OO
+resolve XXXOO w 0,1 .O.OO
+resolve XXXOO w 0,2 ..OOO
+resolve XXXOO w 0,3 ...OO
+resolve XXXOO w 0,4 ...OO
+resolve OXXOO b 0,0 XXX..
+resolve OXXOO b 0,1 .XX..
+resolve OXXOO b 0,2 .XX..
+resolve OXXOO b 0,3 .XXX.
+resolve OXXOO b 0,4 .XX.X
+resolve OXXOO w 0,0 O..OO
+resolve OXXOO w 0,1 OO.OO
+resolve OXXOO w 0,2 O.OOO
+resolve OXXOO w 0,3 O..OO
+resolve OXXOO w 0,4 O..OO
+resolve .OXOO b 0,0 X.X..
+resolve .OXOO b 0,1 .XX..
+resolve .OXOO b 0,2 .OX..
+resolve .OXOO b 0,3 .OXX.
+resolve .OXOO b 0,4 .OX.X
+resolve .OXOO w 0,0 OO.OO
+resolve .OXOO w 0,1 .O.OO
+resolve .OXOO w 0,2 .OOOO
+resolve .OXOO w 0,3 .O.OO
+resolve .OXOO w 0,4 .O.OO
+resolve XOXOO b 0,0 X.X..
+resolve XOXOO b 0,1 XXX..
+resolve XOXOO b 0,2 X.X..
+resolve XOXOO b 0,3 X.XX.
+resolve XOXOO b 0,4 X.X.X
+resolve XOXOO w 0,0 OO.OO
+resolve XOXOO w 0,1 .O.OO
+resolve XOXOO w 0,2 .OOOO
+resolve XOXOO w 0,3 .O.OO
+resolve XOXOO w 0,4 .O.OO
+resolve OOXOO b 0,0 X.X..
+resolve OOXOO b 0,1 .XX..
+resolve OOXOO b 0,2 ..X..
+resolve OOXOO b 0,3 ..XX.
+resolve OOXOO b 0,4 ..X.X
+resolve OOXOO w 0,0 OO.OO
+resolve OOXOO w 0,1 OO.OO
+resolve OOXOO w 0,2 OOOOO
+resolve OOXOO w 0,3 OO.OO
+resolve OOXOO w 0,4 OO.OO
+resolve ..OOO b 0,0 X.OOO
+resolve ..OOO b 0,1 .X...
+resolve ..OOO b 0,2 ..X..
+resolve ..OOO b 0,3 ..OX.
+resolve ..OOO b 0,4 ..OOX
+resolve ..OOO w 0,0 O.OOO
+resolve ..OOO w 0,1 .OOOO
+resolve ..OOO w 0,2 ..OOO
+resolve ..OOO w 0,3 ..OOO
+resolve ..OOO w 0,4 ..OOO
+resolve X.OOO b 0,0 X.OOO
+resolve X.OOO b 0,1 XX...
+resolve X.OOO b 0,2 X.X..
+resolve X.OOO b 0,3 X.OX.
+resolve X.OOO b 0,4 X.OOX
+resolve X.OOO w 0,0 O.OOO
+resolve X.OOO w 0,1 .OOOO
+resolve X.OOO w 0,2 X.OOO
+resolve X.OOO w 0,3 X.OOO
+resolve X.OOO w 0,4 X.OOO
+resolve O.OOO b 0,0 X.OOO
+resolve O.OOO b 0,1 .X...
+resolve O.OOO b 0,2 O.X..
+resolve O.OOO b 0,3 O.OX.
+resolve O.OOO b 0,4 O.OOX
+resolve O.OOO w 0,0 O.OOO
+resolve O.OOO w 0,1 OOOOO
+resolve O.OOO w 0,2 O.OOO
+resolve O.OOO w 0,3 O.OOO
+resolve O.OOO w 0,4 O.OOO
+resolve .XOOO b 0,0 XX...
+resolve .XOOO b 0,1 .X...
+resolve .XOOO b 0,2 .XX..
+resolve .XOOO b 0,3 .X.X.
+resolve .XOOO b 0,4 .X..X
+resolve .XOOO w 0,0 O.OOO
+resolve .XOOO w 0,1 .OOOO
+resolve .XOOO w 0,2 .XOOO
+resolve .XOOO w 0,3 .XOOO
+resolve .XOOO w 0,4 .XOOO
+resolve XXOOO b 0,0 XX...
+resolve XXOOO b 0,1 XX...
+resolve XXOOO b 0,2 XXX..
+resolve XXOOO b 0,3 XX.X.
+resolve XXOOO b 0,4 XX..X
+resolve XXOOO w 0,0 O.OOO
+resolve XXOOO w 0,1 .OOOO
+resolve XXOOO w 0,2 ..OOO
+resolve XXOOO w 0,3 ..OOO
+resolve XXOOO w 0,4 ..OOO
+resolve OXOOO b 0,0 XX...
+resolve OXOOO b 0,1 .X...
+resolve OXOOO b 0,2 .XX..
+resolve OXOOO b 0,3 .X.X.
+resolve OXOOO b 0,4 .X..X
+resolve OXOOO w 0,0 O.OOO
+resolve OXOOO w 0,1 OOOOO
+resolve OXOOO w 0,2 O.OOO
+resolve OXOOO w 0,3 O.OOO
+resolve OXOOO w 0,4 O.OOO
+resolve .OOOO b 0,0 X....
+resolve .OOOO b 0,1 .X...
+resolve .OOOO b 0,2 .OX..
+resolve .OOOO b 0,3 .OOX.
+resolve .OOOO b 0,4 .OOOX
+resolve .OOOO w 0,0 OOOOO
+resolve .OOOO w 0,1 .OOOO
+resolve .OOOO w 0,2 .OOOO
+resolve .OOOO w 0,3 .OOOO
+resolve .OOOO w 0,4 .OOOO
+resolve XOOOO b 0,0 X....
+resolve XOOOO b 0,1 XX...
+resolve XOOOO b 0,2 X.X..
+resolve XOOOO b 0,3 X..X.
+resolve XOOOO b 0,4 X...X
+resolve XOOOO w 0,0 OOOOO
+resolve XOOOO w 0,1 .OOOO
+resolve XOOOO w 0,2 .OOOO
+resolve XOOOO w 0,3 .OOOO
+resolve XOOOO w 0,4 .OOOO
+resolve OOOOO b 0,0 X....
+resolve OOOOO b 0,1 .X...
+resolve OOOOO b 0,2 ..X..
+resolve OOOOO b 0,3 ...X.
+resolve OOOOO b 0,4 ....X
+resolve OOOOO w 0,0 OOOOO
+resolve OOOOO w 0,1 OOOOO
+resolve OOOOO w 0,2 OOOOO
+resolve OOOOO w 0,3 OOOOO
+resolve OOOOO w 0,4 OOOOO
+playable ..... b 0,0 1 1
+playable ..... b 0,1 1 1
+playable ..... b 0,2 1 1
+playable ..... b 0,3 1 1
+playable ..... b 0,4 1 1
+playable ..... w 0,0 1 1
+playable ..... w 0,1 1 1
+playable ..... w 0,2 1 1
+playable ..... w 0,3 1 1
+playable ..... w 0,4 1 1
+playable X.... b 0,0 0 1
+playable X.... b 0,1 1 1
+playable X.... b 0,2 1 1
+playable X.... b 0,3 1 1
+playable X.... b 0,4 1 1
+playable X.... w 0,0 0 1
+playable X.... w 0,1 1 1
+playable X.... w 0,2 1 1
+playable X.... w 0,3 1 1
+playable X.... w 0,4 1 1
+playable O.... b 0,0 0 1
+playable O.... b 0,1 1 1
+playable O.... b 0,2 1 1
+playable O.... b 0,3 1 1
+playable O.... b 0,4 1 1
+playable O.... w 0,0 0 1
+playable O.... w 0,1 1 1
+playable O.... w 0,2 1 1
+playable O.... w 0,3 1 1
+playable O.... w 0,4 1 1
+playable .X... b 0,0 1 1
+playable .X... b 0,1 0 1
+playable .X... b 0,2 1 1
+playable .X... b 0,3 1 1
+playable .X... b 0,4 1 1
+playable .X... w 0,0 1 0
+playable .X... w 0,1 0 1
+playable .X... w 0,2 1 1
+playable .X... w 0,3 1 1
+playable .X... w 0,4 1 1
+playable XX... b 0,0 0 1
+playable XX... b 0,1 0 1
+playable XX... b 0,2 1 1
+playable XX... b 0,3 1 1
+playable XX... b 0,4 1 1
+playable XX... w 0,0 0 0
+playable XX... w 0,1 0 1
+playable XX... w 0,2 1 1
+playable XX... w 0,3 1 1
+playable XX... w 0,4 1 1
+playable OX... b 0,0 0 1
+playable OX... b 0,1 0 1
+playable OX... b 0,2 1 1
+playable OX... b 0,3 1 1
+playable OX... b 0,4 1 1
+playable OX... w 0,0 0 0
+playable OX... w 0,1 0 1
+playable OX... w 0,2 1 1
+playable OX... w 0,3 1 1
+playable OX... w 0,4 1 1
+playable .O... b 0,0 1 0
+playable .O... b 0,1 0 1
+playable .O... b 0,2 1 1
+playable .O... b 0,3 1 1
+playable .O... b 0,4 1 1
+playable .O... w 0,0 1 1
+playable .O... w 0,1 0 1
+playable .O... w 0,2 1 1
+playable .O... w 0,3 1 1
+playable .O... w 0,4 1 1
+playable XO... b 0,0 0 0
+playable XO... b 0,1 0 1
+playable XO... b 0,2 1 1
+playable XO... b 0,3 1 1
+playable XO... b 0,4 1 1
+playable XO... w 0,0 0 1
+playable XO... w 0,1 0 1
+playable XO... w 0,2 1 1
+playable XO... w 0,3 1 1
+playable XO... w 0,4 1 1
+playable OO... b 0,0 0 0
+playable OO... b 0,1 0 1
+playable OO... b 0,2 1 1
+playable OO... b 0,3 1 1
+playable OO... b 0,4 1 1
+playable OO... w 0,0 0 1
+playable OO... w 0,1 0 1
+playable OO... w 0,2 1 1
+playable OO... w 0,3 1 1
+playable OO... w 0,4 1 1
+playable ..X.. b 0,0 1 1
+playable ..X.. b 0,1 1 1
+playable ..X.. b 0,2 0 1
+playable ..X.. b 0,3 1 1
+playable ..X.. b 0,4 1 1
+playable ..X.. w 0,0 1 1
+playable ..X.. w 0,1 1 1
+playable ..X.. w 0,2 0 1
+playable ..X.. w 0,3 1 1
+playable ..X.. w 0,4 1 1
+playable X.X.. b 0,0 0 1
+playable X.X.. b 0,1 1 1
+playable X.X.. b 0,2 0 1
+playable X.X.. b 0,3 1 1
+playable X.X.. b 0,4 1 1
+playable X.X.. w 0,0 0 1
+playable X.X.. w 0,1 1 1
+playable X.X.. w 0,2 0 1
+playable X.X.. w 0,3 1 1
+playable X.X.. w 0,4 1 1
+playable O.X.. b 0,0 0 1
+playable O.X.. b 0,1 1 1
+playable O.X.. b 0,2 0 1
+playable O.X.. b 0,3 1 1
+playable O.X.. b 0,4 1 1
+playable O.X.. w 0,0 0 1
+playable O.X.. w 0,1 1 0
+playable O.X.. w 0,2 0 1
+playable O.X.. w 0,3 1 1
+playable O.X.. w 0,4 1 1
+playable .XX.. b 0,0 1 1
+playable .XX.. b 0,1 0 1
+playable .XX.. b 0,2 0 1
+playable .XX.. b 0,3 1 1
+playable .XX.. b 0,4 1 1
+playable .XX.. w 0,0 1 0
+playable .XX.. w 0,1 0 1
+playable .XX.. w 0,2 0 1
+playable .XX.. w 0,3 1 1
+playable .XX.. w 0,4 1 1
+playable XXX.. b 0,0 0 1
+playable XXX.. b 0,1 0 1
+playable XXX.. b 0,2 0 1
+playable XXX.. b 0,3 1 1
+playable XXX.. b 0,4 1 1
+playable XXX.. w 0,0 0 0
+playable XXX.. w 0,1 0 1
+playable XXX.. w 0,2 0 1
+playable XXX.. w 0,3 1 1
+playable XXX.. w 0,4 1 1
+playable OXX.. b 0,0 0 1
+playable OXX.. b 0,1 0 1
+playable OXX.. b 0,2 0 1
+playable OXX.. b 0,3 1 1
+playable OXX.. b 0,4 1 1
+playable OXX.. w 0,0 0 0
+playable OXX.. w 0,1 0 0
+playable OXX.. w 0,2 0 1
+playable OXX.. w 0,3 1 1
+playable OXX.. w 0,4 1 1
+playable .OX.. b 0,0 1 1
+playable .OX.. b 0,1 0 1
+playable .OX.. b 0,2 0 1
+playable .OX.. b 0,3 1 1
+playable .OX.. b 0,4 1 1
+playable .OX.. w 0,0 1 0
+playable .OX.. w 0,1 0 1
+playable .OX.. w 0,2 0 1
+playable .OX.. w 0,3 1 1
+playable .OX.. w 0,4 1 1
+playable XOX.. b 0,0 0 1
+playable XOX.. b 0,1 0 1
+playable XOX.. b 0,2 0 1
+playable XOX.. b 0,3 1 1
+playable XOX.. b 0,4 1 1
+playable XOX.. w 0,0 0 0
+playable XOX.. w 0,1 0 1
+playable XOX.. w 0,2 0 1
+playable XOX.. w 0,3 1 1
+playable XOX.. w 0,4 1 1
+playable OOX.. b 0,0 0 1
+playable OOX.. b 0,1 0 1
+playable OOX.. b 0,2 0 1
+playable OOX.. b 0,3 1 1
+playable OOX.. b 0,4 1 1
+playable OOX.. w 0,0 0 0
+playable OOX.. w 0,1 0 0
+playable OOX.. w 0,2 0 1
+playable OOX.. w 0,3 1 1
+playable OOX.. w 0,4 1 1
+playable ..O.. b 0,0 1 1
+playable ..O.. b 0,1 1 1
+playable ..O.. b 0,2 0 1
+playable ..O.. b 0,3 1 1
+playable ..O.. b 0,4 1 1
+playable ..O.. w 0,0 1 1
+playable ..O.. w 0,1 1 1
+playable ..O.. w 0,2 0 1
+playable ..O.. w 0,3 1 1
+playable ..O.. w 0,4 1 1
+playable X.O.. b 0,0 0 1
+playable X.O.. b 0,1 1 0
+playable X.O.. b 0,2 0 1
+playable X.O.. b 0,3 1 1
+playable X.O.. b 0,4 1 1
+playable X.O.. w 0,0 0 1
+playable X.O.. w 0,1 1 1
+playable X.O.. w 0,2 0 1
+playable X.O.. w 0,3 1 1
+playable X.O.. w 0,4 1 1
+playable O.O.. b 0,0 0 1
+playable O.O.. b 0,1 1 1
+playable O.O.. b 0,2 0 1
+playable O.O.. b 0,3 1 1
+playable O.O.. b 0,4 1 1
+playable O.O.. w 0,0 0 1
+playable O.O.. w 0,1 1 1
+playable O.O.. w 0,2 0 1
+playable O.O.. w 0,3 1 1
+playable O.O.. w 0,4 1 1
+playable .XO.. b 0,0 1 0
+playable .XO.. b 0,1 0 1
+playable .XO.. b 0,2 0 1
+playable .XO.. b 0,3 1 1
+playable .XO.. b 0,4 1 1
+playable .XO.. w 0,0 1 1
+playable .XO.. w 0,1 0 1
+playable .XO.. w 0,2 0 1
+playable .XO.. w 0,3 1 1
+playable .XO.. w 0,4 1 1
+playable XXO.. b 0,0 0 0
+playable XXO.. b 0,1 0 0
+playable XXO.. b 0,2 0 1
+playable XXO.. b 0,3 1 1
+playable XXO.. b 0,4 1 1
+playable XXO.. w 0,0 0 1
+playable XXO.. w 0,1 0 1
+playable XXO.. w 0,2 0 1
+playable XXO.. w 0,3 1 1
+playable XXO.. w 0,4 1 1
+playable OXO.. b 0,0 0 0
+playable OXO.. b 0,1 0 1
+playable OXO.. b 0,2 0 1
+playable OXO.. b 0,3 1 1
+playable OXO.. b 0,4 1 1
+playable OXO.. w 0,0 0 1
+playable OXO.. w 0,1 0 1
+playable OXO.. w 0,2 0 1
+playable OXO.. w 0,3 1 1
+playable OXO.. w 0,4 1 1
+playable .OO.. b 0,0 1 0
+playable .OO.. b 0,1 0 1
+playable .OO.. b 0,2 0 1
+playable .OO.. b 0,3 1 1
+playable .OO.. b 0,4 1 1
+playable .OO.. w 0,0 1 1
+playable .OO.. w 0,1 0 1
+playable .OO.. w 0,2 0 1
+playable .OO.. w 0,3 1 1
+playable .OO.. w 0,4 1 1
+playable XOO.. b 0,0 0 0
+playable XOO.. b 0,1 0 0
+playable XOO.. b 0,2 0 1
+playable XOO.. b 0,3 1 1
+playable XOO.. b 0,4 1 1
+playable XOO.. w 0,0 0 1
+playable XOO.. w 0,1 0 1
+playable XOO.. w 0,2 0 1
+playable XOO.. w 0,3 1 1
+playable XOO.. w 0,4 1 1
+playable OOO.. b 0,0 0 0
+playable OOO.. b 0,1 0 1
+playable OOO.. b 0,2 0 1
+playable OOO.. b 0,3 1 1
+playable OOO.. b 0,4 1 1
+playable OOO.. w 0,0 0 1
+playable OOO.. w 0,1 0 1
+playable OOO.. w 0,2 0 1
+playable OOO.. w 0,3 1 1
+playable OOO.. w 0,4 1 1
+playable ...X. b 0,0 1 1
+playable ...X. b 0,1 1 1
+playable ...X. b 0,2 1 1
+playable ...X. b 0,3 0 1
+playable ...X. b 0,4 1 1
+playable ...X. w 0,0 1 1
+playable ...X. w 0,1 1 1
+playable ...X. w 0,2 1 1
+playable ...X. w 0,3 0 1
+playable ...X. w 0,4 1 0
+playable X..X. b 0,0 0 1
+playable X..X. b 0,1 1 1
+playable X..X. b 0,2 1 1
+playable X..X. b 0,3 0 1
+playable X..X. b 0,4 1 1
+playable X..X. w 0,0 0 1
+playable X..X. w 0,1 1 1
+playable X..X. w 0,2 1 1
+playable X..X. w 0,3 0 1
+playable X..X. w 0,4 1 0
+playable O..X. b 0,0 0 1
+playable O..X. b 0,1 1 1
+playable O..X. b 0,2 1 1
+playable O..X. b 0,3 0 1
+playable O..X. b 0,4 1 1
+playable O..X. w 0,0 0 1
+playable O..X. w 0,1 1 1
+playable O..X. w 0,2 1 1
+playable O..X. w 0,3 0 1
+playable O..X. w 0,4 1 0
+playable .X.X. b 0,0 1 1
+playable .X.X. b 0,1 0 1
+playable .X.X. b 0,2 1 1
+playable .X.X. b 0,3 0 1
+playable .X.X. b 0,4 1 1
+playable .X.X. w 0,0 1 0
+playable .X.X. w 0,1 0 1
+playable .X.X. w 0,2 1 0
+playable .X.X. w 0,3 0 1
+playable .X.X. w 0,4 1 0
+playable XX.X. b 0,0 0 1
+playable XX.X. b 0,1 0 1
+playable XX.X. b 0,2 1 1
+playable XX.X. b 0,3 0 1
+playable XX.X. b 0,4 1 1
+playable XX.X. w 0,0 0 0
+playable XX.X. w 0,1 0 1
+playable XX.X. w 0,2 1 1
+playable XX.X. w 0,3 0 1
+playable XX.X. w 0,4 1 0
+playable OX.X. b 0,0 0 1
+playable OX.X. b 0,1 0 1
+playable OX.X. b 0,2 1 1
+playable OX.X. b 0,3 0 1
+playable OX.X. b 0,4 1 1
+playable OX.X. w 0,0 0 0
+playable OX.X. w 0,1 0 1
+playable OX.X. w 0,2 1 1
+playable OX.X. w 0,3 0 1
+playable OX.X. w 0,4 1 0
+playable .O.X. b 0,0 1 0
+playable .O.X. b 0,1 0 1
+playable .O.X. b 0,2 1 1
+playable .O.X. b 0,3 0 1
+playable .O.X. b 0,4 1 1
+playable .O.X. w 0,0 1 1
+playable .O.X. w 0,1 0 1
+playable .O.X. w 0,2 1 1
+playable .O.X. w 0,3 0 1
+playable .O.X. w 0,4 1 0
+playable XO.X. b 0,0 0 0
+playable XO.X. b 0,1 0 1
+playable XO.X. b 0,2 1 1
+playable XO.X. b 0,3 0 1
+playable XO.X. b 0,4 1 1
+playable XO.X. w 0,0 0 1
+playable XO.X. w 0,1 0 1
+playable XO.X. w 0,2 1 1
+playable XO.X. w 0,3 0 1
+playable XO.X. w 0,4 1 0
+playable OO.X. b 0,0 0 0
+playable OO.X. b 0,1 0 1
+playable OO.X. b 0,2 1 1
+playable OO.X. b 0,3 0 1
+playable OO.X. b 0,4 1 1
+playable OO.X. w 0,0 0 1
+playable OO.X. w 0,1 0 1
+playable OO.X. w 0,2 1 0
+playable OO.X. w 0,3 0 1
+playable OO.X. w 0,4 1 0
+playable ..XX. b 0,0 1 1
+playable ..XX. b 0,1 1 1
+playable ..XX. b 0,2 0 1
+playable ..XX. b 0,3 0 1
+playable ..XX. b 0,4 1 1
+playable ..XX. w 0,0 1 1
+playable ..XX. w 0,1 1 1
+playable ..XX. w 0,2 0 1
+playable ..XX. w 0,3 0 1
+playable ..XX. w 0,4 1 0
+playable X.XX. b 0,0 0 1
+playable X.XX. b 0,1 1 1
+playable X.XX. b 0,2 0 1
+playable X.XX. b 0,3 0 1
+playable X.XX. b 0,4 1 1
+playable X.XX. w 0,0 0 1
+playable X.XX. w 0,1 1 1
+playable X.XX. w 0,2 0 1
+playable X.XX. w 0,3 0 1
+playable X.XX. w 0,4 1 0
+playable O.XX. b 0,0 0 1
+playable O.XX. b 0,1 1 1
+playable O.XX. b 0,2 0 1
+playable O.XX. b 0,3 0 1
+playable O.XX. b 0,4 1 1
+playable O.XX. w 0,0 0 1
+playable O.XX. w 0,1 1 0
+playable O.XX. w 0,2 0 1
+playable O.XX. w 0,3 0 1
+playable O.XX. w 0,4 1 0
+playable .XXX. b 0,0 1 1
+playable .XXX. b 0,1 0 1
+playable .XXX. b 0,2 0 1
+playable .XXX. b 0,3 0 1
+playable .XXX. b 0,4 1 1
+playable .XXX. w 0,0 1 0
+playable .XXX. w 0,1 0 1
+playable .XXX. w 0,2 0 0
+playable .XXX. w 0,3 0 1
+playable .XXX. w 0,4 1 0
+playable XXXX. b 0,0 0 1
+playable XXXX. b 0,1 0 1
+playable XXXX. b 0,2 0 1
+playable XXXX. b 0,3 0 1
+playable XXXX. b 0,4 1 0
+playable XXXX. w 0,0 0 0
+playable XXXX. w 0,1 0 1
+playable XXXX. w 0,2 0 1
+playable XXXX. w 0,3 0 1
+playable XXXX. w 0,4 1 1
+playable OXXX. b 0,0 0 1
+playable OXXX. b 0,1 0 1
+playable OXXX. b 0,2 0 1
+playable OXXX. b 0,3 0 1
+playable OXXX. b 0,4 1 1
+playable OXXX. w 0,0 0 0
+playable OXXX. w 0,1 0 0
+playable OXXX. w 0,2 0 1
+playable OXXX. w 0,3 0 1
+playable OXXX. w 0,4 1 1
+playable .OXX. b 0,0 1 1
+playable .OXX. b 0,1 0 1
+playable .OXX. b 0,2 0 1
+playable .OXX. b 0,3 0 1
+playable .OXX. b 0,4 1 0
+playable .OXX. w 0,0 1 0
+playable .OXX. w 0,1 0 1
+playable .OXX. w 0,2 0 1
+playable .OXX. w 0,3 0 1
+playable .OXX. w 0,4 1 1
+playable XOXX. b 0,0 0 1
+playable XOXX. b 0,1 0 1
+playable XOXX. b 0,2 0 1
+playable XOXX. b 0,3 0 1
+playable XOXX. b 0,4 1 1
+playable XOXX. w 0,0 0 0
+playable XOXX. w 0,1 0 1
+playable XOXX. w 0,2 0 1
+playable XOXX. w 0,3 0 1
+playable XOXX. w 0,4 1 1
+playable OOXX. b 0,0 0 1
+playable OOXX. b 0,1 0 1
+playable OOXX. b 0,2 0 1
+playable OOXX. b 0,3 0 1
+playable OOXX. b 0,4 1 1
+playable OOXX. w 0,0 0 0
+playable OOXX. w 0,1 0 0
+playable OOXX. w 0,2 0 0
+playable OOXX. w 0,3 0 1
+playable OOXX. w 0,4 1 1
+playable ..OX. b 0,0 1 1
+playable ..OX. b 0,1 1 1
+playable ..OX. b 0,2 0 1
+playable ..OX. b 0,3 0 1
+playable ..OX. b 0,4 1 0
+playable ..OX. w 0,0 1 1
+playable ..OX. w 0,1 1 1
+playable ..OX. w 0,2 0 1
+playable ..OX. w 0,3 0 1
+playable ..OX. w 0,4 1 1
+playable X.OX. b 0,0 0 1
+playable X.OX. b 0,1 1 1
+playable X.OX. b 0,2 0 1
+playable X.OX. b 0,3 0 1
+playable X.OX. b 0,4 1 0
+playable X.OX. w 0,0 0 1
+playable X.OX. w 0,1 1 1
+playable X.OX. w 0,2 0 1
+playable X.OX. w 0,3 0 1
+playable X.OX. w 0,4 1 1
+playable O.OX. b 0,0 0 1
+playable O.OX. b 0,1 1 1
+playable O.OX. b 0,2 0 1
+playable O.OX. b 0,3 0 1
+playable O.OX. b 0,4 1 0
+playable O.OX. w 0,0 0 1
+playable O.OX. w 0,1 1 0
+playable O.OX. w 0,2 0 1
+playable O.OX. w 0,3 0 1
+playable O.OX. w 0,4 1 1
+playable .XOX. b 0,0 1 1
+playable .XOX. b 0,1 0 1
+playable .XOX. b 0,2 0 1
+playable .XOX. b 0,3 0 1
+playable .XOX. b 0,4 1 1
+playable .XOX. w 0,0 1 1
+playable .XOX. w 0,1 0 1
+playable .XOX. w 0,2 0 0
+playable .XOX. w 0,3 0 1
+playable .XOX. w 0,4 1 1
+playable XXOX. b 0,0 0 1
+playable XXOX. b 0,1 0 1
+playable XXOX. b 0,2 0 1
+playable XXOX. b 0,3 0 1
+playable XXOX. b 0,4 1 1
+playable XXOX. w 0,0 0 1
+playable XXOX. w 0,1 0 1
+playable XXOX. w 0,2 0 1
+playable XXOX. w 0,3 0 1
+playable XXOX. w 0,4 1 1
+playable OXOX. b 0,0 0 1
+playable OXOX. b 0,1 0 1
+playable OXOX. b 0,2 0 1
+playable OXOX. b 0,3 0 1
+playable OXOX. b 0,4 1 1
+playable OXOX. w 0,0 0 1
+playable OXOX. w 0,1 0 0
+playable OXOX. w 0,2 0 1
+playable OXOX. w 0,3 0 1
+playable OXOX. w 0,4 1 1
+playable .OOX. b 0,0 1 1
+playable .OOX. b 0,1 0 1
+playable .OOX. b 0,2 0 1
+playable .OOX. b 0,3 0 1
+playable .OOX. b 0,4 1 0
+playable .OOX. w 0,0 1 0
+playable .OOX. w 0,1 0 1
+playable .OOX. w 0,2 0 1
+playable .OOX. w 0,3 0 1
+playable .OOX. w 0,4 1 1
+playable XOOX. b 0,0 0 1
+playable XOOX. b 0,1 0 1
+playable XOOX. b 0,2 0 1
+playable XOOX. b 0,3 0 1
+playable XOOX. b 0,4 1 1
+playable XOOX. w 0,0 0 0
+playable XOOX. w 0,1 0 1
+playable XOOX. w 0,2 0 1
+playable XOOX. w 0,3 0 1
+playable XOOX. w 0,4 1 1
+playable OOOX. b 0,0 0 1
+playable OOOX. b 0,1 0 1
+playable OOOX. b 0,2 0 1
+playable OOOX. b 0,3 0 1
+playable OOOX. b 0,4 1 1
+playable OOOX. w 0,0 0 0
+playable OOOX. w 0,1 0 0
+playable OOOX. w 0,2 0 0
+playable OOOX. w 0,3 0 1
+playable OOOX. w 0,4 1 1
+playable ...O. b 0,0 1 1
+playable ...O. b 0,1 1 1
+playable ...O. b 0,2 1 1
+playable ...O. b 0,3 0 1
+playable ...O. b 0,4 1 0
+playable ...O. w 0,0 1 1
+playable ...O. w 0,1 1 1
+playable ...O. w 0,2 1 1
+playable ...O. w 0,3 0 1
+playable ...O. w 0,4 1 1
+playable X..O. b 0,0 0 1
+playable X..O. b 0,1 1 1
+playable X..O. b 0,2 1 1
+playable X..O. b 0,3 0 1
+playable X..O. b 0,4 1 0
+playable X..O. w 0,0 0 1
+playable X..O. w 0,1 1 1
+playable X..O. w 0,2 1 1
+playable X..O. w 0,3 0 1
+playable X..O. w 0,4 1 1
+playable O..O. b 0,0 0 1
+playable O..O. b 0,1 1 1
+playable O..O. b 0,2 1 1
+playable O..O. b 0,3 0 1
+playable O..O. b 0,4 1 0
+playable O..O. w 0,0 0 1
+playable O..O. w 0,1 1 1
+playable O..O. w 0,2 1 1
+playable O..O. w 0,3 0 1
+playable O..O. w 0,4 1 1
+playable .X.O. b 0,0 1 1
+playable .X.O. b 0,1 0 1
+playable .X.O. b 0,2 1 1
+playable .X.O. b 0,3 0 1
+playable .X.O. b 0,4 1 0
+playable .X.O. w 0,0 1 0
+playable .X.O. w 0,1 0 1
+playable .X.O. w 0,2 1 1
+playable .X.O. w 0,3 0 1
+playable .X.O. w 0,4 1 1
+playable XX.O. b 0,0 0 1
+playable XX.O. b 0,1 0 1
+playable XX.O. b 0,2 1 0
+playable XX.O. b 0,3 0 1
+playable XX.O. b 0,4 1 0
+playable XX.O. w 0,0 0 0
+playable XX.O. w 0,1 0 1
+playable XX.O. w 0,2 1 1
+playable XX.O. w 0,3 0 1
+playable XX.O. w 0,4 1 1
+playable OX.O. b 0,0 0 1
+playable OX.O. b 0,1 0 1
+playable OX.O. b 0,2 1 1
+playable OX.O. b 0,3 0 1
+playable OX.O. b 0,4 1 0
+playable OX.O. w 0,0 0 0
+playable OX.O. w 0,1 0 1
+playable OX.O. w 0,2 1 1
+playable OX.O. w 0,3 0 1
+playable OX.O. w 0,4 1 1
+playable .O.O. b 0,0 1 0
+playable .O.O. b 0,1 0 1
+playable .O.O. b 0,2 1 0
+playable .O.O. b 0,3 0 1
+playable .O.O. b 0,4 1 0
+playable .O.O. w 0,0 1 1
+playable .O.O. w 0,1 0 1
+playable .O.O. w 0,2 1 1
+playable .O.O. w 0,3 0 1
+playable .O.O. w 0,4 1 1
+playable XO.O. b 0,0 0 0
+playable XO.O. b 0,1 0 1
+playable XO.O. b 0,2 1 1
+playable XO.O. b 0,3 0 1
+playable XO.O. b 0,4 1 0
+playable XO.O. w 0,0 0 1
+playable XO.O. w 0,1 0 1
+playable XO.O. w 0,2 1 1
+playable XO.O. w 0,3 0 1
+playable XO.O. w 0,4 1 1
+playable OO.O. b 0,0 0 0
+playable OO.O. b 0,1 0 1
+playable OO.O. b 0,2 1 1
+playable OO.O. b 0,3 0 1
+playable OO.O. b 0,4 1 0
+playable OO.O. w 0,0 0 1
+playable OO.O. w 0,1 0 1
+playable OO.O. w 0,2 1 1
+playable OO.O. w 0,3 0 1
+playable OO.O. w 0,4 1 1
+playable ..XO. b 0,0 1 1
+playable ..XO. b 0,1 1 1
+playable ..XO. b 0,2 0 1
+playable ..XO. b 0,3 0 1
+playable ..XO. b 0,4 1 1
+playable ..XO. w 0,0 1 1
+playable ..XO. w 0,1 1 1
+playable ..XO. w 0,2 0 1
+playable ..XO. w 0,3 0 1
+playable ..XO. w 0,4 1 0
+playable X.XO. b 0,0 0 1
+playable X.XO. b 0,1 1 0
+playable X.XO. b 0,2 0 1
+playable X.XO. b 0,3 0 1
+playable X.XO. b 0,4 1 1
+playable X.XO. w 0,0 0 1
+playable X.XO. w 0,1 1 1
+playable X.XO. w 0,2 0 1
+playable X.XO. w 0,3 0 1
+playable X.XO. w 0,4 1 0
+playable O.XO. b 0,0 0 1
+playable O.XO. b 0,1 1 1
+playable O.XO. b 0,2 0 1
+playable O.XO. b 0,3 0 1
+playable O.XO. b 0,4 1 1
+playable O.XO. w 0,0 0 1
+playable O.XO. w 0,1 1 1
+playable O.XO. w 0,2 0 1
+playable O.XO. w 0,3 0 1
+playable O.XO. w 0,4 1 0
+playable .XXO. b 0,0 1 0
+playable .XXO. b 0,1 0 1
+playable .XXO. b 0,2 0 1
+playable .XXO. b 0,3 0 1
+playable .XXO. b 0,4 1 1
+playable .XXO. w 0,0 1 1
+playable .XXO. w 0,1 0 1
+playable .XXO. w 0,2 0 1
+playable .XXO. w 0,3 0 1
+playable .XXO. w 0,4 1 0
+playable XXXO. b 0,0 0 0
+playable XXXO. b 0,1 0 0
+playable XXXO. b 0,2 0 0
+playable XXXO. b 0,3 0 1
+playable XXXO. b 0,4 1 1
+playable XXXO. w 0,0 0 1
+playable XXXO. w 0,1 0 1
+playable XXXO. w 0,2 0 1
+playable XXXO. w 0,3 0 1
+playable XXXO. w 0,4 1 1
+playable OXXO. b 0,0 0 0
+playable OXXO. b 0,1 0 1
+playable OXXO. b 0,2 0 1
+playable OXXO. b 0,3 0 1
+playable OXXO. b 0,4 1 1
+playable OXXO. w 0,0 0 1
+playable OXXO. w 0,1 0 1
+playable OXXO. w 0,2 0 1
+playable OXXO. w 0,3 0 1
+playable OXXO. w 0,4 1 1
+playable .OXO. b 0,0 1 1
+playable .OXO. b 0,1 0 1
+playable .OXO. b 0,2 0 0
+playable .OXO. b 0,3 0 1
+playable .OXO. b 0,4 1 1
+playable .OXO. w 0,0 1 1
+playable .OXO. w 0,1 0 1
+playable .OXO. w 0,2 0 1
+playable .OXO. w 0,3 0 1
+playable .OXO. w 0,4 1 1
+playable XOXO. b 0,0 0 1
+playable XOXO. b 0,1 0 0
+playable XOXO. b 0,2 0 1
+playable XOXO. b 0,3 0 1
+playable XOXO. b 0,4 1 1
+playable XOXO. w 0,0 0 1
+playable XOXO. w 0,1 0 1
+playable XOXO. w 0,2 0 1
+playable XOXO. w 0,3 0 1
+playable XOXO. w 0,4 1 1
+playable OOXO. b 0,0 0 1
+playable OOXO. b 0,1 0 1
+playable OOXO. b 0,2 0 1
+playable OOXO. b 0,3 0 1
+playable OOXO. b 0,4 1 1
+playable OOXO. w 0,0 0 1
+playable OOXO. w 0,1 0 1
+playable OOXO. w 0,2 0 1
+playable OOXO. w 0,3 0 1
+playable OOXO. w 0,4 1 1
+playable ..OO. b 0,0 1 1
+playable ..OO. b 0,1 1 1
+playable ..OO. b 0,2 0 1
+playable ..OO. b 0,3 0 1
+playable ..OO. b 0,4 1 0
+playable ..OO. w 0,0 1 1
+playable ..OO. w 0,1 1 1
+playable ..OO. w 0,2 0 1
+playable ..OO. w 0,3 0 1
+playable ..OO. w 0,4 1 1
+playable X.OO. b 0,0 0 1
+playable X.OO. b 0,1 1 0
+playable X.OO. b 0,2 0 1
+playable X.OO. b 0,3 0 1
+playable X.OO. b 0,4 1 0
+playable X.OO. w 0,0 0 1
+playable X.OO. w 0,1 1 1
+playable X.OO. w 0,2 0 1
+playable X.OO. w 0,3 0 1
+playable X.OO. w 0,4 1 1
+playable O.OO. b 0,0 0 1
+playable O.OO. b 0,1 1 1
+playable O.OO. b 0,2 0 1
+playable O.OO. b 0,3 0 1
+playable O.OO. b 0,4 1 0
+playable O.OO. w 0,0 0 1
+playable O.OO. w 0,1 1 1
+playable O.OO. w 0,2 0 1
+playable O.OO. w 0,3 0 1
+playable O.OO. w 0,4 1 1
+playable .XOO. b 0,0 1 0
+playable .XOO. b 0,1 0 1
+playable .XOO. b 0,2 0 1
+playable .XOO. b 0,3 0 1
+playable .XOO. b 0,4 1 1
+playable .XOO. w 0,0 1 1
+playable .XOO. w 0,1 0 1
+playable .XOO. w 0,2 0 1
+playable .XOO. w 0,3 0 1
+playable .XOO. w 0,4 1 0
+playable XXOO. b 0,0 0 0
+playable XXOO. b 0,1 0 0
+playable XXOO. b 0,2 0 0
+playable XXOO. b 0,3 0 1
+playable XXOO. b 0,4 1 1
+playable XXOO. w 0,0 0 1
+playable XXOO. w 0,1 0 1
+playable XXOO. w 0,2 0 1
+playable XXOO. w 0,3 0 1
+playable XXOO. w 0,4 1 1
+playable OXOO. b 0,0 0 0
+playable OXOO. b 0,1 0 1
+playable OXOO. b 0,2 0 1
+playable OXOO. b 0,3 0 1
+playable OXOO. b 0,4 1 1
+playable OXOO. w 0,0 0 1
+playable OXOO. w 0,1 0 1
+playable OXOO. w 0,2 0 1
+playable OXOO. w 0,3 0 1
+playable OXOO. w 0,4 1 1
+playable .OOO. b 0,0 1 0
+playable .OOO. b 0,1 0 1
+playable .OOO. b 0,2 0 0
+playable .OOO. b 0,3 0 1
+playable .OOO. b 0,4 1 0
+playable .OOO. w 0,0 1 1
+playable .OOO. w 0,1 0 1
+playable .OOO. w 0,2 0 1
+playable .OOO. w 0,3 0 1
+playable .OOO. w 0,4 1 1
+playable XOOO. b 0,0 0 0
+playable XOOO. b 0,1 0 0
+playable XOOO. b 0,2 0 1
+playable XOOO. b 0,3 0 1
+playable XOOO. b 0,4 1 1
+playable XOOO. w 0,0 0 1
+playable XOOO. w 0,1 0 1
+playable XOOO. w 0,2 0 1
+playable XOOO. w 0,3 0 1
+playable XOOO. w 0,4 1 1
+playable OOOO. b 0,0 0 0
+playable OOOO. b 0,1 0 1
+playable OOOO. b 0,2 0 1
+playable OOOO. b 0,3 0 1
+playable OOOO. b 0,4 1 1
+playable OOOO. w 0,0 0 1
+playable OOOO. w 0,1 0 1
+playable OOOO. w 0,2 0 1
+playable OOOO. w 0,3 0 1
+playable OOOO. w 0,4 1 0
+playable ....X b 0,0 1 1
+playable ....X b 0,1 1 1
+playable ....X b 0,2 1 1
+playable ....X b 0,3 1 1
+playable ....X b 0,4 0 1
+playable ....X w 0,0 1 1
+playable ....X w 0,1 1 1
+playable ....X w 0,2 1 1
+playable ....X w 0,3 1 1
+playable ....X w 0,4 0 1
+playable X...X b 0,0 0 1
+playable X...X b 0,1 1 1
+playable X...X b 0,2 1 1
+playable X...X b 0,3 1 1
+playable X...X b 0,4 0 1
+playable X...X w 0,0 0 1
+playable X...X w 0,1 1 1
+playable X...X w 0,2 1 1
+playable X...X w 0,3 1 1
+playable X...X w 0,4 0 1
+playable O...X b 0,0 0 1
+playable O...X b 0,1 1 1
+playable O...X b 0,2 1 1
+playable O...X b 0,3 1 1
+playable O...X b 0,4 0 1
+playable O...X w 0,0 0 1
+playable O...X w 0,1 1 1
+playable O...X w 0,2 1 1
+playable O...X w 0,3 1 1
+playable O...X w 0,4 0 1
+playable .X..X b 0,0 1 1
+playable .X..X b 0,1 0 1
+playable .X..X b 0,2 1 1
+playable .X..X b 0,3 1 1
+playable .X..X b 0,4 0 1
+playable .X..X w 0,0 1 0
+playable .X..X w 0,1 0 1
+playable .X..X w 0,2 1 1
+playable .X..X w 0,3 1 1
+playable .X..X w 0,4 0 1
+playable XX..X b 0,0 0 1
+playable XX..X b 0,1 0 1
+playable XX..X b 0,2 1 1
+playable XX..X b 0,3 1 1
+playable XX..X b 0,4 0 1
+playable XX..X w 0,0 0 0
+playable XX..X w 0,1 0 1
+playable XX..X w 0,2 1 1
+playable XX..X w 0,3 1 1
+playable XX..X w 0,4 0 1
+playable OX..X b 0,0 0 1
+playable OX..X b 0,1 0 1
+playable OX..X b 0,2 1 1
+playable OX..X b 0,3 1 1
+playable OX..X b 0,4 0 1
+playable OX..X w 0,0 0 0
+playable OX..X w 0,1 0 1
+playable OX..X w 0,2 1 1
+playable OX..X w 0,3 1 1
+playable OX..X w 0,4 0 1
+playable .O..X b 0,0 1 0
+playable .O..X b 0,1 0 1
+playable .O..X b 0,2 1 1
+playable .O..X b 0,3 1 1
+playable .O..X b 0,4 0 1
+playable .O..X w 0,0 1 1
+playable .O..X w 0,1 0 1
+playable .O..X w 0,2 1 1
+playable .O..X w 0,3 1 1
+playable .O..X w 0,4 0 1
+playable XO..X b 0,0 0 0
+playable XO..X b 0,1 0 1
+playable XO..X b 0,2 1 1
+playable XO..X b 0,3 1 1
+playable XO..X b 0,4 0 1
+playable XO..X w 0,0 0 1
+playable XO..X w 0,1 0 1
+playable XO..X w 0,2 1 1
+playable XO..X w 0,3 1 1
+playable XO..X w 0,4 0 1
+playable OO..X b 0,0 0 0
+playable OO..X b 0,1 0 1
+playable OO..X b 0,2 1 1
+playable OO..X b 0,3 1 1
+playable OO..X b 0,4 0 1
+playable OO..X w 0,0 0 1
+playable OO..X w 0,1 0 1
+playable OO..X w 0,2 1 1
+playable OO..X w 0,3 1 1
+playable OO..X w 0,4 0 1
+playable ..X.X b 0,0 1 1
+playable ..X.X b 0,1 1 1
+playable ..X.X b 0,2 0 1
+playable ..X.X b 0,3 1 1
+playable ..X.X b 0,4 0 1
+playable ..X.X w 0,0 1 1
+playable ..X.X w 0,1 1 1
+playable ..X.X w 0,2 0 1
+playable ..X.X w 0,3 1 1
+playable ..X.X w 0,4 0 1
+playable X.X.X b 0,0 0 1
+playable X.X.X b 0,1 1 1
+playable X.X.X b 0,2 0 1
+playable X.X.X b 0,3 1 1
+playable X.X.X b 0,4 0 1
+playable X.X.X w 0,0 0 1
+playable X.X.X w 0,1 1 1
+playable X.X.X w 0,2 0 1
+playable X.X.X w 0,3 1 1
+playable X.X.X w 0,4 0 1
+playable O.X.X b 0,0 0 1
+playable O.X.X b 0,1 1 1
+playable O.X.X b 0,2 0 1
+playable O.X.X b 0,3 1 1
+playable O.X.X b 0,4 0 1
+playable O.X.X w 0,0 0 1
+playable O.X.X w 0,1 1 0
+playable O.X.X w 0,2 0 1
+playable O.X.X w 0,3 1 1
+playable O.X.X w 0,4 0 1
+playable .XX.X b 0,0 1 1
+playable .XX.X b 0,1 0 1
+playable .XX.X b 0,2 0 1
+playable .XX.X b 0,3 1 1
+playable .XX.X b 0,4 0 1
+playable .XX.X w 0,0 1 0
+playable .XX.X w 0,1 0 1
+playable .XX.X w 0,2 0 1
+playable .XX.X w 0,3 1 1
+playable .XX.X w 0,4 0 1
+playable XXX.X b 0,0 0 1
+playable XXX.X b 0,1 0 1
+playable XXX.X b 0,2 0 1
+playable XXX.X b 0,3 1 0
+playable XXX.X b 0,4 0 1
+playable XXX.X w 0,0 0 0
+playable XXX.X w 0,1 0 1
+playable XXX.X w 0,2 0 1
+playable XXX.X w 0,3 1 1
+playable XXX.X w 0,4 0 1
+playable OXX.X b 0,0 0 1
+playable OXX.X b 0,1 0 1
+playable OXX.X b 0,2 0 1
+playable OXX.X b 0,3 1 1
+playable OXX.X b 0,4 0 1
+playable OXX.X w 0,0 0 0
+playable OXX.X w 0,1 0 0
+playable OXX.X w 0,2 0 1
+playable OXX.X w 0,3 1 1
+playable OXX.X w 0,4 0 1
+playable .OX.X b 0,0 1 1
+playable .OX.X b 0,1 0 1
+playable .OX.X b 0,2 0 1
+playable .OX.X b 0,3 1 0
+playable .OX.X b 0,4 0 1
+playable .OX.X w 0,0 1 0
+playable .OX.X w 0,1 0 1
+playable .OX.X w 0,2 0 1
+playable .OX.X w 0,3 1 1
+playable .OX.X w 0,4 0 1
+playable XOX.X b 0,0 0 1
+playable XOX.X b 0,1 0 1
+playable XOX.X b 0,2 0 1
+playable XOX.X b 0,3 1 1
+playable XOX.X b 0,4 0 1
+playable XOX.X w 0,0 0 0
+playable XOX.X w 0,1 0 1
+playable XOX.X w 0,2 0 1
+playable XOX.X w 0,3 1 1
+playable XOX.X w 0,4 0 1
+playable OOX.X b 0,0 0 1
+playable OOX.X b 0,1 0 1
+playable OOX.X b 0,2 0 1
+playable OOX.X b 0,3 1 1
+playable OOX.X b 0,4 0 1
+playable OOX.X w 0,0 0 0
+playable OOX.X w 0,1 0 0
+playable OOX.X w 0,2 0 1
+playable OOX.X w 0,3 1 1
+playable OOX.X w 0,4 0 1
+playable ..O.X b 0,0 1 1
+playable ..O.X b 0,1 1 1
+playable ..O.X b 0,2 0 1
+playable ..O.X b 0,3 1 0
+playable ..O.X b 0,4 0 1
+playable ..O.X w 0,0 1 1
+playable ..O.X w 0,1 1 1
+playable ..O.X w 0,2 0 1
+playable ..O.X w 0,3 1 1
+playable ..O.X w 0,4 0 1
+playable X.O.X b 0,0 0 1
+playable X.O.X b 0,1 1 0
+playable X.O.X b 0,2 0 1
+playable X.O.X b 0,3 1 0
+playable X.O.X b 0,4 0 1
+playable X.O.X w 0,0 0 1
+playable X.O.X w 0,1 1 1
+playable X.O.X w 0,2 0 1
+playable X.O.X w 0,3 1 1
+playable X.O.X w 0,4 0 1
+playable O.O.X b 0,0 0 1
+playable O.O.X b 0,1 1 1
+playable O.O.X b 0,2 0 1
+playable O.O.X b 0,3 1 0
+playable O.O.X b 0,4 0 1
+playable O.O.X w 0,0 0 1
+playable O.O.X w 0,1 1 1
+playable O.O.X w 0,2 0 1
+playable O.O.X w 0,3 1 1
+playable O.O.X w 0,4 0 1
+playable .XO.X b 0,0 1 0
+playable .XO.X b 0,1 0 1
+playable .XO.X b 0,2 0 1
+playable .XO.X b 0,3 1 1
+playable .XO.X b 0,4 0 1
+playable .XO.X w 0,0 1 1
+playable .XO.X w 0,1 0 1
+playable .XO.X w 0,2 0 1
+playable .XO.X w 0,3 1 1
+playable .XO.X w 0,4 0 1
+playable XXO.X b 0,0 0 0
+playable XXO.X b 0,1 0 0
+playable XXO.X b 0,2 0 1
+playable XXO.X b 0,3 1 1
+playable XXO.X b 0,4 0 1
+playable XXO.X w 0,0 0 1
+playable XXO.X w 0,1 0 1
+playable XXO.X w 0,2 0 1
+playable XXO.X w 0,3 1 1
+playable XXO.X w 0,4 0 1
+playable OXO.X b 0,0 0 0
+playable OXO.X b 0,1 0 1
+playable OXO.X b 0,2 0 1
+playable OXO.X b 0,3 1 1
+playable OXO.X b 0,4 0 1
+playable OXO.X w 0,0 0 1
+playable OXO.X w 0,1 0 1
+playable OXO.X w 0,2 0 1
+playable OXO.X w 0,3 1 1
+playable OXO.X w 0,4 0 1
+playable .OO.X b 0,0 1 0
+playable .OO.X b 0,1 0 1
+playable .OO.X b 0,2 0 1
+playable .OO.X b 0,3 1 0
+playable .OO.X b 0,4 0 1
+playable .OO.X w 0,0 1 1
+playable .OO.X w 0,1 0 1
+playable .OO.X w 0,2 0 1
+playable .OO.X w 0,3 1 1
+playable .OO.X w 0,4 0 1
+playable XOO.X b 0,0 0 0
+playable XOO.X b 0,1 0 0
+playable XOO.X b 0,2 0 1
+playable XOO.X b 0,3 1 1
+playable XOO.X b 0,4 0 1
+playable XOO.X w 0,0 0 1
+playable XOO.X w 0,1 0 1
+playable XOO.X w 0,2 0 1
+playable XOO.X w 0,3 1 1
+playable XOO.X w 0,4 0 1
+playable OOO.X b 0,0 0 0
+playable OOO.X b 0,1 0 1
+playable OOO.X b 0,2 0 1
+playable OOO.X b 0,3 1 1
+playable OOO.X b 0,4 0 1
+playable OOO.X w 0,0 0 1
+playable OOO.X w 0,1 0 1
+playable OOO.X w 0,2 0 1
+playable OOO.X w 0,3 1 1
+playable OOO.X w 0,4 0 1
+playable ...XX b 0,0 1 1
+playable ...XX b 0,1 1 1
+playable ...XX b 0,2 1 1
+playable ...XX b 0,3 0 1
+playable ...XX b 0,4 0 1
+playable ...XX w 0,0 1 1
+playable ...XX w 0,1 1 1
+playable ...XX w 0,2 1 1
+playable ...XX w 0,3 0 1
+playable ...XX w 0,4 0 0
+playable X..XX b 0,0 0 1
+playable X..XX b 0,1 1 1
+playable X..XX b 0,2 1 1
+playable X..XX b 0,3 0 1
+playable X..XX b 0,4 0 1
+playable X..XX w 0,0 0 1
+playable X..XX w 0,1 1 1
+playable X..XX w 0,2 1 1
+playable X..XX w 0,3 0 1
+playable X..XX w 0,4 0 0
+playable O..XX b 0,0 0 1
+playable O..XX b 0,1 1 1
+playable O..XX b 0,2 1 1
+playable O..XX b 0,3 0 1
+playable O..XX b 0,4 0 1
+playable O..XX w 0,0 0 1
+playable O..XX w 0,1 1 1
+playable O..XX w 0,2 1 1
+playable O..XX w 0,3 0 1
+playable O..XX w 0,4 0 0
+playable .X.XX b 0,0 1 1
+playable .X.XX b 0,1 0 1
+playable .X.XX b 0,2 1 1
+playable .X.XX b 0,3 0 1
+playable .X.XX b 0,4 0 1
+playable .X.XX w 0,0 1 0
+playable .X.XX w 0,1 0 1
+playable .X.XX w 0,2 1 1
+playable .X.XX w 0,3 0 1
+playable .X.XX w 0,4 0 0
+playable XX.XX b 0,0 0 1
+playable XX.XX b 0,1 0 1
+playable XX.XX b 0,2 1 0
+playable XX.XX b 0,3 0 1
+playable XX.XX b 0,4 0 1
+playable XX.XX w 0,0 0 0
+playable XX.XX w 0,1 0 1
+playable XX.XX w 0,2 1 1
+playable XX.XX w 0,3 0 1
+playable XX.XX w 0,4 0 0
+playable OX.XX b 0,0 0 1
+playable OX.XX b 0,1 0 1
+playable OX.XX b 0,2 1 1
+playable OX.XX b 0,3 0 1
+playable OX.XX b 0,4 0 1
+playable OX.XX w 0,0 0 0
+playable OX.XX w 0,1 0 1
+playable OX.XX w 0,2 1 1
+playable OX.XX w 0,3 0 1
+playable OX.XX w 0,4 0 0
+playable .O.XX b 0,0 1 0
+playable .O.XX b 0,1 0 1
+playable .O.XX b 0,2 1 0
+playable .O.XX b 0,3 0 1
+playable .O.XX b 0,4 0 1
+playable .O.XX w 0,0 1 1
+playable .O.XX w 0,1 0 1
+playable .O.XX w 0,2 1 1
+playable .O.XX w 0,3 0 1
+playable .O.XX w 0,4 0 0
+playable XO.XX b 0,0 0 0
+playable XO.XX b 0,1 0 1
+playable XO.XX b 0,2 1 1
+playable XO.XX b 0,3 0 1
+playable XO.XX b 0,4 0 1
+playable XO.XX w 0,0 0 1
+playable XO.XX w 0,1 0 1
+playable XO.XX w 0,2 1 1
+playable XO.XX w 0,3 0 1
+playable XO.XX w 0,4 0 0
+playable OO.XX b 0,0 0 0
+playable OO.XX b 0,1 0 1
+playable OO.XX b 0,2 1 1
+playable OO.XX b 0,3 0 1
+playable OO.XX b 0,4 0 1
+playable OO.XX w 0,0 0 1
+playable OO.XX w 0,1 0 1
+playable OO.XX w 0,2 1 1
+playable OO.XX w 0,3 0 1
+playable OO.XX w 0,4 0 0
+playable ..XXX b 0,0 1 1
+playable ..XXX b 0,1 1 1
+playable ..XXX b 0,2 0 1
+playable ..XXX b 0,3 0 1
+playable ..XXX b 0,4 0 1
+playable ..XXX w 0,0 1 1
+playable ..XXX w 0,1 1 1
+playable ..XXX w 0,2 0 1
+playable ..XXX w 0,3 0 1
+playable ..XXX w 0,4 0 0
+playable X.XXX b 0,0 0 1
+playable X.XXX b 0,1 1 0
+playable X.XXX b 0,2 0 1
+playable X.XXX b 0,3 0 1
+playable X.XXX b 0,4 0 1
+playable X.XXX w 0,0 0 1
+playable X.XXX w 0,1 1 1
+playable X.XXX w 0,2 0 1
+playable X.XXX w 0,3 0 1
+playable X.XXX w 0,4 0 0
+playable O.XXX b 0,0 0 1
+playable O.XXX b 0,1 1 1
+playable O.XXX b 0,2 0 1
+playable O.XXX b 0,3 0 1
+playable O.XXX b 0,4 0 1
+playable O.XXX w 0,0 0 1
+playable O.XXX w 0,1 1 1
+playable O.XXX w 0,2 0 1
+playable O.XXX w 0,3 0 1
+playable O.XXX w 0,4 0 0
+playable .XXXX b 0,0 1 0
+playable .XXXX b 0,1 0 1
+playable .XXXX b 0,2 0 1
+playable .XXXX b 0,3 0 1
+playable .XXXX b 0,4 0 1
+playable .XXXX w 0,0 1 1
+playable .XXXX w 0,1 0 1
+playable .XXXX w 0,2 0 1
+playable .XXXX w 0,3 0 1
+playable .XXXX w 0,4 0 0
+playable XXXXX b 0,0 0 0
+playable XXXXX b 0,1 0 0
+playable XXXXX b 0,2 0 0
+playable XXXXX b 0,3 0 0
+playable XXXXX b 0,4 0 0
+playable XXXXX w 0,0 0 1
+playable XXXXX w 0,1 0 1
+playable XXXXX w 0,2 0 1
+playable XXXXX w 0,3 0 1
+playable XXXXX w 0,4 0 1
+playable OXXXX b 0,0 0 0
+playable OXXXX b 0,1 0 1
+playable OXXXX b 0,2 0 1
+playable OXXXX b 0,3 0 1
+playable OXXXX b 0,4 0 1
+playable OXXXX w 0,0 0 1
+playable OXXXX w 0,1 0 1
+playable OXXXX w 0,2 0 1
+playable OXXXX w 0,3 0 1
+playable OXXXX w 0,4 0 1
+playable .OXXX b 0,0 1 1
+playable .OXXX b 0,1 0 1
+playable .OXXX b 0,2 0 0
+playable .OXXX b 0,3 0 0
+playable .OXXX b 0,4 0 0
+playable .OXXX w 0,0 1 1
+playable .OXXX w 0,1 0 1
+playable .OXXX w 0,2 0 1
+playable .OXXX w 0,3 0 1
+playable .OXXX w 0,4 0 1
+playable XOXXX b 0,0 0 1
+playable XOXXX b 0,1 0 0
+playable XOXXX b 0,2 0 1
+playable XOXXX b 0,3 0 1
+playable XOXXX b 0,4 0 1
+playable XOXXX w 0,0 0 1
+playable XOXXX w 0,1 0 1
+playable XOXXX w 0,2 0 1
+playable XOXXX w 0,3 0 1
+playable XOXXX w 0,4 0 1
+playable OOXXX b 0,0 0 1
+playable OOXXX b 0,1 0 1
+playable OOXXX b 0,2 0 1
+playable OOXXX b 0,3 0 1
+playable OOXXX b 0,4 0 1
+playable OOXXX w 0,0 0 1
+playable OOXXX w 0,1 0 1
+playable OOXXX w 0,2 0 1
+playable OOXXX w 0,3 0 1
+playable OOXXX w 0,4 0 1
+playable ..OXX b 0,0 1 1
+playable ..OXX b 0,1 1 1
+playable ..OXX b 0,2 0 1
+playable ..OXX b 0,3 0 0
+playable ..OXX b 0,4 0 0
+playable ..OXX w 0,0 1 1
+playable ..OXX w 0,1 1 1
+playable ..OXX w 0,2 0 1
+playable ..OXX w 0,3 0 1
+playable ..OXX w 0,4 0 1
+playable X.OXX b 0,0 0 1
+playable X.OXX b 0,1 1 1
+playable X.OXX b 0,2 0 1
+playable X.OXX b 0,3 0 0
+playable X.OXX b 0,4 0 0
+playable X.OXX w 0,0 0 1
+playable X.OXX w 0,1 1 1
+playable X.OXX w 0,2 0 1
+playable X.OXX w 0,3 0 1
+playable X.OXX w 0,4 0 1
+playable O.OXX b 0,0 0 1
+playable O.OXX b 0,1 1 1
+playable O.OXX b 0,2 0 1
+playable O.OXX b 0,3 0 0
+playable O.OXX b 0,4 0 0
+playable O.OXX w 0,0 0 1
+playable O.OXX w 0,1 1 1
+playable O.OXX w 0,2 0 1
+playable O.OXX w 0,3 0 1
+playable O.OXX w 0,4 0 1
+playable .XOXX b 0,0 1 1
+playable .XOXX b 0,1 0 1
+playable .XOXX b 0,2 0 1
+playable .XOXX b 0,3 0 1
+playable .XOXX b 0,4 0 1
+playable .XOXX w 0,0 1 1
+playable .XOXX w 0,1 0 1
+playable .XOXX w 0,2 0 1
+playable .XOXX w 0,3 0 1
+playable .XOXX w 0,4 0 1
+playable XXOXX b 0,0 0 1
+playable XXOXX b 0,1 0 1
+playable XXOXX b 0,2 0 0
+playable XXOXX b 0,3 0 1
+playable XXOXX b 0,4 0 1
+playable XXOXX w 0,0 0 1
+playable XXOXX w 0,1 0 1
+playable XXOXX w 0,2 0 1
+playable XXOXX w 0,3 0 1
+playable XXOXX w 0,4 0 1
+playable OXOXX b 0,0 0 1
+playable OXOXX b 0,1 0 1
+playable OXOXX b 0,2 0 1
+playable OXOXX b 0,3 0 1
+playable OXOXX b 0,4 0 1
+playable OXOXX w 0,0 0 1
+playable OXOXX w 0,1 0 1
+playable OXOXX w 0,2 0 1
+playable OXOXX w 0,3 0 1
+playable OXOXX w 0,4 0 1
+playable .OOXX b 0,0 1 1
+playable .OOXX b 0,1 0 1
+playable .OOXX b 0,2 0 0
+playable .OOXX b 0,3 0 0
+playable .OOXX b 0,4 0 0
+playable .OOXX w 0,0 1 1
+playable .OOXX w 0,1 0 1
+playable .OOXX w 0,2 0 1
+playable .OOXX w 0,3 0 1
+playable .OOXX w 0,4 0 1
+playable XOOXX b 0,0 0 1
+playable XOOXX b 0,1 0 1
+playable XOOXX b 0,2 0 1
+playable XOOXX b 0,3 0 1
+playable XOOXX b 0,4 0 1
+playable XOOXX w 0,0 0 1
+playable XOOXX w 0,1 0 1
+playable XOOXX w 0,2 0 1
+playable XOOXX w 0,3 0 1
+playable XOOXX w 0,4 0 1
+playable OOOXX b 0,0 0 1
+playable OOOXX b 0,1 0 1
+playable OOOXX b 0,2 0 1
+playable OOOXX b 0,3 0 1
+playable OOOXX b 0,4 0 1
+playable OOOXX w 0,0 0 1
+playable OOOXX w 0,1 0 1
+playable OOOXX w 0,2 0 1
+playable OOOXX w 0,3 0 1
+playable OOOXX w 0,4 0 1
+playable ...OX b 0,0 1 1
+playable ...OX b 0,1 1 1
+playable ...OX b 0,2 1 1
+playable ...OX b 0,3 0 1
+playable ...OX b 0,4 0 0
+playable ...OX w 0,0 1 1
+playable ...OX w 0,1 1 1
+playable ...OX w 0,2 1 1
+playable ...OX w 0,3 0 1
+playable ...OX w 0,4 0 1
+playable X..OX b 0,0 0 1
+playable X..OX b 0,1 1 1
+playable X..OX b 0,2 1 1
+playable X..OX b 0,3 0 1
+playable X..OX b 0,4 0 0
+playable X..OX w 0,0 0 1
+playable X..OX w 0,1 1 1
+playable X..OX w 0,2 1 1
+playable X..OX w 0,3 0 1
+playable X..OX w 0,4 0 1
+playable O..OX b 0,0 0 1
+playable O..OX b 0,1 1 1
+playable O..OX b 0,2 1 1
+playable O..OX b 0,3 0 1
+playable O..OX b 0,4 0 0
+playable O..OX w 0,0 0 1
+playable O..OX w 0,1 1 1
+playable O..OX w 0,2 1 1
+playable O..OX w 0,3 0 1
+playable O..OX w 0,4 0 1
+playable .X.OX b 0,0 1 1
+playable .X.OX b 0,1 0 1
+playable .X.OX b 0,2 1 1
+playable .X.OX b 0,3 0 1
+playable .X.OX b 0,4 0 0
+playable .X.OX w 0,0 1 0
+playable .X.OX w 0,1 0 1
+playable .X.OX w 0,2 1 1
+playable .X.OX w 0,3 0 1
+playable .X.OX w 0,4 0 1
+playable XX.OX b 0,0 0 1
+playable XX.OX b 0,1 0 1
+playable XX.OX b 0,2 1 1
+playable XX.OX b 0,3 0 1
+playable XX.OX b 0,4 0 0
+playable XX.OX w 0,0 0 0
+playable XX.OX w 0,1 0 1
+playable XX.OX w 0,2 1 1
+playable XX.OX w 0,3 0 1
+playable XX.OX w 0,4 0 1
+playable OX.OX b 0,0 0 1
+playable OX.OX b 0,1 0 1
+playable OX.OX b 0,2 1 1
+playable OX.OX b 0,3 0 1
+playable OX.OX b 0,4 0 0
+playable OX.OX w 0,0 0 0
+playable OX.OX w 0,1 0 1
+playable OX.OX w 0,2 1 1
+playable OX.OX w 0,3 0 1
+playable OX.OX w 0,4 0 1
+playable .O.OX b 0,0 1 0
+playable .O.OX b 0,1 0 1
+playable .O.OX b 0,2 1 1
+playable .O.OX b 0,3 0 1
+playable .O.OX b 0,4 0 0
+playable .O.OX w 0,0 1 1
+playable .O.OX w 0,1 0 1
+playable .O.OX w 0,2 1 1
+playable .O.OX w 0,3 0 1
+playable .O.OX w 0,4 0 1
+playable XO.OX b 0,0 0 0
+playable XO.OX b 0,1 0 1
+playable XO.OX b 0,2 1 1
+playable XO.OX b 0,3 0 1
+playable XO.OX b 0,4 0 0
+playable XO.OX w 0,0 0 1
+playable XO.OX w 0,1 0 1
+playable XO.OX w 0,2 1 1
+playable XO.OX w 0,3 0 1
+playable XO.OX w 0,4 0 1
+playable OO.OX b 0,0 0 0
+playable OO.OX b 0,1 0 1
+playable OO.OX b 0,2 1 1
+playable OO.OX b 0,3 0 1
+playable OO.OX b 0,4 0 0
+playable OO.OX w 0,0 0 1
+playable OO.OX w 0,1 0 1
+playable OO.OX w 0,2 1 1
+playable OO.OX w 0,3 0 1
+playable OO.OX w 0,4 0 1
+playable ..XOX b 0,0 1 1
+playable ..XOX b 0,1 1 1
+playable ..XOX b 0,2 0 1
+playable ..XOX b 0,3 0 1
+playable ..XOX b 0,4 0 1
+playable ..XOX w 0,0 1 1
+playable ..XOX w 0,1 1 1
+playable ..XOX w 0,2 0 1
+playable ..XOX w 0,3 0 1
+playable ..XOX w 0,4 0 0
+playable X.XOX b 0,0 0 1
+playable X.XOX b 0,1 1 1
+playable X.XOX b 0,2 0 1
+playable X.XOX b 0,3 0 1
+playable X.XOX b 0,4 0 1
+playable X.XOX w 0,0 0 1
+playable X.XOX w 0,1 1 1
+playable X.XOX w 0,2 0 1
+playable X.XOX w 0,3 0 1
+playable X.XOX w 0,4 0 0
+playable O.XOX b 0,0 0 1
+playable O.XOX b 0,1 1 1
+playable O.XOX b 0,2 0 1
+playable O.XOX b 0,3 0 1
+playable O.XOX b 0,4 0 1
+playable O.XOX w 0,0 0 1
+playable O.XOX w 0,1 1 1
+playable O.XOX w 0,2 0 1
+playable O.XOX w 0,3 0 1
+playable O.XOX w 0,4 0 0
+playable .XXOX b 0,0 1 1
+playable .XXOX b 0,1 0 1
+playable .XXOX b 0,2 0 1
+playable .XXOX b 0,3 0 1
+playable .XXOX b 0,4 0 1
+playable .XXOX w 0,0 1 1
+playable .XXOX w 0,1 0 1
+playable .XXOX w 0,2 0 1
+playable .XXOX w 0,3 0 1
+playable .XXOX w 0,4 0 0
+playable XXXOX b 0,0 0 1
+playable XXXOX b 0,1 0 1
+playable XXXOX b 0,2 0 1
+playable XXXOX b 0,3 0 0
+playable XXXOX b 0,4 0 1
+playable XXXOX w 0,0 0 1
+playable XXXOX w 0,1 0 1
+playable XXXOX w 0,2 0 1
+playable XXXOX w 0,3 0 1
+playable XXXOX w 0,4 0 1
+playable OXXOX b 0,0 0 1
+playable OXXOX b 0,1 0 1
+playable OXXOX b 0,2 0 1
+playable OXXOX b 0,3 0 1
+playable OXXOX b 0,4 0 1
+playable OXXOX w 0,0 0 1
+playable OXXOX w 0,1 0 1
+playable OXXOX w 0,2 0 1
+playable OXXOX w 0,3 0 1
+playable OXXOX w 0,4 0 1
+playable .OXOX b 0,0 1 1
+playable .OXOX b 0,1 0 1
+playable .OXOX b 0,2 0 1
+playable .OXOX b 0,3 0 0
+playable .OXOX b 0,4 0 1
+playable .OXOX w 0,0 1 1
+playable .OXOX w 0,1 0 1
+playable .OXOX w 0,2 0 1
+playable .OXOX w 0,3 0 1
+playable .OXOX w 0,4 0 1
+playable XOXOX b 0,0 0 1
+playable XOXOX b 0,1 0 1
+playable XOXOX b 0,2 0 1
+playable XOXOX b 0,3 0 1
+playable XOXOX b 0,4 0 1
+playable XOXOX w 0,0 0 1
+playable XOXOX w 0,1 0 1
+playable XOXOX w 0,2 0 1
+playable XOXOX w 0,3 0 1
+playable XOXOX w 0,4 0 1
+playable OOXOX b 0,0 0 1
+playable OOXOX b 0,1 0 1
+playable OOXOX b 0,2 0 1
+playable OOXOX b 0,3 0 1
+playable OOXOX b 0,4 0 1
+playable OOXOX w 0,0 0 1
+playable OOXOX w 0,1 0 1
+playable OOXOX w 0,2 0 1
+playable OOXOX w 0,3 0 1
+playable OOXOX w 0,4 0 1
+playable ..OOX b 0,0 1 1
+playable ..OOX b 0,1 1 1
+playable ..OOX b 0,2 0 1
+playable ..OOX b 0,3 0 0
+playable ..OOX b 0,4 0 0
+playable ..OOX w 0,0 1 1
+playable ..OOX w 0,1 1 1
+playable ..OOX w 0,2 0 1
+playable ..OOX w 0,3 0 1
+playable ..OOX w 0,4 0 1
+playable X.OOX b 0,0 0 1
+playable X.OOX b 0,1 1 1
+playable X.OOX b 0,2 0 1
+playable X.OOX b 0,3 0 0
+playable X.OOX b 0,4 0 0
+playable X.OOX w 0,0 0 1
+playable X.OOX w 0,1 1 1
+playable X.OOX w 0,2 0 1
+playable X.OOX w 0,3 0 1
+playable X.OOX w 0,4 0 1
+playable O.OOX b 0,0 0 1
+playable O.OOX b 0,1 1 1
+playable O.OOX b 0,2 0 1
+playable O.OOX b 0,3 0 0
+playable O.OOX b 0,4 0 0
+playable O.OOX w 0,0 0 1
+playable O.OOX w 0,1 1 1
+playable O.OOX w 0,2 0 1
+playable O.OOX w 0,3 0 1
+playable O.OOX w 0,4 0 1
+playable .XOOX b 0,0 1 1
+playable .XOOX b 0,1 0 1
+playable .XOOX b 0,2 0 1
+playable .XOOX b 0,3 0 1
+playable .XOOX b 0,4 0 1
+playable .XOOX w 0,0 1 1
+playable .XOOX w 0,1 0 1
+playable .XOOX w 0,2 0 1
+playable .XOOX w 0,3 0 1
+playable .XOOX w 0,4 0 0
+playable XXOOX b 0,0 0 1
+playable XXOOX b 0,1 0 1
+playable XXOOX b 0,2 0 1
+playable XXOOX b 0,3 0 1
+playable XXOOX b 0,4 0 1
+playable XXOOX w 0,0 0 1
+playable XXOOX w 0,1 0 1
+playable XXOOX w 0,2 0 1
+playable XXOOX w 0,3 0 1
+playable XXOOX w 0,4 0 1
+playable OXOOX b 0,0 0 1
+playable OXOOX b 0,1 0 1
+playable OXOOX b 0,2 0 1
+playable OXOOX b 0,3 0 1
+playable OXOOX b 0,4 0 1
+playable OXOOX w 0,0 0 1
+playable OXOOX w 0,1 0 1
+playable OXOOX w 0,2 0 1
+playable OXOOX w 0,3 0 1
+playable OXOOX w 0,4 0 1
+playable .OOOX b 0,0 1 1
+playable .OOOX b 0,1 0 1
+playable .OOOX b 0,2 0 1
+playable .OOOX b 0,3 0 0
+playable .OOOX b 0,4 0 0
+playable .OOOX w 0,0 1 1
+playable .OOOX w 0,1 0 1
+playable .OOOX w 0,2 0 1
+playable .OOOX w 0,3 0 1
+playable .OOOX w 0,4 0 1
+playable XOOOX b 0,0 0 1
+playable XOOOX b 0,1 0 1
+playable XOOOX b 0,2 0 1
+playable XOOOX b 0,3 0 1
+playable XOOOX b 0,4 0 1
+playable XOOOX w 0,0 0 1
+playable XOOOX w 0,1 0 1
+playable XOOOX w 0,2 0 1
+playable XOOOX w 0,3 0 1
+playable XOOOX w 0,4 0 1
+playable OOOOX b 0,0 0 1
+playable OOOOX b 0,1 0 1
+playable OOOOX b 0,2 0 1
+playable OOOOX b 0,3 0 1
+playable OOOOX b 0,4 0 1
+playable OOOOX w 0,0 0 1
+playable OOOOX w 0,1 0 1
+playable OOOOX w 0,2 0 1
+playable OOOOX w 0,3 0 1
+playable OOOOX w 0,4 0 0
+playable ....O b 0,0 1 1
+playable ....O b 0,1 1 1
+playable ....O b 0,2 1 1
+playable ....O b 0,3 1 1
+playable ....O b 0,4 0 1
+playable ....O w 0,0 1 1
+playable ....O w 0,1 1 1
+playable ....O w 0,2 1 1
+playable ....O w 0,3 1 1
+playable ....O w 0,4 0 1
+playable X...O b 0,0 0 1
+playable X...O b 0,1 1 1
+playable X...O b 0,2 1 1
+playable X...O b 0,3 1 1
+playable X...O b 0,4 0 1
+playable X...O w 0,0 0 1
+playable X...O w 0,1 1 1
+playable X...O w 0,2 1 1
+playable X...O w 0,3 1 1
+playable X...O w 0,4 0 1
+playable O...O b 0,0 0 1
+playable O...O b 0,1 1 1
+playable O...O b 0,2 1 1
+playable O...O b 0,3 1 1
+playable O...O b 0,4 0 1
+playable O...O w 0,0 0 1
+playable O...O w 0,1 1 1
+playable O...O w 0,2 1 1
+playable O...O w 0,3 1 1
+playable O...O w 0,4 0 1
+playable .X..O b 0,0 1 1
+playable .X..O b 0,1 0 1
+playable .X..O b 0,2 1 1
+playable .X..O b 0,3 1 1
+playable .X..O b 0,4 0 1
+playable .X..O w 0,0 1 0
+playable .X..O w 0,1 0 1
+playable .X..O w 0,2 1 1
+playable .X..O w 0,3 1 1
+playable .X..O w 0,4 0 1
+playable XX..O b 0,0 0 1
+playable XX..O b 0,1 0 1
+playable XX..O b 0,2 1 1
+playable XX..O b 0,3 1 1
+playable XX..O b 0,4 0 1
+playable XX..O w 0,0 0 0
+playable XX..O w 0,1 0 1
+playable XX..O w 0,2 1 1
+playable XX..O w 0,3 1 1
+playable XX..O w 0,4 0 1
+playable OX..O b 0,0 0 1
+playable OX..O b 0,1 0 1
+playable OX..O b 0,2 1 1
+playable OX..O b 0,3 1 1
+playable OX..O b 0,4 0 1
+playable OX..O w 0,0 0 0
+playable OX..O w 0,1 0 1
+playable OX..O w 0,2 1 1
+playable OX..O w 0,3 1 1
+playable OX..O w 0,4 0 1
+playable .O..O b 0,0 1 0
+playable .O..O b 0,1 0 1
+playable .O..O b 0,2 1 1
+playable .O..O b 0,3 1 1
+playable .O..O b 0,4 0 1
+playable .O..O w 0,0 1 1
+playable .O..O w 0,1 0 1
+playable .O..O w 0,2 1 1
+playable .O..O w 0,3 1 1
+playable .O..O w 0,4 0 1
+playable XO..O b 0,0 0 0
+playable XO..O b 0,1 0 1
+playable XO..O b 0,2 1 1
+playable XO..O b 0,3 1 1
+playable XO..O b 0,4 0 1
+playable XO..O w 0,0 0 1
+playable XO..O w 0,1 0 1
+playable XO..O w 0,2 1 1
+playable XO..O w 0,3 1 1
+playable XO..O w 0,4 0 1
+playable OO..O b 0,0 0 0
+playable OO..O b 0,1 0 1
+playable OO..O b 0,2 1 1
+playable OO..O b 0,3 1 1
+playable OO..O b 0,4 0 1
+playable OO..O w 0,0 0 1
+playable OO..O w 0,1 0 1
+playable OO..O w 0,2 1 1
+playable OO..O w 0,3 1 1
+playable OO..O w 0,4 0 1
+playable ..X.O b 0,0 1 1
+playable ..X.O b 0,1 1 1
+playable ..X.O b 0,2 0 1
+playable ..X.O b 0,3 1 1
+playable ..X.O b 0,4 0 1
+playable ..X.O w 0,0 1 1
+playable ..X.O w 0,1 1 1
+playable ..X.O w 0,2 0 1
+playable ..X.O w 0,3 1 0
+playable ..X.O w 0,4 0 1
+playable X.X.O b 0,0 0 1
+playable X.X.O b 0,1 1 1
+playable X.X.O b 0,2 0 1
+playable X.X.O b 0,3 1 1
+playable X.X.O b 0,4 0 1
+playable X.X.O w 0,0 0 1
+playable X.X.O w 0,1 1 1
+playable X.X.O w 0,2 0 1
+playable X.X.O w 0,3 1 0
+playable X.X.O w 0,4 0 1
+playable O.X.O b 0,0 0 1
+playable O.X.O b 0,1 1 1
+playable O.X.O b 0,2 0 1
+playable O.X.O b 0,3 1 1
+playable O.X.O b 0,4 0 1
+playable O.X.O w 0,0 0 1
+playable O.X.O w 0,1 1 0
+playable O.X.O w 0,2 0 1
+playable O.X.O w 0,3 1 0
+playable O.X.O w 0,4 0 1
+playable .XX.O b 0,0 1 1
+playable .XX.O b 0,1 0 1
+playable .XX.O b 0,2 0 1
+playable .XX.O b 0,3 1 1
+playable .XX.O b 0,4 0 1
+playable .XX.O w 0,0 1 0
+playable .XX.O w 0,1 0 1
+playable .XX.O w 0,2 0 1
+playable .XX.O w 0,3 1 0
+playable .XX.O w 0,4 0 1
+playable XXX.O b 0,0 0 1
+playable XXX.O b 0,1 0 1
+playable XXX.O b 0,2 0 1
+playable XXX.O b 0,3 1 1
+playable XXX.O b 0,4 0 1
+playable XXX.O w 0,0 0 0
+playable XXX.O w 0,1 0 1
+playable XXX.O w 0,2 0 1
+playable XXX.O w 0,3 1 1
+playable XXX.O w 0,4 0 1
+playable OXX.O b 0,0 0 1
+playable OXX.O b 0,1 0 1
+playable OXX.O b 0,2 0 1
+playable OXX.O b 0,3 1 1
+playable OXX.O b 0,4 0 1
+playable OXX.O w 0,0 0 0
+playable OXX.O w 0,1 0 0
+playable OXX.O w 0,2 0 1
+playable OXX.O w 0,3 1 1
+playable OXX.O w 0,4 0 1
+playable .OX.O b 0,0 1 1
+playable .OX.O b 0,1 0 1
+playable .OX.O b 0,2 0 1
+playable .OX.O b 0,3 1 1
+playable .OX.O b 0,4 0 1
+playable .OX.O w 0,0 1 0
+playable .OX.O w 0,1 0 1
+playable .OX.O w 0,2 0 1
+playable .OX.O w 0,3 1 1
+playable .OX.O w 0,4 0 1
+playable XOX.O b 0,0 0 1
+playable XOX.O b 0,1 0 1
+playable XOX.O b 0,2 0 1
+playable XOX.O b 0,3 1 1
+playable XOX.O b 0,4 0 1
+playable XOX.O w 0,0 0 0
+playable XOX.O w 0,1 0 1
+playable XOX.O w 0,2 0 1
+playable XOX.O w 0,3 1 1
+playable XOX.O w 0,4 0 1
+playable OOX.O b 0,0 0 1
+playable OOX.O b 0,1 0 1
+playable OOX.O b 0,2 0 1
+playable OOX.O b 0,3 1 1
+playable OOX.O b 0,4 0 1
+playable OOX.O w 0,0 0 0
+playable OOX.O w 0,1 0 0
+playable OOX.O w 0,2 0 1
+playable OOX.O w 0,3 1 1
+playable OOX.O w 0,4 0 1
+playable ..O.O b 0,0 1 1
+playable ..O.O b 0,1 1 1
+playable ..O.O b 0,2 0 1
+playable ..O.O b 0,3 1 1
+playable ..O.O b 0,4 0 1
+playable ..O.O w 0,0 1 1
+playable ..O.O w 0,1 1 1
+playable ..O.O w 0,2 0 1
+playable ..O.O w 0,3 1 1
+playable ..O.O w 0,4 0 1
+playable X.O.O b 0,0 0 1
+playable X.O.O b 0,1 1 0
+playable X.O.O b 0,2 0 1
+playable X.O.O b 0,3 1 1
+playable X.O.O b 0,4 0 1
+playable X.O.O w 0,0 0 1
+playable X.O.O w 0,1 1 1
+playable X.O.O w 0,2 0 1
+playable X.O.O w 0,3 1 1
+playable X.O.O w 0,4 0 1
+playable O.O.O b 0,0 0 1
+playable O.O.O b 0,1 1 1
+playable O.O.O b 0,2 0 1
+playable O.O.O b 0,3 1 1
+playable O.O.O b 0,4 0 1
+playable O.O.O w 0,0 0 1
+playable O.O.O w 0,1 1 1
+playable O.O.O w 0,2 0 1
+playable O.O.O w 0,3 1 1
+playable O.O.O w 0,4 0 1
+playable .XO.O b 0,0 1 0
+playable .XO.O b 0,1 0 1
+playable .XO.O b 0,2 0 1
+playable .XO.O b 0,3 1 1
+playable .XO.O b 0,4 0 1
+playable .XO.O w 0,0 1 1
+playable .XO.O w 0,1 0 1
+playable .XO.O w 0,2 0 1
+playable .XO.O w 0,3 1 0
+playable .XO.O w 0,4 0 1
+playable XXO.O b 0,0 0 0
+playable XXO.O b 0,1 0 0
+playable XXO.O b 0,2 0 1
+playable XXO.O b 0,3 1 1
+playable XXO.O b 0,4 0 1
+playable XXO.O w 0,0 0 1
+playable XXO.O w 0,1 0 1
+playable XXO.O w 0,2 0 1
+playable XXO.O w 0,3 1 1
+playable XXO.O w 0,4 0 1
+playable OXO.O b 0,0 0 0
+playable OXO.O b 0,1 0 1
+playable OXO.O b 0,2 0 1
+playable OXO.O b 0,3 1 1
+playable OXO.O b 0,4 0 1
+playable OXO.O w 0,0 0 1
+playable OXO.O w 0,1 0 1
+playable OXO.O w 0,2 0 1
+playable OXO.O w 0,3 1 1
+playable OXO.O w 0,4 0 1
+playable .OO.O b 0,0 1 0
+playable .OO.O b 0,1 0 1
+playable .OO.O b 0,2 0 1
+playable .OO.O b 0,3 1 1
+playable .OO.O b 0,4 0 1
+playable .OO.O w 0,0 1 1
+playable .OO.O w 0,1 0 1
+playable .OO.O w 0,2 0 1
+playable .OO.O w 0,3 1 1
+playable .OO.O w 0,4 0 1
+playable XOO.O b 0,0 0 0
+playable XOO.O b 0,1 0 0
+playable XOO.O b 0,2 0 1
+playable XOO.O b 0,3 1 1
+playable XOO.O b 0,4 0 1
+playable XOO.O w 0,0 0 1
+playable XOO.O w 0,1 0 1
+playable XOO.O w 0,2 0 1
+playable XOO.O w 0,3 1 1
+playable XOO.O w 0,4 0 1
+playable OOO.O b 0,0 0 0
+playable OOO.O b 0,1 0 1
+playable OOO.O b 0,2 0 1
+playable OOO.O b 0,3 1 1
+playable OOO.O b 0,4 0 1
+playable OOO.O w 0,0 0 1
+playable OOO.O w 0,1 0 1
+playable OOO.O w 0,2 0 1
+playable OOO.O w 0,3 1 0
+playable OOO.O w 0,4 0 1
+playable ...XO b 0,0 1 1
+playable ...XO b 0,1 1 1
+playable ...XO b 0,2 1 1
+playable ...XO b 0,3 0 1
+playable ...XO b 0,4 0 1
+playable ...XO w 0,0 1 1
+playable ...XO w 0,1 1 1
+playable ...XO w 0,2 1 1
+playable ...XO w 0,3 0 1
+playable ...XO w 0,4 0 0
+playable X..XO b 0,0 0 1
+playable X..XO b 0,1 1 1
+playable X..XO b 0,2 1 1
+playable X..XO b 0,3 0 1
+playable X..XO b 0,4 0 1
+playable X..XO w 0,0 0 1
+playable X..XO w 0,1 1 1
+playable X..XO w 0,2 1 1
+playable X..XO w 0,3 0 1
+playable X..XO w 0,4 0 0
+playable O..XO b 0,0 0 1
+playable O..XO b 0,1 1 1
+playable O..XO b 0,2 1 1
+playable O..XO b 0,3 0 1
+playable O..XO b 0,4 0 1
+playable O..XO w 0,0 0 1
+playable O..XO w 0,1 1 1
+playable O..XO w 0,2 1 1
+playable O..XO w 0,3 0 1
+playable O..XO w 0,4 0 0
+playable .X.XO b 0,0 1 1
+playable .X.XO b 0,1 0 1
+playable .X.XO b 0,2 1 1
+playable .X.XO b 0,3 0 1
+playable .X.XO b 0,4 0 1
+playable .X.XO w 0,0 1 0
+playable .X.XO w 0,1 0 1
+playable .X.XO w 0,2 1 1
+playable .X.XO w 0,3 0 1
+playable .X.XO w 0,4 0 0
+playable XX.XO b 0,0 0 1
+playable XX.XO b 0,1 0 1
+playable XX.XO b 0,2 1 1
+playable XX.XO b 0,3 0 1
+playable XX.XO b 0,4 0 1
+playable XX.XO w 0,0 0 0
+playable XX.XO w 0,1 0 1
+playable XX.XO w 0,2 1 1
+playable XX.XO w 0,3 0 1
+playable XX.XO w 0,4 0 0
+playable OX.XO b 0,0 0 1
+playable OX.XO b 0,1 0 1
+playable OX.XO b 0,2 1 1
+playable OX.XO b 0,3 0 1
+playable OX.XO b 0,4 0 1
+playable OX.XO w 0,0 0 0
+playable OX.XO w 0,1 0 1
+playable OX.XO w 0,2 1 1
+playable OX.XO w 0,3 0 1
+playable OX.XO w 0,4 0 0
+playable .O.XO b 0,0 1 0
+playable .O.XO b 0,1 0 1
+playable .O.XO b 0,2 1 1
+playable .O.XO b 0,3 0 1
+playable .O.XO b 0,4 0 1
+playable .O.XO w 0,0 1 1
+playable .O.XO w 0,1 0 1
+playable .O.XO w 0,2 1 1
+playable .O.XO w 0,3 0 1
+playable .O.XO w 0,4 0 0
+playable XO.XO b 0,0 0 0
+playable XO.XO b 0,1 0 1
+playable XO.XO b 0,2 1 1
+playable XO.XO b 0,3 0 1
+playable XO.XO b 0,4 0 1
+playable XO.XO w 0,0 0 1
+playable XO.XO w 0,1 0 1
+playable XO.XO w 0,2 1 1
+playable XO.XO w 0,3 0 1
+playable XO.XO w 0,4 0 0
+playable OO.XO b 0,0 0 0
+playable OO.XO b 0,1 0 1
+playable OO.XO b 0,2 1 1
+playable OO.XO b 0,3 0 1
+playable OO.XO b 0,4 0 1
+playable OO.XO w 0,0 0 1
+playable OO.XO w 0,1 0 1
+playable OO.XO w 0,2 1 1
+playable OO.XO w 0,3 0 1
+playable OO.XO w 0,4 0 0
+playable ..XXO b 0,0 1 1
+playable ..XXO b 0,1 1 1
+playable ..XXO b 0,2 0 1
+playable ..XXO b 0,3 0 1
+playable ..XXO b 0,4 0 1
+playable ..XXO w 0,0 1 1
+playable ..XXO w 0,1 1 1
+playable ..XXO w 0,2 0 1
+playable ..XXO w 0,3 0 0
+playable ..XXO w 0,4 0 0
+playable X.XXO b 0,0 0 1
+playable X.XXO b 0,1 1 1
+playable X.XXO b 0,2 0 1
+playable X.XXO b 0,3 0 1
+playable X.XXO b 0,4 0 1
+playable X.XXO w 0,0 0 1
+playable X.XXO w 0,1 1 1
+playable X.XXO w 0,2 0 1
+playable X.XXO w 0,3 0 0
+playable X.XXO w 0,4 0 0
+playable O.XXO b 0,0 0 1
+playable O.XXO b 0,1 1 1
+playable O.XXO b 0,2 0 1
+playable O.XXO b 0,3 0 1
+playable O.XXO b 0,4 0 1
+playable O.XXO w 0,0 0 1
+playable O.XXO w 0,1 1 1
+playable O.XXO w 0,2 0 1
+playable O.XXO w 0,3 0 0
+playable O.XXO w 0,4 0 0
+playable .XXXO b 0,0 1 1
+playable .XXXO b 0,1 0 1
+playable .XXXO b 0,2 0 1
+playable .XXXO b 0,3 0 1
+playable .XXXO b 0,4 0 1
+playable .XXXO w 0,0 1 1
+playable .XXXO w 0,1 0 1
+playable .XXXO w 0,2 0 1
+playable .XXXO w 0,3 0 0
+playable .XXXO w 0,4 0 0
+playable XXXXO b 0,0 0 1
+playable XXXXO b 0,1 0 1
+playable XXXXO b 0,2 0 1
+playable XXXXO b 0,3 0 1
+playable XXXXO b 0,4 0 0
+playable XXXXO w 0,0 0 1
+playable XXXXO w 0,1 0 1
+playable XXXXO w 0,2 0 1
+playable XXXXO w 0,3 0 1
+playable XXXXO w 0,4 0 1
+playable OXXXO b 0,0 0 1
+playable OXXXO b 0,1 0 1
+playable OXXXO b 0,2 0 1
+playable OXXXO b 0,3 0 1
+playable OXXXO b 0,4 0 1
+playable OXXXO w 0,0 0 1
+playable OXXXO w 0,1 0 1
+playable OXXXO w 0,2 0 1
+playable OXXXO w 0,3 0 1
+playable OXXXO w 0,4 0 1
+playable .OXXO b 0,0 1 1
+playable .OXXO b 0,1 0 1
+playable .OXXO b 0,2 0 1
+playable .OXXO b 0,3 0 1
+playable .OXXO b 0,4 0 0
+playable .OXXO w 0,0 1 1
+playable .OXXO w 0,1 0 1
+playable .OXXO w 0,2 0 1
+playable .OXXO w 0,3 0 1
+playable .OXXO w 0,4 0 1
+playable XOXXO b 0,0 0 1
+playable XOXXO b 0,1 0 1
+playable XOXXO b 0,2 0 1
+playable XOXXO b 0,3 0 1
+playable XOXXO b 0,4 0 1
+playable XOXXO w 0,0 0 1
+playable XOXXO w 0,1 0 1
+playable XOXXO w 0,2 0 1
+playable XOXXO w 0,3 0 1
+playable XOXXO w 0,4 0 1
+playable OOXXO b 0,0 0 1
+playable OOXXO b 0,1 0 1
+playable OOXXO b 0,2 0 1
+playable OOXXO b 0,3 0 1
+playable OOXXO b 0,4 0 1
+playable OOXXO w 0,0 0 1
+playable OOXXO w 0,1 0 1
+playable OOXXO w 0,2 0 1
+playable OOXXO w 0,3 0 1
+playable OOXXO w 0,4 0 1
+playable ..OXO b 0,0 1 1
+playable ..OXO b 0,1 1 1
+playable ..OXO b 0,2 0 1
+playable ..OXO b 0,3 0 1
+playable ..OXO b 0,4 0 0
+playable ..OXO w 0,0 1 1
+playable ..OXO w 0,1 1 1
+playable ..OXO w 0,2 0 1
+playable ..OXO w 0,3 0 1
+playable ..OXO w 0,4 0 1
+playable X.OXO b 0,0 0 1
+playable X.OXO b 0,1 1 1
+playable X.OXO b 0,2 0 1
+playable X.OXO b 0,3 0 1
+playable X.OXO b 0,4 0 0
+playable X.OXO w 0,0 0 1
+playable X.OXO w 0,1 1 1
+playable X.OXO w 0,2 0 1
+playable X.OXO w 0,3 0 1
+playable X.OXO w 0,4 0 1
+playable O.OXO b 0,0 0 1
+playable O.OXO b 0,1 1 1
+playable O.OXO b 0,2 0 1
+playable O.OXO b 0,3 0 1
+playable O.OXO b 0,4 0 0
+playable O.OXO w 0,0 0 1
+playable O.OXO w 0,1 1 1
+playable O.OXO w 0,2 0 1
+playable O.OXO w 0,3 0 1
+playable O.OXO w 0,4 0 1
+playable .XOXO b 0,0 1 1
+playable .XOXO b 0,1 0 1
+playable .XOXO b 0,2 0 1
+playable .XOXO b 0,3 0 1
+playable .XOXO b 0,4 0 1
+playable .XOXO w 0,0 1 1
+playable .XOXO w 0,1 0 1
+playable .XOXO w 0,2 0 1
+playable .XOXO w 0,3 0 0
+playable .XOXO w 0,4 0 1
+playable XXOXO b 0,0 0 1
+playable XXOXO b 0,1 0 1
+playable XXOXO b 0,2 0 1
+playable XXOXO b 0,3 0 1
+playable XXOXO b 0,4 0 1
+playable XXOXO w 0,0 0 1
+playable XXOXO w 0,1 0 1
+playable XXOXO w 0,2 0 1
+playable XXOXO w 0,3 0 1
+playable XXOXO w 0,4 0 1
+playable OXOXO b 0,0 0 1
+playable OXOXO b 0,1 0 1
+playable OXOXO b 0,2 0 1
+playable OXOXO b 0,3 0 1
+playable OXOXO b 0,4 0 1
+playable OXOXO w 0,0 0 1
+playable OXOXO w 0,1 0 1
+playable OXOXO w 0,2 0 1
+playable OXOXO w 0,3 0 1
+playable OXOXO w 0,4 0 1
+playable .OOXO b 0,0 1 1
+playable .OOXO b 0,1 0 1
+playable .OOXO b 0,2 0 1
+playable .OOXO b 0,3 0 1
+playable .OOXO b 0,4 0 0
+playable .OOXO w 0,0 1 1
+playable .OOXO w 0,1 0 1
+playable .OOXO w 0,2 0 1
+playable .OOXO w 0,3 0 1
+playable .OOXO w 0,4 0 1
+playable XOOXO b 0,0 0 1
+playable XOOXO b 0,1 0 1
+playable XOOXO b 0,2 0 1
+playable XOOXO b 0,3 0 1
+playable XOOXO b 0,4 0 1
+playable XOOXO w 0,0 0 1
+playable XOOXO w 0,1 0 1
+playable XOOXO w 0,2 0 1
+playable XOOXO w 0,3 0 1
+playable XOOXO w 0,4 0 1
+playable OOOXO b 0,0 0 1
+playable OOOXO b 0,1 0 1
+playable OOOXO b 0,2 0 1
+playable OOOXO b 0,3 0 1
+playable OOOXO b 0,4 0 1
+playable OOOXO w 0,0 0 1
+playable OOOXO w 0,1 0 1
+playable OOOXO w 0,2 0 1
+playable OOOXO w 0,3 0 0
+playable OOOXO w 0,4 0 1
+playable ...OO b 0,0 1 1
+playable ...OO b 0,1 1 1
+playable ...OO b 0,2 1 1
+playable ...OO b 0,3 0 1
+playable ...OO b 0,4 0 0
+playable ...OO w 0,0 1 1
+playable ...OO w 0,1 1 1
+playable ...OO w 0,2 1 1
+playable ...OO w 0,3 0 1
+playable ...OO w 0,4 0 1
+playable X..OO b 0,0 0 1
+playable X..OO b 0,1 1 1
+playable X..OO b 0,2 1 1
+playable X..OO b 0,3 0 1
+playable X..OO b 0,4 0 0
+playable X..OO w 0,0 0 1
+playable X..OO w 0,1 1 1
+playable X..OO w 0,2 1 1
+playable X..OO w 0,3 0 1
+playable X..OO w 0,4 0 1
+playable O..OO b 0,0 0 1
+playable O..OO b 0,1 1 1
+playable O..OO b 0,2 1 1
+playable O..OO b 0,3 0 1
+playable O..OO b 0,4 0 0
+playable O..OO w 0,0 0 1
+playable O..OO w 0,1 1 1
+playable O..OO w 0,2 1 1
+playable O..OO w 0,3 0 1
+playable O..OO w 0,4 0 1
+playable .X.OO b 0,0 1 1
+playable .X.OO b 0,1 0 1
+playable .X.OO b 0,2 1 1
+playable .X.OO b 0,3 0 1
+playable .X.OO b 0,4 0 0
+playable .X.OO w 0,0 1 0
+playable .X.OO w 0,1 0 1
+playable .X.OO w 0,2 1 0
+playable .X.OO w 0,3 0 1
+playable .X.OO w 0,4 0 1
+playable XX.OO b 0,0 0 1
+playable XX.OO b 0,1 0 1
+playable XX.OO b 0,2 1 1
+playable XX.OO b 0,3 0 1
+playable XX.OO b 0,4 0 0
+playable XX.OO w 0,0 0 0
+playable XX.OO w 0,1 0 1
+playable XX.OO w 0,2 1 1
+playable XX.OO w 0,3 0 1
+playable XX.OO w 0,4 0 1
+playable OX.OO b 0,0 0 1
+playable OX.OO b 0,1 0 1
+playable OX.OO b 0,2 1 1
+playable OX.OO b 0,3 0 1
+playable OX.OO b 0,4 0 0
+playable OX.OO w 0,0 0 0
+playable OX.OO w 0,1 0 1
+playable OX.OO w 0,2 1 1
+playable OX.OO w 0,3 0 1
+playable OX.OO w 0,4 0 1
+playable .O.OO b 0,0 1 0
+playable .O.OO b 0,1 0 1
+playable .O.OO b 0,2 1 1
+playable .O.OO b 0,3 0 1
+playable .O.OO b 0,4 0 0
+playable .O.OO w 0,0 1 1
+playable .O.OO w 0,1 0 1
+playable .O.OO w 0,2 1 1
+playable .O.OO w 0,3 0 1
+playable .O.OO w 0,4 0 1
+playable XO.OO b 0,0 0 0
+playable XO.OO b 0,1 0 1
+playable XO.OO b 0,2 1 1
+playable XO.OO b 0,3 0 1
+playable XO.OO b 0,4 0 0
+playable XO.OO w 0,0 0 1
+playable XO.OO w 0,1 0 1
+playable XO.OO w 0,2 1 1
+playable XO.OO w 0,3 0 1
+playable XO.OO w 0,4 0 1
+playable OO.OO b 0,0 0 0
+playable OO.OO b 0,1 0 1
+playable OO.OO b 0,2 1 1
+playable OO.OO b 0,3 0 1
+playable OO.OO b 0,4 0 0
+playable OO.OO w 0,0 0 1
+playable OO.OO w 0,1 0 1
+playable OO.OO w 0,2 1 0
+playable OO.OO w 0,3 0 1
+playable OO.OO w 0,4 0 1
+playable ..XOO b 0,0 1 1
+playable ..XOO b 0,1 1 1
+playable ..XOO b 0,2 0 1
+playable ..XOO b 0,3 0 1
+playable ..XOO b 0,4 0 1
+playable ..XOO w 0,0 1 1
+playable ..XOO w 0,1 1 1
+playable ..XOO w 0,2 0 1
+playable ..XOO w 0,3 0 0
+playable ..XOO w 0,4 0 0
+playable X.XOO b 0,0 0 1
+playable X.XOO b 0,1 1 1
+playable X.XOO b 0,2 0 1
+playable X.XOO b 0,3 0 1
+playable X.XOO b 0,4 0 1
+playable X.XOO w 0,0 0 1
+playable X.XOO w 0,1 1 1
+playable X.XOO w 0,2 0 1
+playable X.XOO w 0,3 0 0
+playable X.XOO w 0,4 0 0
+playable O.XOO b 0,0 0 1
+playable O.XOO b 0,1 1 1
+playable O.XOO b 0,2 0 1
+playable O.XOO b 0,3 0 1
+playable O.XOO b 0,4 0 1
+playable O.XOO w 0,0 0 1
+playable O.XOO w 0,1 1 1
+playable O.XOO w 0,2 0 1
+playable O.XOO w 0,3 0 0
+playable O.XOO w 0,4 0 0
+playable .XXOO b 0,0 1 1
+playable .XXOO b 0,1 0 1
+playable .XXOO b 0,2 0 1
+playable .XXOO b 0,3 0 1
+playable .XXOO b 0,4 0 1
+playable .XXOO w 0,0 1 1
+playable .XXOO w 0,1 0 1
+playable .XXOO w 0,2 0 0
+playable .XXOO w 0,3 0 0
+playable .XXOO w 0,4 0 0
+playable XXXOO b 0,0 0 1
+playable XXXOO b 0,1 0 1
+playable XXXOO b 0,2 0 1
+playable XXXOO b 0,3 0 1
+playable XXXOO b 0,4 0 1
+playable XXXOO w 0,0 0 1
+playable XXXOO w 0,1 0 1
+playable XXXOO w 0,2 0 1
+playable XXXOO w 0,3 0 1
+playable XXXOO w 0,4 0 1
+playable OXXOO b 0,0 0 1
+playable OXXOO b 0,1 0 1
+playable OXXOO b 0,2 0 1
+playable OXXOO b 0,3 0 1
+playable OXXOO b 0,4 0 1
+playable OXXOO w 0,0 0 1
+playable OXXOO w 0,1 0 1
+playable OXXOO w 0,2 0 1
+playable OXXOO w 0,3 0 1
+playable OXXOO w 0,4 0 1
+playable .OXOO b 0,0 1 1
+playable .OXOO b 0,1 0 1
+playable .OXOO b 0,2 0 1
+playable .OXOO b 0,3 0 1
+playable .OXOO b 0,4 0 1
+playable .OXOO w 0,0 1 1
+playable .OXOO w 0,1 0 1
+playable .OXOO w 0,2 0 1
+playable .OXOO w 0,3 0 1
+playable .OXOO w 0,4 0 1
+playable XOXOO b 0,0 0 1
+playable XOXOO b 0,1 0 1
+playable XOXOO b 0,2 0 1
+playable XOXOO b 0,3 0 1
+playable XOXOO b 0,4 0 1
+playable XOXOO w 0,0 0 1
+playable XOXOO w 0,1 0 1
+playable XOXOO w 0,2 0 1
+playable XOXOO w 0,3 0 1
+playable XOXOO w 0,4 0 1
+playable OOXOO b 0,0 0 1
+playable OOXOO b 0,1 0 1
+playable OOXOO b 0,2 0 1
+playable OOXOO b 0,3 0 1
+playable OOXOO b 0,4 0 1
+playable OOXOO w 0,0 0 1
+playable OOXOO w 0,1 0 1
+playable OOXOO w 0,2 0 0
+playable OOXOO w 0,3 0 1
+playable OOXOO w 0,4 0 1
+playable ..OOO b 0,0 1 1
+playable ..OOO b 0,1 1 1
+playable ..OOO b 0,2 0 1
+playable ..OOO b 0,3 0 1
+playable ..OOO b 0,4 0 0
+playable ..OOO w 0,0 1 1
+playable ..OOO w 0,1 1 1
+playable ..OOO w 0,2 0 1
+playable ..OOO w 0,3 0 1
+playable ..OOO w 0,4 0 1
+playable X.OOO b 0,0 0 1
+playable X.OOO b 0,1 1 1
+playable X.OOO b 0,2 0 1
+playable X.OOO b 0,3 0 1
+playable X.OOO b 0,4 0 0
+playable X.OOO w 0,0 0 1
+playable X.OOO w 0,1 1 1
+playable X.OOO w 0,2 0 1
+playable X.OOO w 0,3 0 1
+playable X.OOO w 0,4 0 1
+playable O.OOO b 0,0 0 1
+playable O.OOO b 0,1 1 1
+playable O.OOO b 0,2 0 1
+playable O.OOO b 0,3 0 1
+playable O.OOO b 0,4 0 0
+playable O.OOO w 0,0 0 1
+playable O.OOO w 0,1 1 0
+playable O.OOO w 0,2 0 1
+playable O.OOO w 0,3 0 1
+playable O.OOO w 0,4 0 1
+playable .XOOO b 0,0 1 1
+playable .XOOO b 0,1 0 1
+playable .XOOO b 0,2 0 1
+playable .XOOO b 0,3 0 1
+playable .XOOO b 0,4 0 1
+playable .XOOO w 0,0 1 1
+playable .XOOO w 0,1 0 1
+playable .XOOO w 0,2 0 0
+playable .XOOO w 0,3 0 0
+playable .XOOO w 0,4 0 0
+playable XXOOO b 0,0 0 1
+playable XXOOO b 0,1 0 1
+playable XXOOO b 0,2 0 1
+playable XXOOO b 0,3 0 1
+playable XXOOO b 0,4 0 1
+playable XXOOO w 0,0 0 1
+playable XXOOO w 0,1 0 1
+playable XXOOO w 0,2 0 1
+playable XXOOO w 0,3 0 1
+playable XXOOO w 0,4 0 1
+playable OXOOO b 0,0 0 1
+playable OXOOO b 0,1 0 1
+playable OXOOO b 0,2 0 1
+playable OXOOO b 0,3 0 1
+playable OXOOO b 0,4 0 1
+playable OXOOO w 0,0 0 1
+playable OXOOO w 0,1 0 0
+playable OXOOO w 0,2 0 1
+playable OXOOO w 0,3 0 1
+playable OXOOO w 0,4 0 1
+playable .OOOO b 0,0 1 1
+playable .OOOO b 0,1 0 1
+playable .OOOO b 0,2 0 1
+playable .OOOO b 0,3 0 1
+playable .OOOO b 0,4 0 0
+playable .OOOO w 0,0 1 0
+playable .OOOO w 0,1 0 1
+playable .OOOO w 0,2 0 1
+playable .OOOO w 0,3 0 1
+playable .OOOO w 0,4 0 1
+playable XOOOO b 0,0 0 1
+playable XOOOO b 0,1 0 1
+playable XOOOO b 0,2 0 1
+playable XOOOO b 0,3 0 1
+playable XOOOO b 0,4 0 1
+playable XOOOO w 0,0 0 0
+playable XOOOO w 0,1 0 1
+playable XOOOO w 0,2 0 1
+playable XOOOO w 0,3 0 1
+playable XOOOO w 0,4 0 1
+playable OOOOO b 0,0 0 1
+playable OOOOO b 0,1 0 1
+playable OOOOO b 0,2 0 1
+playable OOOOO b 0,3 0 1
+playable OOOOO b 0,4 0 1
+playable OOOOO w 0,0 0 0
+playable OOOOO w 0,1 0 0
+playable OOOOO w 0,2 0 0
+playable OOOOO w 0,3 0 0
+playable OOOOO w 0,4 0 0
+area ..... 0 0
+area X.... 5 0
+area O.... 0 5
+area .X... 5 0
+area XX... 5 0
+area OX... 4 1
+area .O... 0 5
+area XO... 1 4
+area OO... 0 5
+area ..X.. 5 0
+area X.X.. 5 0
+area O.X.. 3 1
+area .XX.. 5 0
+area XXX.. 5 0
+area OXX.. 4 1
+area .OX.. 3 2
+area XOX.. 4 1
+area OOX.. 3 2
+area ..O.. 0 5
+area X.O.. 1 3
+area O.O.. 0 5
+area .XO.. 2 3
+area XXO.. 2 3
+area OXO.. 1 4
+area .OO.. 0 5
+area XOO.. 1 4
+area OOO.. 0 5
+area ...X. 5 0
+area X..X. 5 0
+area O..X. 2 1
+area .X.X. 5 0
+area XX.X. 5 0
+area OX.X. 4 1
+area .O.X. 2 2
+area XO.X. 3 1
+area OO.X. 2 2
+area ..XX. 5 0
+area X.XX. 5 0
+area O.XX. 3 1
+area .XXX. 5 0
+area XXXX. 5 0
+area OXXX. 4 1
+area .OXX. 3 2
+area XOXX. 4 1
+area OOXX. 3 2
+area ..OX. 2 3
+area X.OX. 3 1
+area O.OX. 2 3
+area .XOX. 4 1
+area XXOX. 4 1
+area OXOX. 3 2
+area .OOX. 2 3
+area XOOX. 3 2
+area OOOX. 2 3
+area ...O. 0 5
+area X..O. 1 2
+area O..O. 0 5
+area .X.O. 2 2
+area XX.O. 2 2
+area OX.O. 1 3
+area .O.O. 0 5
+area XO.O. 1 4
+area OO.O. 0 5
+area ..XO. 3 2
+area X.XO. 3 2
+area O.XO. 1 3
+area .XXO. 3 2
+area XXXO. 3 2
+area OXXO. 2 3
+area .OXO. 1 4
+area XOXO. 2 3
+area OOXO. 1 4
+area ..OO. 0 5
+area X.OO. 1 3
+area O.OO. 0 5
+area .XOO. 2 3
+area XXOO. 2 3
+area OXOO. 1 4
+area .OOO. 0 5
+area XOOO. 1 4
+area OOOO. 0 5
+area ....X 5 0
+area X...X 5 0
+area O...X 1 1
+area .X..X 5 0
+area XX..X 5 0
+area OX..X 4 1
+area .O..X 1 2
+area XO..X 2 1
+area OO..X 1 2
+area ..X.X 5 0
+area X.X.X 5 0
+area O.X.X 3 1
+area .XX.X 5 0
+area XXX.X 5 0
+area OXX.X 4 1
+area .OX.X 3 2
+area XOX.X 4 1
+area OOX.X 3 2
+area ..O.X 1 3
+area X.O.X 2 1
+area O.O.X 1 3
+area .XO.X 3 1
+area XXO.X 3 1
+area OXO.X 2 2
+area .OO.X 1 3
+area XOO.X 2 2
+area OOO.X 1 3
+area ...XX 5 0
+area X..XX 5 0
+area O..XX 2 1
+area .X.XX 5 0
+area XX.XX 5 0
+area OX.XX 4 1
+area .O.XX 2 2
+area XO.XX 3 1
+area OO.XX 2 2
+area ..XXX 5 0
+area X.XXX 5 0
+area O.XXX 3 1
+area .XXXX 5 0
+area XXXXX 5 0
+area OXXXX 4 1
+area .OXXX 3 2
+area XOXXX 4 1
+area OOXXX 3 2
+area ..OXX 2 3
+area X.OXX 3 1
+area O.OXX 2 3
+area .XOXX 4 1
+area XXOXX 4 1
+area OXOXX 3 2
+area .OOXX 2 3
+area XOOXX 3 2
+area OOOXX 2 3
+area ...OX 1 4
+area X..OX 2 1
+area O..OX 1 4
+area .X.OX 3 1
+area XX.OX 3 1
+area OX.OX 2 2
+area .O.OX 1 4
+area XO.OX 2 3
+area OO.OX 1 4
+area ..XOX 4 1
+area X.XOX 4 1
+area O.XOX 2 2
+area .XXOX 4 1
+area XXXOX 4 1
+area OXXOX 3 2
+area .OXOX 2 3
+area XOXOX 3 2
+area OOXOX 2 3
+area ..OOX 1 4
+area X.OOX 2 2
+area O.OOX 1 4
+area .XOOX 3 2
+area XXOOX 3 2
+area OXOOX 2 3
+area .OOOX 1 4
+area XOOOX 2 3
+area OOOOX 1 4
+area ....O 0 5
+area X...O 1 1
+area O...O 0 5
+area .X..O 2 1
+area XX..O 2 1
+area OX..O 1 2
+area .O..O 0 5
+area XO..O 1 4
+area OO..O 0 5
+area ..X.O 3 1
+area X.X.O 3 1
+area O.X.O 1 2
+area .XX.O 3 1
+area XXX.O 3 1
+area OXX.O 2 2
+area .OX.O 1 3
+area XOX.O 2 2
+area OOX.O 1 3
+area ..O.O 0 5
+area X.O.O 1 3
+area O.O.O 0 5
+area .XO.O 2 3
+area XXO.O 2 3
+area OXO.O 1 4
+area .OO.O 0 5
+area XOO.O 1 4
+area OOO.O 0 5
+area ...XO 4 1
+area X..XO 4 1
+area O..XO 1 2
+area .X.XO 4 1
+area XX.XO 4 1
+area OX.XO 3 2
+area .O.XO 1 3
+area XO.XO 2 2
+area OO.XO 1 3
+area ..XXO 4 1
+area X.XXO 4 1
+area O.XXO 2 2
+area .XXXO 4 1
+area XXXXO 4 1
+area OXXXO 3 2
+area .OXXO 2 3
+area XOXXO 3 2
+area OOXXO 2 3
+area ..OXO 1 4
+area X.OXO 2 2
+area O.OXO 1 4
+area .XOXO 3 2
+area XXOXO 3 2
+area OXOXO 2 3
+area .OOXO 1 4
+area XOOXO 2 3
+area OOOXO 1 4
+area ...OO 0 5
+area X..OO 1 2
+area O..OO 0 5
+area .X.OO 2 2
+area XX.OO 2 2
+area OX.OO 1 3
+area .O.OO 0 5
+area XO.OO 1 4
+area OO.OO 0 5
+area ..XOO 3 2
+area X.XOO 3 2
+area O.XOO 1 3
+area .XXOO 3 2
+area XXXOO 3 2
+area OXXOO 2 3
+area .OXOO 1 4
+area XOXOO 2 3
+area OOXOO 1 4
+area ..OOO 0 5
+area X.OOO 1 3
+area O.OOO 0 5
+area .XOOO 2 3
+area XXOOO 2 3
+area OXOOO 1 4
+area .OOOO 0 5
+area XOOOO 1 4
+area OOOOO 0 5
+play ssk 0 root ..... b pass 1 0 1
+play ssk 0 root ..... b 0,0 1 0 1
+play ssk 0 root ..... b 0,1 1 0 1
+play ssk 0 root ..... b 0,2 1 0 1
+play ssk 0 root ..... b 0,3 1 0 1
+play ssk 0 root ..... b 0,4 1 0 1
+play ssk 1 pass ..... w pass 1 1 2
+play ssk 1 pass ..... w 0,0 1 1 2
+play ssk 1 pass ..... w 0,1 1 1 2
+play ssk 1 pass ..... w 0,2 1 1 2
+play ssk 1 pass ..... w 0,3 1 1 2
+play ssk 1 pass ..... w 0,4 1 1 2
+play ssk 1 0,0 X.... w pass 1 0 2
+play ssk 1 0,0 X.... w 0,0 0 0 2
+play ssk 1 0,0 X.... w 0,1 1 0 2
+play ssk 1 0,0 X.... w 0,2 1 0 2
+play ssk 1 0,0 X.... w 0,3 1 0 2
+play ssk 1 0,0 X.... w 0,4 1 0 2
+play ssk 1 0,1 .X... w pass 1 0 2
+play ssk 1 0,1 .X... w 0,0 0 0 2
+play ssk 1 0,1 .X... w 0,1 0 0 2
+play ssk 1 0,1 .X... w 0,2 1 0 2
+play ssk 1 0,1 .X... w 0,3 1 0 2
+play ssk 1 0,1 .X... w 0,4 1 0 2
+play ssk 1 0,2 ..X.. w pass 1 0 2
+play ssk 1 0,2 ..X.. w 0,0 1 0 2
+play ssk 1 0,2 ..X.. w 0,1 1 0 2
+play ssk 1 0,2 ..X.. w 0,2 0 0 2
+play ssk 1 0,2 ..X.. w 0,3 1 0 2
+play ssk 1 0,2 ..X.. w 0,4 1 0 2
+play ssk 1 0,3 ...X. w pass 1 0 2
+play ssk 1 0,3 ...X. w 0,0 1 0 2
+play ssk 1 0,3 ...X. w 0,1 1 0 2
+play ssk 1 0,3 ...X. w 0,2 1 0 2
+play ssk 1 0,3 ...X. w 0,3 0 0 2
+play ssk 1 0,3 ...X. w 0,4 0 0 2
+play ssk 1 0,4 ....X w pass 1 0 2
+play ssk 1 0,4 ....X w 0,0 1 0 2
+play ssk 1 0,4 ....X w 0,1 1 0 2
+play ssk 1 0,4 ....X w 0,2 1 0 2
+play ssk 1 0,4 ....X w 0,3 1 0 2
+play ssk 1 0,4 ....X w 0,4 0 0 2
+play psk 0 root ..... b pass 1 0 1
+play psk 0 root ..... b 0,0 1 0 1
+play psk 0 root ..... b 0,1 1 0 1
+play psk 0 root ..... b 0,2 1 0 1
+play psk 0 root ..... b 0,3 1 0 1
+play psk 0 root ..... b 0,4 1 0 1
+play psk 1 pass ..... w pass 1 1 2
+play psk 1 pass ..... w 0,0 1 1 2
+play psk 1 pass ..... w 0,1 1 1 2
+play psk 1 pass ..... w 0,2 1 1 2
+play psk 1 pass ..... w 0,3 1 1 2
+play psk 1 pass ..... w 0,4 1 1 2
+play psk 1 0,0 X.... w pass 1 0 2
+play psk 1 0,0 X.... w 0,0 0 0 2
+play psk 1 0,0 X.... w 0,1 1 0 2
+play psk 1 0,0 X.... w 0,2 1 0 2
+play psk 1 0,0 X.... w 0,3 1 0 2
+play psk 1 0,0 X.... w 0,4 1 0 2
+play psk 1 0,1 .X... w pass 1 0 2
+play psk 1 0,1 .X... w 0,0 0 0 2
+play psk 1 0,1 .X... w 0,1 0 0 2
+play psk 1 0,1 .X... w 0,2 1 0 2
+play psk 1 0,1 .X... w 0,3 1 0 2
+play psk 1 0,1 .X... w 0,4 1 0 2
+play psk 1 0,2 ..X.. w pass 1 0 2
+play psk 1 0,2 ..X.. w 0,0 1 0 2
+play psk 1 0,2 ..X.. w 0,1 1 0 2
+play psk 1 0,2 ..X.. w 0,2 0 0 2
+play psk 1 0,2 ..X.. w 0,3 1 0 2
+play psk 1 0,2 ..X.. w 0,4 1 0 2
+play psk 1 0,3 ...X. w pass 1 0 2
+play psk 1 0,3 ...X. w 0,0 1 0 2
+play psk 1 0,3 ...X. w 0,1 1 0 2
+play psk 1 0,3 ...X. w 0,2 1 0 2
+play psk 1 0,3 ...X. w 0,3 0 0 2
+play psk 1 0,3 ...X. w 0,4 0 0 2
+play psk 1 0,4 ....X w pass 1 0 2
+play psk 1 0,4 ....X w 0,0 1 0 2
+play psk 1 0,4 ....X w 0,1 1 0 2
+play psk 1 0,4 ....X w 0,2 1 0 2
+play psk 1 0,4 ....X w 0,3 1 0 2
+play psk 1 0,4 ....X w 0,4 0 0 2

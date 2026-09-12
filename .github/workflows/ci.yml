@@ -38,6 +38,11 @@ jobs:
       # No toolchain needed: these gates are shell and awk.
       - run: ./tools/check-docs.sh
       - run: ./tools/check-ledger.sh
+      - run: ./tools/check-mirror.sh
+      # The Lean oracle fixtures record the SHA-256 of the three Lean files they
+      # were generated from. No toolchain is needed to check that they still
+      # match; regenerating them is what needs Lean.
+      - run: ./tools/check-oracle.sh
 
   lean:
     runs-on: ubuntu-latest
