@@ -168,3 +168,13 @@ open Superko
 #print axioms Superko.Compress.winsFor_insert_unreachable
 #print axioms Superko.Compress.decideWins_iff_winsFor
 #print axioms Superko.Compress.sitStep_empty_board
+
+-- C-50, C-51, what separates the two superko rules (Results/C50_Mechanism.lean).
+#print axioms Superko.now_mem_seen_start
+#print axioms Superko.now_mem_seen_step
+#print axioms Superko.eq_or_eq_other
+#print axioms Superko.pass_seen_both
+#print axioms Superko.C50_pass_closes_board
+#print axioms Superko.resolve_keeps_mover
+#print axioms Superko.C51_play_changes_board
+#print axioms Superko.C51_two_plays_by_one_color_change_board
