@@ -176,5 +176,7 @@ open Superko
 #print axioms Superko.pass_seen_both
 #print axioms Superko.C50_pass_closes_board
 #print axioms Superko.resolve_keeps_mover
+#print axioms Superko.resolve_mover_of_ne
+#print axioms Superko.resolve_other_of_other
 #print axioms Superko.C51_play_changes_board
 #print axioms Superko.C51_two_plays_by_one_color_change_board

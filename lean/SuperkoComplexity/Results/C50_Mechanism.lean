@@ -9,11 +9,11 @@ import SuperkoComplexity.Basic
 # What separates the two superko rules (C-50, C-51)
 
 `Superko.PSK` refuses a play whose board has stood with *either* color to move;
-`Superko.SSK` refuses it only when that board has stood with *this* color to
-move. So the two rules differ at exactly the plays whose target board has
-occurred at the opposite parity and never at this one, and the question of how
-a game reaches such a play is the question of how a board comes to stand with
-both colors to move.
+`Superko.SSK` refuses it only when that board has stood with the opponent — the
+color to move after the play — to move. So the two rules differ at exactly the
+plays whose board has stood with the mover to move and never with the opponent,
+and the question of how a game reaches such a play is the question of how a
+board comes to stand with both colors to move.
 
 This file proves the two local facts that answer it.
 
@@ -29,14 +29,18 @@ the recurring board, not passes altogether.
 **C-51: a play never undoes a play of the same color.** `resolve` clears the
 opponent's chains only, so the mover's own stones survive every move the mover
 makes. A single play therefore never recreates the board it was played on, and
-two plays by one color never do either. A board can only come back after a play
-by each color — a ko brings one back in two — and a return that swaps the color
-to move needs at least three plays (C-52).
+two plays by one color with nothing but passes between them never do either.
+The file also proves the two per-play facts the stone count of C-52 uses: a play
+puts a mover stone at no point but the one played, and leaves no opponent stone
+that was not there before. That a board comes back only through a walk in which
+both colors play, and that a return swapping the color to move needs at least
+three plays, is C-52's count over a walk, and that count is by hand. A ko brings
+a board back in two plays, with the same color to move.
 
 Together these are the local content of claim C-52, which is that the return
 walk behind a legality gap holds at least three plays and no pass at the
 recurring board. That statement is
-about walks and is proved by hand in `proofs/C-52.md`, not here; the two facts
+about walks and is proved by hand in `proofs/C-52.md`, not here; the facts
 below are the ones it turns on, and they are what makes it a correction rather
 than a guess:
 
@@ -52,8 +56,9 @@ than a guess:
 `proved`, machine-checked, on the three standard axioms. Nothing here bears on
 whether the *value* of a position differs between the rules: that is C-17, and
 it is open. A legality gap is necessary for a value gap and nowhere near
-sufficient — the sweep of `superko-solve` finds no value gap on any board with
-`m · n ≤ 5` and finds legality gaps all over those same boards (C-53).
+sufficient: the sweep of `superko-solve` finds no value gap on any board with
+`m · n ≤ 5` (C-53), and C-53 also records how often its searches made plays SSK
+permits and PSK refuses on those boards.
 -/
 
 namespace Superko
@@ -130,6 +135,30 @@ theorem resolve_keeps_mover (b : Position m n) (c : Color) (q r : Point m n)
   unfold resolve clear
   simp [hupd, hne]
 
+/-- **A play puts a mover stone nowhere but where it is played.** Away from the
+played point, the result carries a `c` stone exactly where the board did. -/
+theorem resolve_mover_of_ne (b : Position m n) (c : Color) (p q : Point m n)
+    (hq : q ≠ p) : resolve b c p q = some c ↔ b q = some c := by
+  constructor
+  · intro h
+    simp only [resolve, clear, Function.update_of_ne hq] at h
+    split_ifs at h
+    exact h
+  · exact resolve_keeps_mover b c p q
+
+/-- **A play adds no opponent stone.** Wherever the result carries a `c.other`
+stone, the board already carried one: `update` writes `c`, and `clear` only
+erases. -/
+theorem resolve_other_of_other (b : Position m n) (c : Color) (p q : Point m n)
+    (h : resolve b c p q = some c.other) : b q = some c.other := by
+  have hne : c ≠ c.other := by cases c <;> simp [Color.other]
+  simp only [resolve, clear] at h
+  split_ifs at h
+  by_cases hq : q = p
+  · subst hq
+    simp [hne] at h
+  · rwa [Function.update_of_ne hq] at h
+
 /-- **C-51, one play.** A play never recreates the board it was played on: the
 point played to was empty and carries the played stone afterwards. -/
 theorem C51_play_changes_board (b : Position m n) (c : Color) (p : Point m n)
@@ -144,8 +173,9 @@ recreate the board either, whatever they capture: the first play's stone
 survives the second, so the point it stands on is occupied at the end and was
 empty at the start.
 
-This is the case that rules out the three-move return `play, pass, play`, whose
-two plays are necessarily by the same color — see `proofs/C-52.md`. -/
+This is the case of the three-move walk `play, pass, play`, whose two plays are
+by the same color. `proofs/C-52.md` rules that walk out by its stone count
+instead, which covers every walk at once. -/
 theorem C51_two_plays_by_one_color_change_board (b : Position m n) (c : Color)
     (p q : Point m n) (hp : b p = none) :
     resolve (resolve b c p) c q ≠ b := by
