@@ -60,8 +60,10 @@ Two sub-questions, of very different difficulty:
   PSK refuses on some of those boards; under the suicide-removing convention
   the least is `X.` on 1×2 (C-54, `computed`). Under that convention separation
   is not monotone in the board; under `Defs.lean`'s rules nothing is known
-  either way, so the absence at five points bounds nothing at six, and the
-  boards of six points are unswept. The shape of a separating play is settled (C-50 and C-51,
+  either way, so the absence at five points bounds nothing at six. Of the
+  six-point boards only 2×3 is swept, under a node budget, and it is
+  inconclusive: none of the 792 roots it resolves separates, and 666 are
+  unresolved, the empty board among them (C-53). The shape of a separating play is settled (C-50 and C-51,
   `proved`; C-52, `proved` by hand): it closes an odd walk of at least three
   plays with no pass at the recurring board, so a value separation needs a
   position where closing that walk is worth a player's while. A witness, once

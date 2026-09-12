@@ -73,7 +73,8 @@ censuses the situation graph and finds a single mutually reachable component
 above the empty board, so C-42's prune removes at most two archive entries
 (C-45, C-46): pruning the archive to a subset of itself is closed. The solver
 finds no position whose value differs between positional and situational
-superko on any board of at most five points (C-53), where the suicide-removing
+superko on any board of at most five points, or at any of the 792 of 2×3's
+1458 roots it resolves within its node budget (C-53), where the suicide-removing
 convention, which `Defs.lean` does not model, already separates them on 1×2
 (C-54). Every number here regenerates from a witness command in [`results/`](results/) or a named
 test.

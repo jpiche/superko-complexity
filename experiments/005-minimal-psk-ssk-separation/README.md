@@ -131,7 +131,7 @@ Every body lands in `results/` with a witness header.
 ## Result
 
 Runs of 2026-09-12. The bodies under `results/` were produced at commit
-`b93f20e`. Every value is `computed` by `superko-solve`, from `Defs.lean`'s
+`b93f20e`, except the 2×3 sweep, produced at `475f550`. Every value is `computed` by `superko-solve`, from `Defs.lean`'s
 rules unless a table says otherwise.
 
 **The gate of row 1.** `crates/superko-solve/tests/published.rs` reproduces
@@ -165,6 +165,7 @@ test's budget of 4 × 10⁷ nodes, and 1×9 is not attempted.
 | 1×4 | 162 | 162 | 0 | 4 | 4 / 4 |
 | 2×2 | 162 | 162 | 0 | 98 | 1 / 1 |
 | 1×5 | 486 | 486 | 0 | 328 | 0 / 0 |
+| 2×3, at 10⁷ nodes per search | 1458 | 792 | 0 | 184 | unresolved / unresolved |
 
 "Meeting an SSK-only play" means the SSK search made a play PSK would refuse —
 made, not merely generated at a node where a cutoff then pruned it. The count
@@ -173,6 +174,17 @@ the searches made none: every such play they generated was cut off. The 1×3
 row therefore carries no evidence from the searches that the rules met there,
 and the 1×3 legality gap is the one `crates/superko-graph/tests/containment.rs`
 exhibits.
+
+**2×3 is not exhaustive.** Its sweep ran under a budget of 10⁷ nodes per search
+(`results/separate-2x3-forbid-budget-1e7.txt`: 1.35 × 10¹⁰ nodes in 363 s,
+2 MB resident) and resolved 792 of the 1458 roots. The 666 it left unresolved
+include the least root by rank, the empty board with Black to move. None of
+the 792 separates, and 184 of them made a play PSK refuses. All 666 unresolved
+roots made one as well, 850 roots in all: the budget stopped exactly the
+searches in which the rules met. The empty root does not resolve within 10⁹
+nodes under either rule (`superko solve --board 2x3 --rule psk --suicide
+forbid --root .../... --budget 1000000000`, and the same with `--rule ssk`;
+27 s each).
 
 **The sweep, suicide removed** (`results/separate-<board>-remove-own.txt`),
 which has no counterpart in `Defs.lean`:
@@ -196,7 +208,8 @@ searches separately from the score searches, rather than from separate
 **Not run.** The boards of six points, exhaustively: the empty 1×6 root
 resolves under PSK in 27 925 122 nodes (`superko solve --board 1x6 --rule psk
 --suicide forbid --root ......`), and a sweep of 1×6 was started and lost to a
-machine crash before it finished. `remove-own` on 1×5. The Lean route of row 3,
+machine crash before it finished; 2×3 was swept under a budget only, above, and
+3×2 and 6×1 not at all. `remove-own` on 1×5. The Lean route of row 3,
 which needs a witness under `Defs.lean`'s rules.
 
 **The mechanism.** The analysis the sweep prompted became C-50, C-51 and C-52:
@@ -217,7 +230,7 @@ As the row prescribed: C-17 stays `open` for `Defs.lean`, C-54 records the
 fact, and `docs/formal-model.md` §3 records that the suicide convention is
 observable in the value.
 
-**Row 4 held through five points, and six was not reached.** C-53 records the
+**Row 4 held through five points, and six was reached only on 2×3, in part.** C-53 records the
 exhausted region exactly. Under the suicide-removing convention separation is
 not monotone in the board (C-54); under `Defs.lean`'s rules nothing is known
 either way, so the null result bounds nothing above five points. Row 4's second
@@ -226,9 +239,14 @@ is not opened: whether any position separates at all is C-17, and a proof of the
 absence C-53 computes would move C-53 itself to `proved`, so the question
 already has the rows it needs.
 
+**Row 5 fired on 2×3.** At 10⁷ nodes per search the least unresolved root is
+the empty board, so no minimum on 2×3 is unconditional, and the board holds a
+null result: none of its 792 resolved roots separates, and nothing is known of
+the 666 unresolved.
+
 **The hypothesis is not refuted under `Defs.lean`'s rules, and is narrowed.**
 It placed the smallest separating board at `m · n` between 4 and 6; 4 and 5
-hold none, so it now requires six points, which are unswept. Under the
+hold none, so it now requires six points, which are swept only in part. Under the
 suicide-removing convention the least separating board has two points, outside
 the guessed range.
 
@@ -238,9 +256,11 @@ Consequences applied: ledger rows C-50 to C-55; the witness columns of C-17
 and C-24; `docs/formal-model.md` §OPEN-1 and §3; `docs/open-questions.md` §2
 and §3; the validation table of `docs/trusted-base.md`.
 
-What this does not establish: anything about boards of six points or more;
+What this does not establish: anything about boards of six points or more,
+beyond the values at the 792 resolved roots of 2×3;
 that the SSK-only plays counted are all such plays in the trees; that the two
 rules give the same winner on 1×5 at every komi, which needs C-55 beyond the
 boards it was checked on; and anything `proved` about C-17.
 
-**Status stays `running`.** It resumes at the six-point boards.
+**Status stays `running`.** It resumes at the six-point boards, where the empty
+2×3 root, unresolved at 10⁹ nodes, is the first obstacle.
