@@ -247,8 +247,9 @@ the definitions or the code before anything changed, and nearly all held.
    this is where a separation lives is a guess.
 5. **Formalizing C-52**, which needs a notion of a game as a sequence of states.
 6. **CI time.** Under the debug profile CI uses, the `superko-solve` agreement
-   tests take 448 s, and the workspace suite took 495 s on 2026-09-12 against a
-   few seconds before this session. Either an `opt-level` override for
+   tests took 448 s and the workspace suite 495 s before the wrap-up review's
+   test changes, and 103 s and 154 s after them, against a few seconds before
+   this session. Either an `opt-level` override for
    `superko-rules` and `superko-solve` in the dev profile, or moving the
    heaviest comparisons behind `--ignored`, would bring it back down. Neither is
    done.
