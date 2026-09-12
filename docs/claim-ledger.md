@@ -61,7 +61,7 @@ matching `C-<digits>`, `depends-on` comma-separated or `-`.
 | C-12 | SUPERKO-GO under PSK and under SSK lie in the same complexity class | open | infra-gap | C-1 | no published separation or equivalence |
 | C-13 | Every play sequence under SSK from any start state is finite | proved | formalized:C13_terminates | - | lean/SuperkoComplexity/Results/C13_Termination.lean |
 | C-14 | SUPERKO-GO is in EXPTIME | conjecture | infra-gap | C-1 | Robson's belief as reported second-hand in a 2011 blog comment and in Hearn 2006; no proof |
-| C-15 | The history-congruence index H(n) grows as 2^poly(n) | open | formalizable | C-13 | - |
+| C-15 | The index of the congruence on histories that agrees on legality and on the value, maximized over roots and komi floors, grows as 2^poly(m·n) | open | formalizable | C-13 | - ; the row used to say "the history-congruence index H(n)", which named neither the congruence nor the quantifier over roots, and open-questions.md §4 leans on it |
 | C-16 | Mechanical area scoring agrees with AGA agreed scoring under optimal play | conjecture | formalizable | - | docs/formal-model.md §4; the resumption mechanism the argument uses is AGA Rules 9 and 10, held |
 | C-17 | A minimal position exists whose game value differs under PSK and SSK | open | formalizable | - | KGS anecdotes; no published minimal case |
 | C-18 | Under AGA rules a pass is exempt from the superko restriction | cited | prose-only | - | AGA Rules 2, 6 and 7 (held): Rule 6 restricts playing, Rule 2 says a pass is always legal; Tromp–Taylor Rule 6 (held) makes a turn either a pass or a non-repeating move |
@@ -87,6 +87,15 @@ matching `C-<digits>`, `depends-on` comma-separated or `-`.
 | C-38 | From the empty 2x2 board under PSK the game count is the same under both suicide conventions, because every position-changing self-capture on 2x2 returns to the empty board, which the root archives | computed | formalizable | - | results/count-games-2x2-psk-forbid.txt and results/count-games-2x2-psk-remove-own.txt agree on every field, and the suicide refusals of the first equal the extra repetition refusals of the second; the census of the eight plays is in notebook/2026-09-11-experiment-004.md |
 | C-39 | From the empty 2x2 board under PSK, Defs.lean's rules give 386356909593 games, the number Tromp computed under his own rules from his own definitions | computed | formalizable | - | results/count-games-2x2-psk-forbid.txt, experiment 004; the independent-agreement validation of docs/trusted-base.md, at computed and not above |
 | C-40 | From the empty 2x2 board under SSK, Defs.lean's rules give 1391718029753 games, 3.6 times the PSK count | computed | formalizable | - | results/count-games-2x2-ssk-forbid.txt, experiment 004; no SSK count has been published at any size, so nothing independent checks it |
+| C-41 | Value transfer along a simulation: a relation preserving the situation, the pass counter and legality, and preserved by step on legal moves, preserves who wins; parametric in the repetition rule | proved | formalized:winsFor_transfer | - | lean/SuperkoComplexity/Compress.lean; every compression statement in this project factors through it |
+| C-42 | The archive may be pruned to the forward cone of the current situation without changing who wins, and an unreachable situation may be added to it freely | proved | formalized:winsFor_seen_inter_cone | C-41 | lean/SuperkoComplexity/Compress.lean; the cone is reachability under board-legal moves, with the repetition rule out of the way |
+| C-43 | The fuel-indexed archive decider decides WinsFor from every state whose archive is nonempty, not only from a root of play | proved | formalized:decideWins_iff_winsFor | C-26, C-29 | lean/SuperkoComplexity/Compress.lean; C-29 is stated at start' only, so without this no mid-game verdict transports to WinsFor |
+| C-44 | The played stone survives its own move, so no play produces the empty board and the empty situation has in-degree zero under play edges, on every board | proved | formalized:sitStep_empty_board | - | lean/SuperkoComplexity/Compress.lean and resolve_self in Basic.lean; resolve clears c.other only |
+| C-45 | Over the positions play can reach, the situation graph has exactly two strongly connected components — the empty board's pass cycle and one component holding every other situation — with condensation depth 2, on every board censused: 1x3 through 1x7, 2x2, 2x3, 2x4, 3x3 in crates/superko-graph/tests/scc.rs, and 3x4, 2x6, 1x12 at m·n = 12. 1x2 has three components and 1x1 one | computed | formalizable | C-44 | results/scc-census-1x3-forbid.txt, -2x2-, -3x3-, -3x4-, and -1x2- for the exception; crates/superko-graph/tests/scc.rs. The censused boards do not exhaust 3 <= m·n <= 12 |
+| C-46 | The forward-cone prune of C-42 removes at most the two empty situations from an archive that may hold 2·3^(m·n), so it is not a compression; under the suicide-permitting convention it removes none at all | computed | formalizable | C-42, C-45 | results/scc-census-*.txt, field outside-largest; the remove-own contrast is results/scc-census-1x3-remove-own.txt |
+| C-47 | A game whose reachable states number 2^poly(n) in the input length n, with names of 2^O(n) bits and a successor computable in time polynomial in a name, is decidable in EXPTIME by backward induction over the state graph | folklore | infra-gap | - | no source held; the step every "bounded effective state implies EXPTIME" argument consumes, this project's included, and it appeared nowhere in docs/, proofs/, notebook/ or lean/ before this row |
+| C-48 | APSPACE = EXPTIME, and APTIME(poly) = PSPACE | folklore | infra-gap | - | Chandra–Kozen–Stockmeyer 1981, sought; held only through Hearn 2006's uncited restatement. open-questions.md §5 consumes it |
+| C-49 | Undirected vertex geography with unconditional pass edges and a terminal scored by area is solvable in time polynomial in the graph size | open | infra-gap | C-21 | no source; C-21 is a normal-play theorem — last player able to move wins — while a superko Go game never becomes immobile (C-18) and ends by scoring. This is the theorem generalizing C-6 to arbitrary Go, and nobody has it |
 
 ## Detail
 
@@ -475,3 +484,92 @@ either direction, and the two areas sum to at most `m·n`; both are proved in
 the sentence "input size polynomial in m·n" over arbitrary inputs and for
 normalizing an input's komi; it is not needed by membership, where a longer
 komi only enlarges the budget, nor by a reduction, which chooses its komi.
+
+### C-41 to C-46 — what the value sees of the archive, and why it does not help
+
+These rows are one result with two halves, and the halves point opposite ways.
+
+The proved half is
+[`../lean/SuperkoComplexity/Compress.lean`](../lean/SuperkoComplexity/Compress.lean).
+`winsFor_transfer` (C-41) is the general schema: a relation that preserves the
+situation, the pass counter and legality, and survives `step`, preserves who
+wins. It is parametric in the repetition rule, so the positional twin is proved
+rather than asserted, and every later compression statement factors through it.
+`winsFor_seen_inter_cone` (C-42) is the instance the upper bound wanted: the
+value reads the archive only inside the forward cone — the situations still
+reachable by moves the board permits, with the repetition rule out of the way —
+so entries outside it may be dropped and unreachable situations may be added.
+`decideWins_iff_winsFor` (C-43) lifts C-29 off the root, which every mid-game
+statement needs and which C-29 alone does not give. `Defs.lean` is untouched.
+
+The computed half says the prune is worth nothing. C-45's census, on every
+board it reaches — 1×3 through 1×7, 2×2, 2×3, 2×4 and 3×3 in the test suite,
+and 3×4, 2×6 and 1×12 at the top of the range, none of them exhaustive over
+the range: the legal part of the situation graph has exactly two
+components — the empty board's pass 2-cycle, and one component holding every
+other situation — and the condensation is two deep. So the cone of any
+non-empty situation is the whole of that giant component, and C-46 is the
+consequence: the prune removes at most the two empty situations from an archive
+that may hold `2 · 3^(m·n)`.
+
+C-44 is why the two components are two rather than one, and it is a theorem
+rather than a measurement: `resolve` clears `c.other` only, so the played stone
+survives (`resolve_self`) and no play produces the empty board. The census
+corroborates it in the sharpest available way — under the suicide-permitting
+convention, which has no counterpart in `Defs.lean` and where a self-capture
+*can* take the played stone back off, the graph collapses to a single component
+on every board censused and the prune removes nothing at all.
+
+**What this refutes.** Not C-42, which is exact. The subset-of-the-archive
+route to a smaller state: pruning to a forward cone, to a strongly connected
+component, to a reachability ball. Every such scheme is bounded above by C-46's
+two entries, and the reason is structural rather than incidental — Go's
+situation graph is one mutually reachable mass as soon as a stone is on the
+board. A summary that is *not* a subset of the archive — a hash, a quotient
+representative, an automaton state — is untouched by this and remains the only
+live form. So does the question of C-15's index, which is about how many
+archives are distinguishable, not about which subset of one suffices.
+
+**What it does not bear on.** C-14, in either direction, for the reason
+[`open-questions.md`](open-questions.md) §4 now states: a bound on one summary
+scheme bounds no complexity class. The census is `computed` at `m·n ≤ 12` and
+is terminal there — no certificate turns a census of other boards into a
+statement about all of them, and the two-component finding would become a
+theorem only by proof, which nobody has attempted.
+
+### C-47, C-48 — the steps this project was consuming silently
+
+Neither is new mathematics and neither is in doubt. They are here because the
+ledger's rule is that a step a proof consumes has a row, and these two were
+being spent without one.
+
+C-47 is the backward-induction meta-theorem — bounded effective state implies
+EXPTIME — which is the second half of every argument of the form "the history
+compresses, therefore C-14". Before this row it appeared nowhere in `docs/`,
+`proofs/`, `notebook/` or `lean/`, while the shape of the argument appeared
+repeatedly. C-48 is APSPACE = EXPTIME, which [`open-questions.md`](open-questions.md)
+§5 has been quoting; Chandra, Kozen and Stockmeyer are `sought` in
+[`../references/README.md`](../references/README.md) and the restatement this
+project has read is Hearn's, uncited.
+
+Both are `folklore` on this ledger's vocabulary rather than `cited`, which is
+the vocabulary working as intended and not a slight: the sources exist and are
+correct, and this project has not read them. Obtaining Chandra–Kozen–Stockmeyer
+moves C-48 to `cited` and costs an afternoon.
+
+### C-49 — the theorem C-6 would need, which nobody has
+
+C-21 — undirected vertex geography is polynomial — is a **normal-play**
+theorem: the player unable to move loses, and the algorithm is a maximum
+matching. Neither half survives the transfer to Go. A superko game never
+becomes immobile, because a pass is always legal (C-18), and it ends by area
+scoring rather than by immobility, so the terminal condition the matching
+argument reads is absent.
+
+This is a third obstruction to generalizing C-6, alongside the two
+[`open-questions.md`](open-questions.md) §5 already names. It is recorded
+because C-6 is the whole reason to believe C-14, and an obstacle to C-6 that
+lives only in a reader's head is the kind of thing this ledger exists to stop.
+Robson's construction engineers a normal-play-like payoff; arbitrary Go has
+none. Whether the matching argument survives the addition of free pass edges
+and a scored terminal is open, and is the concrete form of the question.
