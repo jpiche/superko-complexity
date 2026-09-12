@@ -31,7 +31,7 @@ use superko_rules::config::{Dims, Repetition, Suicide};
 use superko_rules::reference::Color;
 use superko_rules::table::RuleTable;
 use superko_solve::naive;
-use superko_solve::search::Solver;
+use superko_solve::search::{MoveOrder, Solver};
 
 /// Every board with at most three points, in both orientations.
 const SMALL: [(usize, usize); 5] = [(1, 1), (1, 2), (2, 1), (1, 3), (3, 1)];
@@ -39,10 +39,10 @@ const SMALL: [(usize, usize); 5] = [(1, 1), (1, 2), (2, 1), (1, 3), (3, 1)];
 /// The boards the fast engine alone covers here.
 const FAST: [(usize, usize); 5] = [(1, 1), (1, 2), (1, 3), (1, 4), (2, 2)];
 
-/// The boards the reversed-order comparison covers. 2×2 is out: the reversed
-/// order visits the pass last, and the pass is what gives alpha-beta its first
-/// cheap bound, so the reversed search on 2×2 is slower than the whole rest of
-/// this file by two orders of magnitude. 1×4 is in, and is a board the naive
+/// The boards the move-order comparison covers. 2×2 is out: the unordered
+/// reversed search visits the pass last, and the pass is what gives alpha-beta
+/// its cheapest bound, so that search on 2×2 is slower than the whole rest of
+/// this file by orders of magnitude. 1×4 is in, and is a board the naive
 /// arbiter cannot reach, which is the point of the comparison.
 const REVERSED: [(usize, usize); 4] = [(1, 1), (1, 2), (1, 3), (1, 4)];
 
@@ -167,12 +167,17 @@ fn verdicts_are_determined_and_track_the_value() {
 /// second half is asserted because an order that changed nothing would make
 /// the first half vacuous.
 ///
-/// A root the reversed order cannot reach within its budget is skipped and
+/// The comparison is the default heuristic order — the pass in place, the
+/// plays sorted by a one-ply area count — against `MoveOrder::Static` run
+/// over the reversed move list, which is every point in reverse row-major
+/// order and then the pass. Those two share no move at the same index.
+///
+/// A root the second order cannot reach within its budget is skipped and
 /// counted, not failed: the comparison is about the cutoffs, and a search that
 /// did not finish makes no claim about them.
 #[test]
 fn the_value_survives_a_reversed_move_order() {
-    /// Nodes the reversed order may spend on one root.
+    /// Nodes the second order may spend on one root.
     const BUDGET: u64 = 2_000_000;
     let mut differing_counts = 0u64;
     let mut compared = 0u64;
@@ -184,6 +189,7 @@ fn the_value_survives_a_reversed_move_order() {
             for rep in [Repetition::Psk, Repetition::Ssk] {
                 let mut forward = Solver::new(&table, rep);
                 let mut backward = Solver::new(&table, rep)
+                    .with_order(MoveOrder::Static)
                     .with_reversed_moves()
                     .with_budget(Some(BUDGET));
                 for raw in 0..code_space(dims) {

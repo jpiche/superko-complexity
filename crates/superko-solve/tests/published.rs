@@ -58,7 +58,7 @@ const BUDGET: u64 = 40_000_000;
 
 /// The boards this test has reached, at the budget above. Raising it is a
 /// change to the solver's reach and must be a visible one.
-const REACHED: usize = 5;
+const REACHED: usize = 6;
 
 #[test]
 fn the_published_linear_scores_reproduce_as_far_as_the_solver_reaches() {

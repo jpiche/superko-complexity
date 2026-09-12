@@ -76,5 +76,5 @@ pub mod naive;
 pub mod search;
 pub mod separate;
 
-pub use search::{Decision, Solution, decide, solve};
-pub use separate::{Separating, Sweep, sweep};
+pub use search::{Decision, MoveOrder, Solution, decide, solve};
+pub use separate::{Separating, Sweep, sweep, sweep_above};

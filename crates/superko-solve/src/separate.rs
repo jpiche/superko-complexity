@@ -196,6 +196,12 @@ pub struct Sweep {
     pub ssk_only_plays: u64,
     /// Roots whose situational-superko search met at least one such play.
     pub roots_with_ssk_only: u64,
+    /// **Resolved** roots whose situational-superko search met at least one
+    /// such play. This is the number a null result stands on, and it is not
+    /// the one above: on a budgeted sweep the roots with repetition cycles in
+    /// them are exactly the expensive ones, so a sweep can meet thousands of
+    /// such plays and resolve none of the roots that met them.
+    pub resolved_with_ssk_only: u64,
     /// Roots excluded by a stone-count floor, which restricts the sweep's
     /// domain rather than failing to resolve it.
     pub skipped: u64,
@@ -252,6 +258,7 @@ impl Sweep {
             format!("separating-liberties={}", self.separating_liberties),
             format!("ssk-only-plays={}", self.ssk_only_plays),
             format!("roots-with-ssk-only={}", self.roots_with_ssk_only),
+            format!("resolved-with-ssk-only={}", self.resolved_with_ssk_only),
             format!("min-stones={}", self.min_stones),
             format!("skipped={}", self.skipped),
         ];
@@ -386,6 +393,7 @@ pub fn sweep_on_above(table: &RuleTable, budget: Option<u64>, min_stones: u32) -
         nodes: 0,
         ssk_only_plays: 0,
         roots_with_ssk_only: 0,
+        resolved_with_ssk_only: 0,
         skipped: 0,
         min_stones,
     };
@@ -431,6 +439,9 @@ pub fn sweep_on_above(table: &RuleTable, budget: Option<u64>, min_stones: u32) -
                 continue;
             };
             out.resolved += 1;
+            if b.ssk_only > 0 {
+                out.resolved_with_ssk_only += 1;
+            }
             if pv == sv {
                 continue;
             }

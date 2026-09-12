@@ -40,7 +40,29 @@ use superko_rules::archive::{Archive, ArchiveKey};
 use superko_rules::code::{PosCode, encode};
 use superko_rules::config::{Dims, Repetition, Suicide};
 use superko_rules::reference::{Color, Move, Position, all_moves};
-use superko_rules::table::{RuleTable, TooLarge};
+use superko_rules::table::{MAX_TABLE_POINTS, RuleTable, TooLarge};
+
+/// The most moves a board can offer: a pass and a play at each point of the
+/// largest board the transition table covers.
+const MAX_MOVES: usize = MAX_TABLE_POINTS + 1;
+
+/// The order a search visits the moves of a node in.
+///
+/// Alpha-beta returns the minimax value whatever order it visits moves in, and
+/// its cutoffs depend on the order entirely, so this is a performance choice
+/// and an agreement between the two settings is evidence about the cutoffs.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum MoveOrder {
+    /// The pass where the move list puts it, then the plays best for the
+    /// mover first by a one-ply area count. The default, and the only order a
+    /// headline number is produced under.
+    #[default]
+    Heuristic,
+    /// The `all_moves` order — the pass, then each point row-major — unsorted.
+    /// For the tests: it is a genuinely different order, not a reshuffling of
+    /// ties.
+    Static,
+}
 
 /// What a score search found.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -86,6 +108,7 @@ pub struct Solver<'t> {
     to_move: Color,
     passes: u32,
     depth: usize,
+    order: MoveOrder,
     budget: Option<u64>,
     nodes: u64,
     max_depth: usize,
@@ -122,6 +145,7 @@ impl<'t> Solver<'t> {
             to_move: Color::Black,
             passes: 0,
             depth: 0,
+            order: MoveOrder::Heuristic,
             budget: None,
             nodes: 0,
             max_depth: 0,
@@ -138,15 +162,22 @@ impl<'t> Solver<'t> {
         self
     }
 
-    /// Visit moves in the reverse of `all_moves` order — each point in reverse
-    /// row-major order, then the pass.
+    /// Visit moves in the named order.
+    #[must_use]
+    pub const fn with_order(mut self, order: MoveOrder) -> Self {
+        self.order = order;
+        self
+    }
+
+    /// Reverse the underlying move list: each point in reverse row-major
+    /// order, then the pass.
     ///
-    /// This exists for the tests. Alpha-beta returns the minimax value of the
-    /// tree whatever order it visits moves in, and its cutoffs depend on that
-    /// order entirely, so a second order agreeing on the value and disagreeing
-    /// on the node count is evidence that the cutoffs preserve the answer —
-    /// evidence available on boards the naive arbiter of [`crate::naive`]
-    /// cannot reach.
+    /// Under [`MoveOrder::Static`] this is a wholly different visit order;
+    /// under [`MoveOrder::Heuristic`] it reverses the tie-break alone. Either
+    /// way the value must not move, and that a reversed search agrees on the
+    /// value while disagreeing on the node count is evidence that the cutoffs
+    /// preserve the answer — evidence available on boards the naive arbiter of
+    /// [`crate::naive`] cannot reach.
     #[must_use]
     pub fn with_reversed_moves(mut self) -> Self {
         self.moves.reverse();
@@ -293,6 +324,70 @@ impl<'t> Solver<'t> {
         }
     }
 
+    /// The legal moves from the state standing now, in the order the search
+    /// visits them, each with its successor.
+    ///
+    /// The **pass keeps its place** in the underlying move list, and only the
+    /// plays are sorted, by the area difference of the position they lead to,
+    /// best for the mover first, with the `all_moves` order breaking ties.
+    ///
+    /// The pass is exempt because it is the mover's cheapest child — the
+    /// opponent's own pass ends the game — so searching it first bounds the
+    /// value of stopping here before any play is entered, and that bound is
+    /// worth more than any ordering of the plays. Sorting the pass in with the
+    /// rest was tried and is worse: on the empty 1×5 board under positional
+    /// superko it costs 63 917 nodes, against 35 121 for the unsorted
+    /// `all_moves` order and 2 115 for the order adopted here (`computed`,
+    /// 2026-09-12, `superko solve --board 1x5 --rule psk --suicide forbid
+    /// --root .....`), because a play raising the mover's own area always
+    /// sorts ahead of standing still.
+    ///
+    /// The order changes which cutoffs fire and cannot change the value.
+    /// `tests/agreement.rs` holds that by running the same searches under the
+    /// unordered move list and under its reverse.
+    ///
+    /// Returned in a fixed array rather than a `Vec` so that the recursion
+    /// allocates nothing per node, and so that no borrow of `self.moves` is
+    /// held across the recursive call.
+    fn ordered_moves(&mut self) -> ([(Move, PosCode); MAX_MOVES], usize) {
+        let mut out = [(Move::Pass, self.code); MAX_MOVES];
+        let mut len = 0;
+        let mut i = 0;
+        while i < self.moves.len() {
+            let mv = self.moves[i];
+            i += 1;
+            if let Some(succ) = self.legal_succ(mv) {
+                out[len] = (mv, succ);
+                len += 1;
+            }
+        }
+        if matches!(self.order, MoveOrder::Heuristic) {
+            let maximizing = self.to_move == Color::Black;
+            let key = |&(_, succ): &(Move, PosCode)| {
+                let diff = self.diff_at(succ);
+                if maximizing { -diff } else { diff }
+            };
+            // The pass is always legal, so it is always in `out[..len]`, and
+            // the plays form the runs on either side of it. Sorting each run
+            // leaves the pass exactly where the move list put it. Both sorts
+            // are stable, so `all_moves` order survives as the tie-break.
+            let at = out[..len]
+                .iter()
+                .position(|(mv, _)| matches!(mv, Move::Pass))
+                .expect("a pass is always legal");
+            out[..at].sort_by_key(key);
+            out[at + 1..len].sort_by_key(key);
+        }
+        (out, len)
+    }
+
+    /// The area difference of a position named by its code.
+    fn diff_at(&self, code: PosCode) -> i32 {
+        let black = i32::try_from(self.table.area(code, Color::Black)).expect("area fits an i32");
+        let white = i32::try_from(self.table.area(code, Color::White)).expect("area fits an i32");
+        black - white
+    }
+
     /// Fail-soft alpha-beta from the state standing now.
     ///
     /// The value returned is exact when the window contains the whole score
@@ -305,18 +400,11 @@ impl<'t> Solver<'t> {
             return self.leaf();
         }
         let maximizing = self.to_move == Color::Black;
+        // Never returned: a pass is always legal, so a state that has not
+        // ended always visits a child.
         let mut best = if maximizing { alpha - 1 } else { beta + 1 };
-        // Indexed rather than iterated: a borrow of `self.moves` cannot be held
-        // across the recursive call, which takes `self` mutably. The sentinel
-        // above is never returned, because a pass is always legal and so a
-        // state that has not ended always visits a child.
-        let mut i = 0;
-        while i < self.moves.len() {
-            let mv = self.moves[i];
-            i += 1;
-            let Some(succ) = self.legal_succ(mv) else {
-                continue;
-            };
+        let (moves, len) = self.ordered_moves();
+        for &(mv, succ) in &moves[..len] {
             let undo = self.make(mv, succ);
             let v = self.alphabeta(alpha, beta);
             self.unmake(undo);
@@ -347,13 +435,8 @@ impl<'t> Solver<'t> {
             return self.winner_at(komi_floor) == c;
         }
         let mover = self.to_move == c;
-        let mut i = 0;
-        while i < self.moves.len() {
-            let mv = self.moves[i];
-            i += 1;
-            let Some(succ) = self.legal_succ(mv) else {
-                continue;
-            };
+        let (moves, len) = self.ordered_moves();
+        for &(mv, succ) in &moves[..len] {
             let undo = self.make(mv, succ);
             let won = self.verdict(komi_floor, c);
             self.unmake(undo);
