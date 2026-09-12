@@ -12,7 +12,11 @@
 # This script re-runs each witness command and diffs its output against the
 # body. A measurement nobody can reproduce is an opinion (docs/style.md).
 #
-# Usage: tools/verify-results.sh [file ...]
+# A file may also carry '# slow: <reason>'. Such a witness takes hours and is
+# skipped, visibly, unless SUPERKO_VERIFY_SLOW=1 is set. Every other header
+# line ('# commit:', '# date:', '# defs-blob:', ...) is ignored here.
+#
+# Usage: [SUPERKO_VERIFY_SLOW=1] tools/verify-results.sh [file ...]
 set -eu
 
 root=$(cd "$(dirname "$0")/.." && pwd)
@@ -35,6 +39,14 @@ for f in $files; do
     if [ -z "$cmd" ]; then
         echo "verify-results: $f has no '# witness:' header" >&2
         fail=1
+        continue
+    fi
+    # A '# slow:' line marks a witness that takes hours (the 2x2 game counts).
+    # It is skipped, and said to be skipped, unless SUPERKO_VERIFY_SLOW=1 —
+    # a skip that reads as a pass would be the wrong kind of silence.
+    slow=$(sed -n 's/^# slow: //p' "$f" | head -1)
+    if [ -n "$slow" ] && [ "${SUPERKO_VERIFY_SLOW:-}" != 1 ]; then
+        echo "verify-results: $f SKIPPED (slow: $slow; set SUPERKO_VERIFY_SLOW=1 to run it)"
         continue
     fi
 
