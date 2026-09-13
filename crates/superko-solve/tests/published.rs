@@ -31,6 +31,7 @@
 use superko_rules::code::PosCode;
 use superko_rules::config::{Dims, Repetition, Suicide};
 use superko_rules::reference::Color;
+use superko_rules::symmetry::Symmetries;
 use superko_rules::table::RuleTable;
 use superko_solve::search::Solver;
 
@@ -62,32 +63,62 @@ const REACHED: usize = 6;
 
 #[test]
 fn the_published_linear_scores_reproduce_as_far_as_the_solver_reaches() {
+    reproduce(false);
+}
+
+/// The same rows, reached by the solver with mirrored moves on
+/// (`superko_solve::search`'s module docs), at the same budget. The reach is
+/// pinned to the same six boards; the node counts of the searches that
+/// resolved are pinned too, so that the variant cannot quietly become the
+/// plain search.
+#[test]
+fn the_published_linear_scores_reproduce_with_mirrored_moves() {
+    let nodes = reproduce(true);
+    assert_eq!(nodes, MIRRORED_NODES);
+}
+
+/// Nodes the mirrored search visited on each board it resolved, 1×1 to 1×6.
+const MIRRORED_NODES: [u64; REACHED] = [3, 15, 39, 183, 1_125, 13_311_270];
+
+/// Solve each published board, hold every resolved value to the table and the
+/// number resolved to [`REACHED`], and return the node counts of the
+/// resolved searches in board order.
+fn reproduce(mirrored: bool) -> Vec<u64> {
     let mut checked = 0usize;
     let mut out_of_reach = Vec::new();
+    let mut nodes = Vec::new();
     for (n, published) in PUBLISHED {
         let dims = Dims::new(1, n);
         let table = RuleTable::build(dims, Suicide::Forbid).expect("a board of at most 12 points");
+        let sym = Symmetries::new(dims).expect("a board of at most 12 points");
         let mut solver = Solver::new(&table, Repetition::Psk).with_budget(Some(BUDGET));
+        if mirrored {
+            solver = solver.with_mirrored_moves(&sym);
+        }
         let solved = solver.solve_root(PosCode(0), Color::Black);
         match solved.value {
             None => out_of_reach.push(n),
             Some(value) => {
                 assert_eq!(
                     value, published,
-                    "1x{n} under positional superko: this workspace computes {value}, the \
+                    "1x{n} under positional superko (mirrored moves {mirrored}): this workspace \
+                     computes {value}, the \
                      table of test_data/literature/linear-go-scores.toml says {published}. \
                      One of the two is wrong and nothing downstream is worth anything until \
                      which is known."
                 );
                 checked += 1;
+                nodes.push(solved.nodes);
             }
         }
     }
     assert_eq!(
         checked, REACHED,
-        "the solver reached {checked} of the published rows, not the {REACHED} this test \
-         records; {out_of_reach:?} were out of reach at a budget of {BUDGET} nodes"
+        "the solver (mirrored moves {mirrored}) reached {checked} of the published rows, not \
+         the {REACHED} this test records; {out_of_reach:?} were out of reach at a budget of \
+         {BUDGET} nodes"
     );
+    nodes
 }
 
 /// The transcription above is the fixture's, still.

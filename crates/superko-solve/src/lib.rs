@@ -87,6 +87,21 @@
 //! roots each that resolve within the budget that file names — and with the
 //! naive engine's value at every root of every board of at most three points.
 //!
+//! The mirrored moves of [`search`] skip a play at a state a board symmetry
+//! fixes, archive included, when the symmetry maps an earlier play onto it.
+//! That the value and both colors' verdicts at every komi floor from
+//! `-(m·n) - 1` to `m·n + 1` are the same with the skip as without it is
+//! `computed` under both rules and both suicide conventions at every root of
+//! 1×1, 1×2, 2×1, 1×3, 3×1, 1×4, 4×1 and 2×2 (`tests/mirrored.rs`), and of 1×5
+//! and 5×1 under the no-suicide rule; with suicide removing its own stones on
+//! 1×5 and 5×1 it is `computed` only where both searches resolved within the
+//! budgets that file names (440 of 972 values and 15 976 of 25 272 verdicts on
+//! each). The fast engine with mirrored moves agrees with the naive engine on
+//! every value and verdict of every board of at most three points
+//! (`tests/agreement.rs`), and reproduces the published 1×n values for n ≤ 6
+//! (`tests/published.rs`). It is not proved; the fact it would follow from is
+//! the `board-symmetry` divergence.
+//!
 //! What they do not establish: agreement with `Defs.lean` on any board those
 //! tests do not reach, or anything at all about a board the sweep did not
 //! resolve within its node budget — a budget the sweep reports rather than

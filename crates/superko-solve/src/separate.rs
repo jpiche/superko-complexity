@@ -110,6 +110,20 @@
 //! The verdict searches [`Sweep::lines`] adds for a witness are not
 //! transported: they run on the witness root itself, whether its values were
 //! searched or transported, and a witness block says which.
+//!
+//! # Mirrored moves
+//!
+//! With [`Options::mirrored_moves`] set, every solver the sweep builds — the
+//! two per thread and the four of each witness's verdicts — skips the plays
+//! [`Solver::with_mirrored_moves`] skips: at a state a board symmetry fixes,
+//! archive included, a play the symmetry maps an earlier play onto. It uses
+//! the board symmetries only, never the color swap. It is independent of
+//! [`Options::symmetry`]: it changes how each root is searched, not which
+//! roots are. A root's value and verdicts do not change if the rules commute
+//! with the board's symmetries, which is the `board-symmetry` divergence; the
+//! node count and the count of ssk-only plays made can, and so, under a
+//! budget, can whether a root resolves. [`Sweep::mirrored_skips`] adds up the
+//! plays skipped over the searches that ran.
 
 use core::fmt;
 use std::panic;
@@ -211,7 +225,8 @@ impl Verdicts {
 /// Both rules' verdicts for both colors at one komi floor, each by the
 /// recursion `Superko.decideWins` uses.
 ///
-/// Four searches, not one score search read four ways.
+/// Four searches, not one score search read four ways. With `mirror` given,
+/// each search skips mirrored plays ([`Solver::with_mirrored_moves`]).
 ///
 /// # Panics
 ///
@@ -225,9 +240,13 @@ pub fn verdicts(
     to_move: Color,
     komi_floor: i64,
     budget: Option<u64>,
+    mirror: Option<&Symmetries>,
 ) -> Verdicts {
     let ask = |rep: Repetition, c: Color| {
         let mut solver = Solver::new(table, rep).with_budget(budget);
+        if let Some(sym) = mirror {
+            solver = solver.with_mirrored_moves(sym);
+        }
         solver
             .decide_root(code, to_move, komi_floor, c)
             .wins
@@ -305,6 +324,12 @@ pub struct Sweep {
     /// Roots whose values were transported from their representative; zero
     /// without symmetry. `searched + transported + skipped == roots`.
     pub transported: u64,
+    /// Whether every search skipped mirrored plays (the module docs).
+    pub mirrored_moves: bool,
+    /// Plays skipped as mirror images across every search the sweep ran;
+    /// zero without mirrored moves. Like [`Sweep::nodes`], a transported root
+    /// adds nothing.
+    pub mirrored_skips: u64,
 }
 
 impl Sweep {
@@ -401,11 +426,17 @@ impl Sweep {
             out.push(format!("symmetry-searched={}", self.searched));
             out.push(format!("symmetry-transported={}", self.transported));
         }
+        if self.mirrored_moves {
+            out.push("symmetry-mirrored-moves=on".to_string());
+        }
+        let sym = (self.mirrored_moves
+            && (self.minimal.is_some() || self.minimal_liberties.is_some()))
+        .then(|| Symmetries::new(self.dims).expect("a swept board has symmetry maps"));
         if let Some(sep) = self.minimal {
-            out.extend(self.witness_lines("minimal", &sep, table, budget));
+            out.extend(self.witness_lines("minimal", &sep, table, budget, sym.as_ref()));
         }
         if let Some(sep) = self.minimal_liberties {
-            out.extend(self.witness_lines("minimal-liberties", &sep, table, budget));
+            out.extend(self.witness_lines("minimal-liberties", &sep, table, budget, sym.as_ref()));
         }
         out
     }
@@ -418,6 +449,7 @@ impl Sweep {
         sep: &Separating,
         table: &RuleTable,
         budget: Option<u64>,
+        mirror: Option<&Symmetries>,
     ) -> Vec<String> {
         let mut out = vec![
             format!("{prefix}-root={}", render(&decode(self.dims, sep.code))),
@@ -440,7 +472,7 @@ impl Sweep {
                 .join(",")
         ));
         if let Some(&floor) = floors.first() {
-            let v = verdicts(table, sep.code, sep.to_move, floor, budget);
+            let v = verdicts(table, sep.code, sep.to_move, floor, budget, mirror);
             out.push(format!("{prefix}-witness-komi-floor={}", v.komi_floor));
             out.push(format!("{prefix}-witness-psk-black-wins={}", v.psk_black));
             out.push(format!("{prefix}-witness-psk-white-wins={}", v.psk_white));
@@ -519,6 +551,7 @@ pub fn sweep_on_above(table: &RuleTable, budget: Option<u64>, min_stones: u32) -
             min_stones,
             threads: 1,
             symmetry: false,
+            mirrored_moves: false,
         },
     )
 }
@@ -527,8 +560,8 @@ pub fn sweep_on_above(table: &RuleTable, budget: Option<u64>, min_stones: u32) -
 ///
 /// `budget` and `min_stones` decide what the [`Sweep`] says. `threads` decides
 /// only how long it takes. `symmetry` decides how many roots are searched, and
-/// with them the node count and, under a budget, which roots resolve: see the
-/// module docs.
+/// `mirrored_moves` how each is searched, and with them the node count and,
+/// under a budget, which roots resolve: see the module docs.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Options {
     /// The node budget of each search, when there is one.
@@ -541,16 +574,20 @@ pub struct Options {
     /// Search one root of each orbit under the board's symmetries and the
     /// color swap, and transport the values to the rest.
     pub symmetry: bool,
+    /// Skip mirrored plays at states a board symmetry fixes, in every search
+    /// of the sweep and of its witness verdicts.
+    pub mirrored_moves: bool,
 }
 
 impl Default for Options {
-    /// Every root searched, no budget, one thread.
+    /// Every root searched in full, no budget, one thread.
     fn default() -> Self {
         Self {
             budget: None,
             min_stones: 0,
             threads: 1,
             symmetry: false,
+            mirrored_moves: false,
         }
     }
 }
@@ -565,7 +602,7 @@ impl Default for Options {
 #[must_use]
 pub fn sweep_with(table: &RuleTable, opts: Options) -> Sweep {
     let roots = solve_roots(table, opts);
-    fold(table.dims(), opts.min_stones, opts.symmetry, &roots)
+    fold(table.dims(), opts, &roots)
 }
 
 /// What a sweep recorded for one root, before anything is added up.
@@ -657,11 +694,17 @@ fn solve_roots(table: &RuleTable, opts: Options) -> Vec<Root> {
     let dims = table.dims();
     let count =
         usize::try_from(u64::from(code_space(dims)) * 2).expect("the root count fits a usize");
+    let maps = (opts.symmetry || opts.mirrored_moves)
+        .then(|| Symmetries::new(dims).expect("the board has a transition table, so it has maps"));
     let solvers = || {
-        (
-            Solver::new(table, Repetition::Psk).with_budget(opts.budget),
-            Solver::new(table, Repetition::Ssk).with_budget(opts.budget),
-        )
+        let mut psk = Solver::new(table, Repetition::Psk).with_budget(opts.budget);
+        let mut ssk = Solver::new(table, Repetition::Ssk).with_budget(opts.budget);
+        if opts.mirrored_moves {
+            let sym = maps.as_ref().expect("built when mirrored moves are on");
+            psk = psk.with_mirrored_moves(sym);
+            ssk = ssk.with_mirrored_moves(sym);
+        }
+        (psk, ssk)
     };
     if !opts.symmetry {
         return solve_indexed(count, opts.threads, solvers, |(psk, ssk), index| {
@@ -669,8 +712,8 @@ fn solve_roots(table: &RuleTable, opts: Options) -> Vec<Root> {
         });
     }
 
-    let sym = Symmetries::new(dims).expect("the board has a transition table, so it has maps");
-    let orbits = representatives(&sym);
+    let sym = maps.as_ref().expect("built when symmetry is on");
+    let orbits = representatives(sym);
     let reps: Vec<usize> = (0..count).filter(|&i| orbits[i].0 == i).collect();
     let searched = solve_indexed(reps.len(), opts.threads, solvers, |(psk, ssk), k| {
         solve_at(psk, ssk, dims, opts.min_stones, reps[k])
@@ -918,7 +961,7 @@ impl Drop for StopOnPanic<'_> {
 /// Add up a sweep from its roots, taken in the sweep order.
 ///
 /// The only place a [`Sweep`] is assembled, whatever the thread count.
-fn fold(dims: Dims, min_stones: u32, symmetry: bool, roots: &[Root]) -> Sweep {
+fn fold(dims: Dims, opts: Options, roots: &[Root]) -> Sweep {
     let empty = PosCode(0);
     let mut out = Sweep {
         dims,
@@ -938,10 +981,12 @@ fn fold(dims: Dims, min_stones: u32, symmetry: bool, roots: &[Root]) -> Sweep {
         roots_with_ssk_only: 0,
         resolved_with_ssk_only: 0,
         skipped: 0,
-        min_stones,
-        symmetry,
+        min_stones: opts.min_stones,
+        symmetry: opts.symmetry,
         searched: 0,
         transported: 0,
+        mirrored_moves: opts.mirrored_moves,
+        mirrored_skips: 0,
     };
     assert_eq!(
         u64::try_from(roots.len()).expect("the root count fits a u64"),
@@ -971,6 +1016,11 @@ fn fold(dims: Dims, min_stones: u32, symmetry: bool, roots: &[Root]) -> Sweep {
                 .checked_add(a.nodes)
                 .and_then(|n| n.checked_add(b.nodes))
                 .expect("a node count overflowed");
+            out.mirrored_skips = out
+                .mirrored_skips
+                .checked_add(a.mirrored_skips)
+                .and_then(|n| n.checked_add(b.mirrored_skips))
+                .expect("a skip count overflowed");
         }
         out.ssk_only_plays = out
             .ssk_only_plays

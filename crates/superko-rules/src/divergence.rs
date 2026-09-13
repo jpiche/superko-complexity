@@ -15,7 +15,8 @@
 //! `board-symmetry` and `color-swap` differ from the other five in kind: they
 //! are not readings of a `Defs.lean` item but facts about the rules a search
 //! relies on to skip work, and a run is under them only when it asked for that
-//! (`superko separate --symmetry on`). Their markers are in
+//! (`superko separate --symmetry on`, under both, and `superko solve --symmetry
+//! on`, under `board-symmetry` alone). Their markers are in
 //! [`crate::symmetry`].
 
 use core::fmt;
@@ -33,8 +34,8 @@ pub enum Divergence {
     RuleTableMemo,
     /// The winner is decided over ℤ at the floor of komi.
     WinnerViaFloorKomi,
-    /// A search takes values from the image of a root under a symmetry of the
-    /// board.
+    /// A search takes values from the image of a root, or of a play at a state
+    /// the symmetry fixes, under a symmetry of the board.
     BoardSymmetry,
     /// A search takes values, negated, from the root with the colors
     /// exchanged.
@@ -120,13 +121,21 @@ impl Divergence {
             }
             Self::BoardSymmetry => {
                 "Some roots take their values from the root a symmetry of the board maps \
-                 them to instead of being searched; that the transition table commutes with \
+                 them to instead of being searched, or some plays at a state a symmetry of \
+                 the board fixes, archive included, are not searched because the symmetry \
+                 maps an earlier play onto them; that the transition table commutes with \
                  every symmetry of the board is `computed` for boards of at most six points \
                  and for 3x3 and 3x4; that values are invariant under it is `computed` at \
                  every root of every board of at most five points except 1x5 and 5x1 with \
                  suicide removing its own stones, where it is `computed` only at the roots \
                  resolved within the node budgets `superko-solve`'s tests/symmetry.rs names \
-                 (1288 of 2916 pairs of a root and any of its images, both rules, on each); and neither is proved."
+                 (1288 of 2916 pairs of a root and any of its images, both rules, on each); \
+                 that values and verdicts with those plays skipped equal those without is \
+                 `computed` at every root and komi floor of every board of at most five \
+                 points except 1x5 and 5x1 with suicide removing its own stones, where it is \
+                 `computed` only where both searches resolved within the budgets of \
+                 `superko-solve`'s tests/mirrored.rs (440 of 972 values and 15976 of 25272 \
+                 verdicts, both rules, on each); and none of it is proved."
             }
             Self::ColorSwap => {
                 "Some roots take their values, negated, from the root with every stone's \

@@ -323,6 +323,8 @@ fn as_plain(sweep: &Sweep, plain: &Sweep) -> Sweep {
         symmetry: false,
         searched: plain.searched,
         transported: 0,
+        mirrored_moves: false,
+        mirrored_skips: 0,
         minimal: clear(sweep.minimal),
         minimal_liberties: clear(sweep.minimal_liberties),
         ..sweep.clone()
@@ -336,7 +338,16 @@ fn as_plain(sweep: &Sweep, plain: &Sweep) -> Sweep {
 /// searches. Returns the roots whose values were compared, and the
 /// transported roots whose carried situational search made an ssk-only play,
 /// so that a caller can pin the carry as reached.
-fn symmetric_sweep_agrees(dims: Dims, suicide: Suicide, budget: Option<u64>) -> (u64, u64) {
+///
+/// With `mirrored` the symmetric sweep also skips mirrored plays, both halves
+/// of the feature on, as `superko separate --symmetry on` runs; the plain sweep
+/// never does.
+fn symmetric_sweep_agrees(
+    dims: Dims,
+    suicide: Suicide,
+    budget: Option<u64>,
+    mirrored: bool,
+) -> (u64, u64) {
     let table = RuleTable::build(dims, suicide).expect("a small board");
     let plain_opts = Options {
         budget,
@@ -345,6 +356,7 @@ fn symmetric_sweep_agrees(dims: Dims, suicide: Suicide, budget: Option<u64>) -> 
     let plain = sweep_with(&table, plain_opts);
     let sym_opts = Options {
         symmetry: true,
+        mirrored_moves: mirrored,
         ..plain_opts
     };
     let on = sweep_with(&table, sym_opts);
@@ -365,6 +377,8 @@ fn symmetric_sweep_agrees(dims: Dims, suicide: Suicide, budget: Option<u64>) -> 
         "{dims} {suicide}"
     );
     assert!(on.symmetry && !plain.symmetry);
+    assert_eq!(on.mirrored_moves, mirrored);
+    assert!(!plain.mirrored_moves && plain.mirrored_skips == 0);
     assert!(
         on.transported > 0,
         "{dims} {suicide}: nothing was transported"
@@ -505,7 +519,32 @@ fn symmetric_sweep_agrees(dims: Dims, suicide: Suicide, budget: Option<u64>) -> 
 /// compared.
 #[test]
 fn a_symmetric_sweep_agrees_with_the_plain_sweep() {
+    assert_eq!(sweeps_of_five_points_agree(false), (CARRIED_SSK_ONLY, 0));
+}
+
+/// As [`a_symmetric_sweep_agrees_with_the_plain_sweep`], with mirrored moves
+/// on as well. The carried roots with an ssk-only play and the plays skipped
+/// are pinned.
+#[test]
+fn a_symmetric_sweep_with_mirrored_moves_agrees_with_the_plain_sweep() {
+    assert_eq!(
+        sweeps_of_five_points_agree(true),
+        (MIRRORED_CARRIED_SSK_ONLY, MIRRORED_SWEEP_SKIPS)
+    );
+}
+
+/// Transported roots whose carried situational search made an ssk-only play,
+/// and plays skipped as mirror images, summed over the boards of
+/// [`a_symmetric_sweep_with_mirrored_moves_agrees_with_the_plain_sweep`].
+const MIRRORED_CARRIED_SSK_ONLY: u64 = 947;
+const MIRRORED_SWEEP_SKIPS: u64 = 668;
+
+/// The sweeps of [`a_symmetric_sweep_agrees_with_the_plain_sweep`], returning
+/// the carried roots with an ssk-only play and the plays the symmetric sweeps
+/// skipped.
+fn sweeps_of_five_points_agree(mirrored: bool) -> (u64, u64) {
     let mut carried = 0u64;
+    let mut skips = 0u64;
     for (rows, cols) in [
         (1, 1),
         (1, 2),
@@ -524,12 +563,24 @@ fn a_symmetric_sweep_agrees_with_the_plain_sweep() {
                 continue;
             }
             let roots = u64::from(code_space(dims)) * 2;
-            let (compared, copied) = symmetric_sweep_agrees(dims, suicide, None);
+            let (compared, copied) = symmetric_sweep_agrees(dims, suicide, None, mirrored);
             assert_eq!(compared, roots, "{dims} {suicide}");
             carried += copied;
+            if mirrored {
+                let table = RuleTable::build(dims, suicide).expect("a small board");
+                skips += sweep_with(
+                    &table,
+                    Options {
+                        symmetry: true,
+                        mirrored_moves: true,
+                        ..Options::default()
+                    },
+                )
+                .mirrored_skips;
+            }
         }
     }
-    assert_eq!(carried, CARRIED_SSK_ONLY);
+    (carried, skips)
 }
 
 /// Transported roots whose carried situational search made an ssk-only play,
@@ -599,7 +650,27 @@ fn a_budgeted_symmetric_sweep_agrees_with_the_plain_sweep() {
     for (rows, cols) in [(1, 5), (5, 1)] {
         let dims = Dims::new(rows, cols);
         assert_eq!(
-            symmetric_sweep_agrees(dims, Suicide::RemoveOwn, Some(10_000)).0,
+            symmetric_sweep_agrees(dims, Suicide::RemoveOwn, Some(10_000), false).0,
+            72,
+            "{dims} remove-own"
+        );
+    }
+}
+
+/// As [`a_budgeted_symmetric_sweep_agrees_with_the_plain_sweep`], with mirrored
+/// moves on as well. The roots compared — resolved under both rules in both
+/// sweeps — are pinned. Mirrored moves could change which roots the symmetric
+/// sweep resolves within the budget; on these boards the count is the same 72
+/// as without them.
+///
+/// `cargo test --release -p superko-solve --test symmetry -- --ignored a_budgeted_symmetric_sweep_with_mirrored_moves_agrees_with_the_plain_sweep`
+#[test]
+#[ignore = "release only: many searches run to their budget"]
+fn a_budgeted_symmetric_sweep_with_mirrored_moves_agrees_with_the_plain_sweep() {
+    for (rows, cols) in [(1, 5), (5, 1)] {
+        let dims = Dims::new(rows, cols);
+        assert_eq!(
+            symmetric_sweep_agrees(dims, Suicide::RemoveOwn, Some(10_000), true).0,
             72,
             "{dims} remove-own"
         );

@@ -63,6 +63,10 @@ values — negated when the colors were exchanged — before adding the sweep up
 - after `skipped=`, the lines `symmetry=on`, `symmetry-searched=N`, the roots
   whose two searches ran, and `symmetry-transported=M`, the roots whose values
   were transported, with `N + M + skipped = roots`;
+- after those, the line `symmetry-mirrored-moves=on`: every search, the
+  witness verdicts included, skips a play at a state a board symmetry fixes,
+  archive included, when the symmetry maps an earlier play onto it
+  (`crates/superko-solve/src/search.rs`);
 - in each witness block, after `-ssk=`, a line `minimal-transported=` (or
   `minimal-liberties-transported=`) saying whether that root's values were
   transported. The witness verdicts are searched on the root itself either way.
@@ -75,5 +79,17 @@ where it is `computed` only at the roots resolved within the node budgets
 uncompared (the two divergences' consequence sentences). Under a node budget a
 transported root is resolved exactly when its representative is, so a budgeted
 body with symmetry on can report different resolved, unresolved and ssk-only
-counts from the same sweep without it. Without `--symmetry on` none of these lines appears
-and the body is unchanged.
+counts from the same sweep without it; mirrored moves change the ssk-only
+counts too, and under a budget which roots resolve. That values and verdicts
+are the same with mirrored plays skipped as without is `computed` on the boards
+`crates/superko-solve/tests/mirrored.rs` names and is not proved (the
+`board-symmetry` consequence sentence). Without `--symmetry on` none of these
+lines appears and the body is unchanged.
+
+A `solve` body produced with `--symmetry on` turns on mirrored moves alone,
+in the value search and in any verdict search. It carries
+`board-symmetry:unlicensed` at the end of the `divergences=` line, and after
+`max-depth=` the lines `symmetry-mirrored-moves=on` and
+`symmetry-mirrored-skips=N`, the plays the value search skipped. Its `nodes=`
+and `max-depth=` are the mirrored search's. Without the flag the body is
+unchanged.

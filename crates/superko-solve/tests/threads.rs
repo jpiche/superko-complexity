@@ -40,6 +40,7 @@ fn same_at_every_thread_count(
             min_stones,
             threads,
             symmetry: false,
+            mirrored_moves: false,
         };
         let parallel = sweep_with(&table, opts);
         assert_eq!(

@@ -7,7 +7,10 @@
 //!    rule predicates themselves and prunes nothing. The fast path reads a
 //!    memo of those predicates, makes and unmakes a dense archive, and cuts.
 //!    They share no control flow. Bounded to `m · n <= 3`: the naive engine
-//!    visits the whole tree, which on four points is billions of nodes.
+//!    visits the whole tree, which on four points is billions of nodes. The
+//!    fast path with mirrored moves on (`superko_solve::search`'s module docs)
+//!    is held to the naive engine on the same boards, 1×3 and 3×1 in an
+//!    ignored release test.
 //!
 //! 2. **Recursions.** The score search and the verdict search are written
 //!    separately and neither is computed from the other, so holding
@@ -29,6 +32,7 @@
 use superko_rules::code::{PosCode, code_space, decode};
 use superko_rules::config::{Dims, Repetition, Suicide};
 use superko_rules::reference::Color;
+use superko_rules::symmetry::Symmetries;
 use superko_rules::table::RuleTable;
 use superko_solve::naive;
 use superko_solve::search::{MoveOrder, Solver};
@@ -115,6 +119,90 @@ fn the_engines_agree_on_every_verdict_of_every_board_of_three_points() {
         }
     }
 }
+
+/// The fast engine with mirrored moves against the naive engine on the named
+/// boards: every root's value, and both colors' verdicts at every komi floor,
+/// under both rules and both suicide conventions. Returns the plays the value
+/// searches and the verdict searches skipped.
+fn mirrored_engines_agree(boards: &[(usize, usize)]) -> (u64, u64) {
+    let (mut value_skips, mut verdict_skips) = (0u64, 0u64);
+    for &(rows, cols) in boards {
+        let dims = Dims::new(rows, cols);
+        let sym = Symmetries::new(dims).expect("a small board");
+        for suicide in [Suicide::Forbid, Suicide::RemoveOwn] {
+            let table = RuleTable::build(dims, suicide).expect("a small board");
+            for rep in [Repetition::Psk, Repetition::Ssk] {
+                let mut solver = Solver::new(&table, rep).with_mirrored_moves(&sym);
+                for raw in 0..code_space(dims) {
+                    let code = PosCode(raw);
+                    let board = decode(dims, code);
+                    for to_move in [Color::Black, Color::White] {
+                        let sol = solver.solve_root(code, to_move);
+                        value_skips += sol.mirrored_skips;
+                        let fast = sol.value.expect("no budget was set");
+                        let slow = naive::value_from(&board, to_move, rep, suicide);
+                        assert_eq!(
+                            fast, slow,
+                            "{dims} {rep} {suicide} root {code} {to_move} to move: \
+                             fast with mirrored moves {fast} naive {slow}"
+                        );
+                        for floor in floors(dims) {
+                            for c in [Color::Black, Color::White] {
+                                let d = solver.decide_root(code, to_move, floor, c);
+                                verdict_skips += d.mirrored_skips;
+                                let fast = d.wins.expect("no budget was set");
+                                let slow =
+                                    naive::wins_from(&board, to_move, rep, suicide, floor, c);
+                                assert_eq!(
+                                    fast, slow,
+                                    "{dims} {rep} {suicide} root {code} {to_move} to move, \
+                                     komi floor {floor}, {c}: fast with mirrored moves {fast} \
+                                     naive {slow}"
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    (value_skips, verdict_skips)
+}
+
+/// 1×1, 1×2 and 2×1: every value and verdict of the fast engine with mirrored
+/// moves is the naive engine's. The plays skipped are pinned, so the check
+/// reaches the skip.
+#[test]
+fn the_engines_agree_with_mirrored_moves_on_two_points() {
+    assert_eq!(
+        mirrored_engines_agree(&[(1, 1), (1, 2), (2, 1)]),
+        MIRRORED_TWO_SKIPS
+    );
+}
+
+/// Plays skipped by the value searches and the verdict searches of
+/// [`the_engines_agree_with_mirrored_moves_on_two_points`].
+const MIRRORED_TWO_SKIPS: (u64, u64) = (32, 224);
+
+/// 1×3 and 3×1: every value and verdict of the fast engine with mirrored moves
+/// is the naive engine's, the plays skipped pinned. The naive engine on three
+/// points is what `the_engines_agree_on_every_value_of_every_board_of_three_points`
+/// spends most of its debug time on, so this second pass over it is release
+/// only.
+///
+/// `cargo test --release -p superko-solve --test agreement -- --ignored the_engines_agree_with_mirrored_moves_on_three_points`
+#[test]
+#[ignore = "release only: the naive engine on three points"]
+fn the_engines_agree_with_mirrored_moves_on_three_points() {
+    assert_eq!(
+        mirrored_engines_agree(&[(1, 3), (3, 1)]),
+        MIRRORED_THREE_SKIPS
+    );
+}
+
+/// Plays skipped by the value searches and the verdict searches of
+/// [`the_engines_agree_with_mirrored_moves_on_three_points`].
+const MIRRORED_THREE_SKIPS: (u64, u64) = (188, 780);
 
 /// Exactly one color wins, and Black wins exactly when the value exceeds the
 /// komi floor. The first is determinacy (C-28, `proved`) seen in the verdicts;

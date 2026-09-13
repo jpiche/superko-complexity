@@ -36,13 +36,31 @@
 //! the `Sweep`, which does not depend on it (`superko_solve::separate`'s
 //! module docs, and its `tests/threads.rs`).
 //!
-//! `--symmetry on` reaches the sweep case only: it searches one root of each
+//! `--symmetry` takes one of four values, so that the two halves of the
+//! symmetry feature can be measured apart:
+//!
+//! | value   | canonical roots (sweep case) | mirrored moves (every case) |
+//! |---------|------------------------------|-----------------------------|
+//! | `off`   | no                           | no                          |
+//! | `roots` | yes                          | no                          |
+//! | `moves` | no                           | yes                         |
+//! | `on`    | yes                          | yes                         |
+//!
+//! **Canonical roots** reach the sweep case only: it searches one root of each
 //! orbit under the board's symmetries and the color swap and transports the
-//! rest (`superko_solve::separate`'s module docs). It lowers `nodes` and
-//! `seconds`, and under the case's budget it can move `resolved`, `unresolved`
-//! and the ssk-only counts, since a transported root is resolved exactly when
-//! its representative is. The `empty-` cases are one search each and ignore
-//! it.
+//! rest (`superko_solve::separate`'s module docs). Under the case's budget they
+//! can move `resolved`, `unresolved` and the ssk-only counts, since a
+//! transported root is resolved exactly when its representative is.
+//! **Mirrored moves** reach every case: each search skips a play at a state a
+//! board symmetry fixes when the symmetry maps an earlier play onto it
+//! (`superko_solve::search`'s module docs). They move `nodes`, `seconds`,
+//! `max-depth` and the ssk-only counts, and under a budget whether a search
+//! resolves; `mirrored-skips` counts the plays skipped. `superko separate
+//! --symmetry on` turns both halves on, as `on` does here.
+//!
+//! `superko bench` built before mirrored moves existed printed `symmetry=on`
+//! for what this build calls `roots`: a `flags` line is read against the build
+//! that printed it.
 //!
 //! # The line format
 //!
@@ -65,14 +83,18 @@
 //!   `Solver`s, the per-root decode and legality check, every search, and
 //!   adding up the per-root results.
 //!   Building the table is not timed, since no solver feature changes it.
-//!   Under `--symmetry on` the sweep builds the board's symmetry maps and the
-//!   orbit representatives inside `sweep_with`, so that build is inside the
-//!   span;
+//!   With either half of symmetry on, the board's symmetry maps are built
+//!   inside the span: by `sweep_with` for the sweep, with the orbit
+//!   representatives when canonical roots are on, and just before the
+//!   `Solver` for an `empty-` case with mirrored moves;
 //! - `budget`;
 //! - the counters that apply: `max-depth` and `ssk-only` for a single search,
 //!   `roots`, `ssk-only-plays` and `resolved-with-ssk-only` for the sweep,
 //!   then `searched` and `transported`: the roots whose searches ran and the
-//!   roots whose values were transported, `transported=0` without symmetry.
+//!   roots whose values were transported, `transported=0` without canonical
+//!   roots; and last, on both kinds of line, `mirrored-skips`: the plays
+//!   skipped as mirror images, over every search of the case, zero without
+//!   mirrored moves.
 //!
 //! A feature that adds a flag records it on the `flags` line through
 //! [`Settings::header`], and a feature that adds a counter appends it after
@@ -85,6 +107,7 @@ use std::time::Instant;
 use superko_rules::code::PosCode;
 use superko_rules::config::{Dims, Repetition, Suicide};
 use superko_rules::reference::Color;
+use superko_rules::symmetry::Symmetries;
 use superko_rules::table::RuleTable;
 use superko_solve::search::{MoveOrder, Solver};
 use superko_solve::separate as sep;
@@ -94,6 +117,48 @@ pub const SOLVE_BUDGET_CAP: u64 = 100_000_000;
 
 /// The largest budget a search of a sweep in the suite may carry.
 pub const SWEEP_BUDGET_CAP: u64 = 1_000_000;
+
+/// Which halves of the symmetry feature a bench run has on (the module docs).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum Symmetry {
+    /// Neither half.
+    #[default]
+    Off,
+    /// Canonical roots in the sweep case only.
+    Roots,
+    /// Mirrored moves in every search only.
+    Moves,
+    /// Both halves, as `superko separate --symmetry on`.
+    On,
+}
+
+impl Symmetry {
+    /// Every value, in the order the usage text names them.
+    pub const ALL: [Self; 4] = [Self::Off, Self::Roots, Self::Moves, Self::On];
+
+    /// The spelling `--symmetry` takes and the `flags` line prints.
+    #[must_use]
+    pub const fn name(self) -> &'static str {
+        match self {
+            Self::Off => "off",
+            Self::Roots => "roots",
+            Self::Moves => "moves",
+            Self::On => "on",
+        }
+    }
+
+    /// Whether the sweep case searches orbit representatives only.
+    #[must_use]
+    pub const fn roots(self) -> bool {
+        matches!(self, Self::Roots | Self::On)
+    }
+
+    /// Whether every search skips mirrored plays.
+    #[must_use]
+    pub const fn moves(self) -> bool {
+        matches!(self, Self::Moves | Self::On)
+    }
+}
 
 /// The settings a bench run is under.
 ///
@@ -105,9 +170,8 @@ pub struct Settings {
     /// The threads the sweep case spreads its roots over, at least one. The
     /// `empty-` cases are one search each and ignore it.
     pub threads: usize,
-    /// Whether the sweep case searches orbit representatives only. The
-    /// `empty-` cases ignore it.
-    pub symmetry: bool,
+    /// Which halves of the symmetry feature are on.
+    pub symmetry: Symmetry,
 }
 
 impl Default for Settings {
@@ -115,7 +179,7 @@ impl Default for Settings {
     fn default() -> Self {
         Self {
             threads: 1,
-            symmetry: false,
+            symmetry: Symmetry::Off,
         }
     }
 }
@@ -126,15 +190,16 @@ impl Settings {
     /// The move order is named although no flag sets it, because it is what a
     /// later ordering feature changes and a baseline that did not say which
     /// order it measured would not be comparable. A line from before the
-    /// thread count existed, `flags order=heuristic`, ran on one thread, and a
-    /// line from before symmetry existed ran without it.
+    /// thread count existed, `flags order=heuristic`, ran on one thread, a
+    /// line from before symmetry existed ran without it, and a line from before
+    /// mirrored moves existed that says `symmetry=on` ran canonical roots only.
     #[must_use]
     pub fn header(&self) -> String {
         format!(
             "flags order={} threads={} symmetry={}",
             order_name(MoveOrder::default()),
             self.threads,
-            if self.symmetry { "on" } else { "off" }
+            self.symmetry.name()
         )
     }
 }
@@ -253,7 +318,13 @@ pub fn run_case(case: &Case, settings: &Settings) -> Result<Line, String> {
     match *case {
         Case::Empty { rep, budget, .. } => {
             let started = Instant::now();
+            let maps = settings.symmetry.moves().then(|| {
+                Symmetries::new(case.dims()).expect("a board with a table has symmetry maps")
+            });
             let mut solver = Solver::new(&table, rep).with_budget(Some(budget));
+            if let Some(sym) = &maps {
+                solver = solver.with_mirrored_moves(sym);
+            }
             let solution = solver.solve_root(PosCode(0), Color::Black);
             let seconds = started.elapsed().as_secs_f64();
             line.push("rule", rep);
@@ -268,6 +339,7 @@ pub fn run_case(case: &Case, settings: &Settings) -> Result<Line, String> {
             line.push("budget", budget);
             line.push("max-depth", solution.max_depth);
             line.push("ssk-only", solution.ssk_only);
+            line.push("mirrored-skips", solution.mirrored_skips);
         }
         Case::Sweep { budget, .. } => {
             let started = Instant::now();
@@ -275,7 +347,8 @@ pub fn run_case(case: &Case, settings: &Settings) -> Result<Line, String> {
                 budget: Some(budget),
                 min_stones: 0,
                 threads: settings.threads,
-                symmetry: settings.symmetry,
+                symmetry: settings.symmetry.roots(),
+                mirrored_moves: settings.symmetry.moves(),
             };
             let sweep = sep::sweep_with(&table, opts);
             let seconds = started.elapsed().as_secs_f64();
@@ -291,6 +364,7 @@ pub fn run_case(case: &Case, settings: &Settings) -> Result<Line, String> {
             line.push("resolved-with-ssk-only", sweep.resolved_with_ssk_only);
             line.push("searched", sweep.searched);
             line.push("transported", sweep.transported);
+            line.push("mirrored-skips", sweep.mirrored_skips);
         }
     }
     Ok(line)
@@ -340,13 +414,26 @@ mod tests {
             Settings::default().header(),
             "flags order=heuristic threads=1 symmetry=off"
         );
+        for symmetry in Symmetry::ALL {
+            assert_eq!(
+                Settings {
+                    threads: 14,
+                    symmetry
+                }
+                .header(),
+                format!(
+                    "flags order=heuristic threads=14 symmetry={}",
+                    symmetry.name()
+                )
+            );
+        }
+        let halves: Vec<(bool, bool)> = Symmetry::ALL
+            .iter()
+            .map(|s| (s.roots(), s.moves()))
+            .collect();
         assert_eq!(
-            Settings {
-                threads: 14,
-                symmetry: true
-            }
-            .header(),
-            "flags order=heuristic threads=14 symmetry=on"
+            halves,
+            [(false, false), (true, false), (false, true), (true, true)]
         );
     }
 
@@ -406,7 +493,8 @@ mod tests {
                 "seconds",
                 "budget",
                 "max-depth",
-                "ssk-only"
+                "ssk-only",
+                "mirrored-skips"
             ]
         );
         assert_eq!(
@@ -419,6 +507,7 @@ mod tests {
                 ("budget", "100"),
                 ("max-depth", "10"),
                 ("ssk-only", "0"),
+                ("mirrored-skips", "0"),
             ])
         );
     }
@@ -443,8 +532,48 @@ mod tests {
                 ("budget", "100000000"),
                 ("max-depth", "17"),
                 ("ssk-only", "0"),
+                ("mirrored-skips", "0"),
             ])
         );
+    }
+
+    /// Mirrored moves reach an `empty-` case, and canonical roots do not: with
+    /// `moves` or `on` the empty 1×5 board keeps its value and skips plays, and
+    /// with `roots` its line is the plain line.
+    #[test]
+    fn an_empty_case_under_mirrored_moves_skips_plays() {
+        let case = Case::Empty {
+            dims: Dims::new(1, 5),
+            rep: Repetition::Psk,
+            budget: 100_000_000,
+        };
+        let at = |symmetry| {
+            fields_but_seconds(
+                &run_case(
+                    &case,
+                    &Settings {
+                        threads: 1,
+                        symmetry,
+                    },
+                )
+                .unwrap(),
+            )
+        };
+        let plain = at(Symmetry::Off);
+        assert_eq!(at(Symmetry::Roots), plain);
+        let moves = at(Symmetry::Moves);
+        assert_eq!(at(Symmetry::On), moves);
+        let field = |line: &[(&'static str, String)], key: &str| {
+            line.iter()
+                .find(|(k, _)| *k == key)
+                .map(|(_, v)| v.clone())
+                .unwrap()
+        };
+        assert_eq!(field(&moves, "value"), "0");
+        assert_ne!(field(&moves, "mirrored-skips"), "0");
+        // A skip is a subtree not searched; the node count is pinned in
+        // `superko_solve`'s tests/mirrored.rs, not here.
+        assert_ne!(field(&moves, "nodes"), field(&plain, "nodes"));
     }
 
     /// A sweep case passes its budget to every search and reports the
@@ -474,6 +603,7 @@ mod tests {
                 "resolved-with-ssk-only",
                 "searched",
                 "transported",
+                "mirrored-skips",
             ]
         );
         let pinned = owned(&[
@@ -489,6 +619,7 @@ mod tests {
             ("resolved-with-ssk-only", "0"),
             ("searched", "162"),
             ("transported", "0"),
+            ("mirrored-skips", "0"),
         ]);
         assert_eq!(fields_but_seconds(&line), pinned);
         // The thread count reaches the sweep and moves nothing but `seconds`.
@@ -497,7 +628,7 @@ mod tests {
                 &case,
                 &Settings {
                     threads,
-                    symmetry: false,
+                    symmetry: Symmetry::Off,
                 },
             )
             .unwrap();
@@ -524,21 +655,29 @@ mod tests {
                 ("resolved-with-ssk-only", n(sweep.resolved_with_ssk_only)),
                 ("searched", n(sweep.searched)),
                 ("transported", n(sweep.transported)),
+                ("mirrored-skips", n(sweep.mirrored_skips)),
             ]
         );
     }
 
-    /// `symmetry` reaches the sweep: the line reports the symmetric `Sweep`'s
-    /// own counts, fewer roots are searched than there are, and the thread
-    /// count still moves nothing but `seconds`.
+    /// Each value of `symmetry` reaches the sweep as the halves it names: the
+    /// line reports the `Sweep` with those options' own counts, canonical roots
+    /// search fewer roots than there are, mirrored moves skip plays, and the
+    /// thread count still moves nothing but `seconds`.
     #[test]
     fn a_sweep_case_under_symmetry_reports_the_symmetric_sweep() {
+        for symmetry in [Symmetry::Roots, Symmetry::Moves, Symmetry::On] {
+            a_sweep_case_reports_the_sweep_under(symmetry);
+        }
+    }
+
+    fn a_sweep_case_reports_the_sweep_under(symmetry: Symmetry) {
         let dims = Dims::new(2, 2);
         let budget = 50;
         let case = Case::Sweep { dims, budget };
         let on = Settings {
             threads: 1,
-            symmetry: true,
+            symmetry,
         };
         let line = run_case(&case, &on).unwrap();
         let table = RuleTable::build(dims, Suicide::Forbid).unwrap();
@@ -548,10 +687,12 @@ mod tests {
                 budget: Some(budget),
                 min_stones: 0,
                 threads: 1,
-                symmetry: true,
+                symmetry: symmetry.roots(),
+                mirrored_moves: symmetry.moves(),
             },
         );
-        assert!(sweep.transported > 0);
+        assert_eq!(sweep.transported > 0, symmetry.roots(), "{symmetry:?}");
+        assert_eq!(sweep.mirrored_skips > 0, symmetry.moves(), "{symmetry:?}");
         assert_eq!(sweep.searched + sweep.transported, sweep.roots);
         let n = |v: u64| v.to_string();
         let expected = vec![
@@ -567,16 +708,17 @@ mod tests {
             ("resolved-with-ssk-only", n(sweep.resolved_with_ssk_only)),
             ("searched", n(sweep.searched)),
             ("transported", n(sweep.transported)),
+            ("mirrored-skips", n(sweep.mirrored_skips)),
         ];
-        assert_eq!(fields_but_seconds(&line), expected);
+        assert_eq!(fields_but_seconds(&line), expected, "{symmetry:?}");
         let spread = run_case(
             &case,
             &Settings {
                 threads: 14,
-                symmetry: true,
+                symmetry,
             },
         )
         .unwrap();
-        assert_eq!(fields_but_seconds(&spread), expected);
+        assert_eq!(fields_but_seconds(&spread), expected, "{symmetry:?}");
     }
 }
