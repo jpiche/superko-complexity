@@ -85,9 +85,13 @@ both. The body then carries
 - with `roots` or `on`, after that, `symmetry-searched=N`, the roots whose two
   searches ran, and `symmetry-transported=M`, the roots whose values were
   transported, with `N + M + skipped = roots`;
-- with `moves` or `on`, after those, the line `symmetry-mirrored-moves=on`. No
-  test checks that the witness verdict searches skip; that they do is read
-  from the code;
+- with `moves` or `on`, after those, the line `symmetry-mirrored-moves=on`.
+  `crates/superko-solve/tests/mirrored.rs` checks that the witness verdict
+  searches are handed the board's maps under exactly these two values, through
+  `Sweep::lines_with_verdicts`, which `Sweep::lines` wraps. It uses a record
+  put by hand into a 1×4 sweep, because the one real witness among the results
+  of at most five points, 1×2 with suicide removing its own stones, skips no
+  play under any value (`computed`, same test);
 - with `roots` or `on`, in each witness block, after `-ssk=`, a line
   `minimal-transported=` (or `minimal-liberties-transported=`) saying whether
   that root's values were transported. The witness verdicts are searched on the
@@ -111,7 +115,12 @@ skipped as without is `computed` at every root of every board of at most five
 points, except on 1x5 and 5x1 with suicide removing its own stones, where it is
 `computed` only where both searches resolved within the budgets
 `crates/superko-solve/tests/mirrored.rs` names (440 of 972 values and 15 976 of
-25 272 verdicts, both rules, on each). Verdicts at floors outside that range are
+25 272 verdicts, both rules, on each). On 2×3 and 3×2 under the no-suicide
+rule, whose group has four elements, the values of the sweep under `roots`,
+`moves` and `on` are `computed` equal to the plain sweep's only at the roots
+and rules both resolved within 10⁵ nodes a search (1 504 of 2 916 on each
+board and value, `crates/superko-solve/tests/symmetry.rs`); no verdict is
+compared there. Verdicts at floors outside that range are
 not tested, and none of it is proved. With `--symmetry off`, the default, none
 of these lines appears and the body is unchanged.
 

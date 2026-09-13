@@ -74,7 +74,7 @@
 //! plays only situational superko permits copied. Its stones and liberties are
 //! read off the root itself.
 //!
-//! Then every root, searched or transported, goes through the one [`fold`] in
+//! Then every root, searched or transported, goes through the one `fold` in
 //! the sweep order, so each field of the [`Sweep`] — resolved and unresolved
 //! counts, the least unresolved roots, the separating counts and minima, the
 //! empty board's values, the ssk-only counts, the unconditional flags — is
@@ -91,7 +91,12 @@
 //! 5×1 under the no-suicide rule. On 1×5 and 5×1 with suicide removing its own
 //! stones it is `computed` only at the roots resolved within the budgets that
 //! file names, which leave most of them uncompared (1 628 of 2 916 value pairs
-//! on each at 10⁵ nodes a search). The facts about the rules it would follow
+//! on each at 10⁵ nodes a search). On 2×3 and 3×2 under the no-suicide rule,
+//! whose group has four elements, the symmetric sweep's values are `computed`
+//! equal to the plain sweep's only at the root-and-rule pairs both resolved
+//! within 10⁵ nodes a search, 1 504 of 2 916 on each, and no verdict is
+//! compared there (`tests/symmetry.rs`, ignored in debug). The facts about the
+//! rules it would follow
 //! from are the divergences `board-symmetry` and `color-swap`, which a body
 //! produced under it names.
 //!
@@ -208,7 +213,9 @@ pub struct Verdicts {
     /// Plays the four searches skipped as mirror images, added up
     /// ([`crate::search::Decision::mirrored_skips`]). Zero when [`verdicts`]
     /// was given no maps. Printed in no body: it is what a test reads to see
-    /// that the maps reached the searches.
+    /// that the maps reached the searches. The derived `PartialEq` compares
+    /// it, so a check that plain and mirrored `Verdicts` agree must set it
+    /// aside first, as `tests/mirrored.rs` does by zeroing it.
     pub mirrored_skips: u64,
 }
 

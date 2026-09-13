@@ -79,9 +79,10 @@
 //! test and in `tests/mirrored.rs` on the searches that file names: the value
 //! searches of every board it compares but the five-point lines with suicide
 //! removing its own stones, the verdict searches of the lines of at most four
-//! points, and the value and verdict searches on the empty 1×4 and 2×2 roots.
-//! The other searches under test, the verdict differential on 2×2 among them,
-//! run without it.
+//! points, and the value and verdict searches on the empty 1×4 and 2×2 roots;
+//! and in `tests/symmetry.rs` on the value searches with mirrored moves from
+//! the empty 2×3 and 3×2 roots at 10⁴ nodes. The other searches under test,
+//! the verdict differential on 2×2 among them, run without it.
 //!
 //! Whether mirrored moves are on is decided once per root rather than at every
 //! node: [`Solver::solve_root`] and [`Solver::decide_root`] run the value or the
@@ -474,8 +475,9 @@ impl<'t> Solver<'t> {
     /// The change is the module docs' `[s(k) ≠ k and s(k) ∉ A] − [s⁻¹(k) ≠ k
     /// and s⁻¹(k) ∈ A]` with `A` the archive without `k`. It reads the archive
     /// only at keys other than `k`, so it is the same whether `k` itself is
-    /// archived yet or not, and may be called after the insert or before the
-    /// undo. The preimage of `k` under `g` is its image under `g⁻¹`, so each
+    /// archived yet or not, and may be called before or after the insert and
+    /// before or after the undo: `archive_insert` calls it after the insert,
+    /// and `unmake` and `archive_undo` call it after the undo. The preimage of `k` under `g` is its image under `g⁻¹`, so each
     /// element's image is looked up once and serves as its own image and as
     /// its inverse's preimage.
     fn track(&mut self, key: ArchiveKey, inserting: bool) {

@@ -515,3 +515,461 @@ The main session narrowed the `board-symmetry` consequence sentence in
 `results/README.md` that said it overstated. The bullet on that sentence under
 "What is not established" and item 3 of the next-session list describe the
 state before that change and are left as written.
+
+## Follow-up: separate --symmetry roots|moves, and cheaper mirrored moves
+
+The maintainer approved this step after `56f7935`. The same arrangement as
+above: the main session orchestrated, and Claude Opus 5 (`claude-opus-5`)
+subagents implemented, reviewed, fixed and wrote these records. The main
+session ran the gate at `c5bf5ab` (`data/gate2.log`). The records agent reran
+some measurements, and each such number names its file below.
+
+**Status.** Nothing here enters the ledger above `computed`, and no ledger row
+changed. Every performance number is a release measurement on the 14-core,
+36 GiB machine. The symmetry facts are still unlicensed divergences.
+
+| commit | subject | review |
+|---|---|---|
+| `b827836` | cli: superko separate takes --symmetry off, roots, moves or on | approved in round 1 (lenses: protections, tests) |
+| `c5bf5ab` | solve: make mirrored-move bookkeeping cheaper and restore the plain path's cost | approved in round 1 (lenses: protections, tests, soundness) |
+
+### The four values of `superko separate --symmetry`
+
+`SymmetryMode { Off, Roots, Moves, On }` now lives in
+`superko_solve::separate`, with `ALL`, `from_halves`, `name`, `roots` and
+`moves`. `Flags::symmetry()` is the one parser for `separate`, `bench` and
+`solve`, and `Flags::bench_symmetry` is gone. `solve` takes only `off` and `on`,
+and refuses `roots` and `moves` with a message saying `on` is its only
+symmetric mode.
+
+| value | what runs | `divergences=` gains | body lines added |
+|---|---|---|---|
+| `off` (default) | the plain sweep | nothing | none: the body every earlier results file records |
+| `roots` | canonical roots only (`Options::symmetry`) | `board-symmetry:unlicensed,color-swap:unlicensed` | after `skipped=`: `symmetry=roots`, `symmetry-searched=`, `symmetry-transported=`; in each witness block after `-ssk=`: `<prefix>-transported=` |
+| `moves` | mirrored moves only (`Options::mirrored_moves`), in every search, the witness verdicts included | `board-symmetry:unlicensed` | after `skipped=`: `symmetry=moves`, `symmetry-mirrored-moves=on` |
+| `on` | both | `board-symmetry:unlicensed,color-swap:unlicensed` | after `skipped=`: `symmetry=on`, `symmetry-searched=`, `symmetry-transported=`, `symmetry-mirrored-moves=on`; `<prefix>-transported=` in each witness block |
+
+The `on` body keeps its `bfeb530` line order. Evidence that it is unchanged:
+the `bfeb530` release binary's bodies were compared with `b827836`'s. For
+`separate` 1×3 forbid and 1×2 remove-own, the `on` bodies are pinned in the CLI
+test `separate_symmetry_on_prints_the_body_bfeb530_printed`, at one and
+fourteen threads. For `separate` 2×2 forbid and `solve` 1×4 psk, under `on` and
+`off`, they were diffed in release only, not in a test.
+
+**A departure from the brief, recorded by the implementer.** Beyond the lines
+in the table, mirrored moves change the three ssk-only lines, because they
+change which plays a search makes. Canonical roots already could, since a
+transported root copies its representative's count. `ssk-only-plays` per value
+(off, roots, moves, on), `computed` under the divergences each body names:
+1×2 remove-own 12, 12, 10, 10; 2×2 forbid 1 004, 1 136, 822, 892. The CLI tests
+set these three lines aside for every value but `off`, and pin them per value
+on 1×2 remove-own only. The 2×2 counts are pinned by no test; they come from
+the unbudgeted runs in `data/fast/before.txt` and
+`data/flag/new-separate-2x2-forbid-{off,roots,moves,on}.txt`.
+Under a budget, either half can also change which roots resolve (above).
+
+The CLI tests `b827836` added, in `crates/superko-cli/src/main.rs`:
+
+- `the_symmetry_flag_takes_four_values`.
+- `each_symmetry_value_changes_a_separate_body_only_in_its_lines`: at one and
+  fourteen threads, every line outside the symmetry lines and the ssk-only
+  counts is the `off` body's.
+- `each_symmetry_value_names_exactly_its_lines_and_divergences`, on 1×2
+  remove-own, with both witness blocks.
+- `separate_symmetry_on_prints_the_body_bfeb530_printed`.
+- `solve_refuses_roots_and_moves`.
+
+The implementer read `separate --board 2x2 --suicide forbid --threads 14` from
+standard error under each value: nodes 69 828 under off, 9 930 under roots,
+54 090 with 600 skips under moves, and 6 750 with 98 skips under on. The wall
+times were a few milliseconds and do not separate the values. These numbers
+are in `data/flag/time-2x2-forbid-t14-{off,roots,moves,on}.err` (23:44, before
+the `b827836` commit at 23:54).
+
+### The fast step: what was measured, kept and dropped
+
+**Invariant.** `data/fast/invariant.sh` runs 16 commands and sets seconds and
+standard error aside:
+
+- `superko bench --threads 14` under each of the four values;
+- `superko solve` on the empty 1×6 and 2×3 boards, under psk and ssk, at 10⁸
+  nodes, with and without `--symmetry on`;
+- `superko separate --board 2x2 --suicide forbid --threads 14` under each value.
+
+`data/fast/before.txt` was recorded at `b827836`. The implementer's
+`data/fast/after.txt` (00:30) predates its last source edit. The main session
+reran the script on the committed `c5bf5ab` as `data/fast/gate-head.txt`, and
+`diff data/fast/before.txt data/fast/gate-head.txt` prints nothing; the records
+agent reran that diff. So the 16 outputs are byte-identical, seconds aside, at
+`b827836` and `c5bf5ab`, on those commands only.
+
+**Timings.** `data/fast/timing.sh <label> <binary> yes` reports medians of five
+release runs, one heavy job at a time. Solve times are the `# elapsed=` field
+(table build and search). The sweep column is `superko bench --threads 14
+--symmetry moves`'s `sweep-2x3` seconds.
+
+| build | file (time written) | 1×6 psk off | 2×3 ssk off | 1×6 psk `on` | 2×3 ssk `on` | sweep, moves, 14 threads |
+|---|---|---|---|---|---|---|
+| (a) `09dcc60`, temporary worktree since removed | `timing-a.txt` (23:59) | 0.780 | 2.804 | n/a | n/a | n/a |
+| (b) `b827836` | `timing-b.txt` (00:02) | 0.845 | 2.995 | 0.499 | 4.783 | 6.062 |
+| bitmask build | `timing-c.txt` (00:11) | 0.775 | 2.783 | 0.456 | 4.038 | 5.229 |
+| x: the bitmask build without the bitmask | `timing-x.txt` (00:17) | 0.754 | 2.730 | 0.457 | 4.018 | 5.294 |
+| oldbk: flat tables read through the accessors | `timing-oldbk.txt` (00:21) | 0.765 | 2.724 | 0.488 | 5.078 | 6.349 |
+| s3: the const-generic off path alone | `timing-s3.txt` (00:24) | 0.745 | 2.696 | 0.470 | 4.546 | 5.758 |
+| final, implementer | `timing-final.txt` (00:33) | 0.760 | 2.739 | 0.468 | 4.068 | 5.312 |
+| `c5bf5ab`, records agent | `timing-records2.txt` | 0.728 | 2.664 | 0.456 | 4.007 | 5.279 |
+
+The commit is dated 00:45, so `timing-final.txt` was measured before it, and
+whether on the committed source is not recorded. The last row was rerun on the
+release binary built at `c5bf5ab`, with
+`data/fast/timing.sh records2-c5bf5ab target/release/superko yes`. On the off
+rows it reads 3 to 4 percent below `final`, about the build-to-build noise the
+implementer quoted, about 3 percent. `final` sits 2.6 and 2.3 percent below (a)
+on the off rows, within that noise. The `c5bf5ab` row sits 6.7 percent (0.728
+against 0.780 s) and 5.0 percent (2.664 against 2.804 s) below (a), outside it;
+that gap spans two build trees and two timing sessions, and it is not claimed
+as an improvement. Each ablation is one build, timed in one session (five runs,
+median).
+
+Bench files, each a single run at 14 threads:
+
+| file | sweep-2x3 at 10⁶ nodes per search |
+|---|---|
+| `data/bench/5-fast-before-moves-t14.txt` (`b827836`) | 5.779 s, nodes 1 409 314 340, 788 skips |
+| `data/bench/5-fast-after-moves-t14.txt` (00:33, pre-commit, the build of `timing-final.txt`) | 5.435 s, same nodes and skips |
+| `data/bench/5-fast-after-off-t14.txt` (00:33, pre-commit, the same build) | 3.774 s, nodes 1 409 326 892 |
+| `data/bench/6-records-on-t14.txt` (records agent, `c5bf5ab`) | 0.792 s, nodes 204 558 495, 216 searched, 1 242 transported, 228 skips, 760 resolved |
+| `data/bench/6-records-roots-t14.txt` (records agent, `c5bf5ab`) | 0.547 s, nodes 204 561 993, same roots, 760 resolved |
+
+Each `6-records-*` file came from `target/release/superko bench --threads 14
+--symmetry <value>` and holds the empty-board cases as well. Under `on`, the
+empty 2×3 PSK case again reads 0 in 93 137 907 nodes with 22 skips, and the
+empty 2×3 SSK case is unresolved at 10⁸ nodes with 11 skips.
+
+**Kept:**
+
+- flat code and point tables in `Symmetries`, read through `code_count()`,
+  `code_table()` and `point_table()`; the existing accessors keep their
+  signatures and values, now with explicit asserts;
+- `Mirror` holds the element count and flat slices;
+- `track()` runs after the insert, reads each image once, and uses the image
+  under `inverse[g]` as the preimage;
+- the off path as a const generic `MIRROR: bool` on `make`, `unmake`, `enter`,
+  `alphabeta` and `verdict`, chosen once per root, with one source per
+  recursion compiled twice.
+
+**Dropped:** the per-code bitmask of fixing elements. With it and without it
+(bitmask build against x) the rows differ by at most about 3 percent, in both
+directions, within noise. Its field and accessor were removed.
+
+**Where the off-path cost came from.** In the ablation, s3 alone brought the
+off rows back level with (a): 0.745 against 0.780 s, and 2.696 against 2.804 s.
+s3 changes only the per-node `is_some()` branches, so the implementer
+attributes the cost to them. That is a reading of one ablation per build,
+consistent with that cause; nothing else, a layout effect say, was isolated.
+
+**What mirrored moves still cost per node**, from these files:
+
+- On the moves-only sweep at 14 threads, at nearly equal nodes, in one
+  pre-commit build: 5.435 s (`5-fast-after-moves`) against 3.774 s off
+  (`5-fast-after-off`), single runs each. That is about 44 percent more per
+  node. The first part of this entry's 59 percent (F against B) was measured on
+  one thread against an earlier build, so the two are not like for like, and
+  no change in this ratio is claimed.
+- On `solve` 2×3 SSK, both searches stopped at 10⁸ nodes: 4.007 against
+  2.664 s, about 50 percent more, where (b) had 4.783 against 2.995 s, about
+  60 percent.
+- On the `on` sweep against `roots` at 14 threads, at nearly equal nodes:
+  0.792 against 0.547 s, 45 percent more. The first part of this entry had H
+  against J, 44 percent. Single runs; on this case no change in the relative
+  cost was measured.
+
+So the recommendation of the first part stands. Canonical roots belong in
+sweeps. Mirrored moves pay only where they skip, and on a case that skips
+nothing they still cost 40 to 50 percent more per node. Defaults are unchanged:
+`--threads 1` and `--symmetry off`.
+
+### New tests, and what each holds
+
+- **`superko-solve` `tests/symmetry.rs`
+  `the_four_element_group_agrees_with_the_plain_sweep_on_2x3_and_3x2`**
+  (ignored in debug). Setup: 2×3 and 3×2 under the no-suicide rule, both
+  rules, every root, 10⁵ nodes per search. Each of `moves`, `roots` and `on`
+  is compared with the plain sweep's per-root values (`root_outcomes`) at
+  every root and rule both resolved. Per board and value, 1 504 values are
+  compared and 1 412 are not. Transported roots: 0, 1 242 and 1 242. Plays
+  skipped: 788, 0 and 228 on 2×3, and 764, 0 and 216 on 3×2. Then, on each
+  board and under each rule, a mirrored value search from the empty root at
+  10⁴ nodes returns the same `Solution` with `with_unmatched_self_check` as
+  without it, and the recount runs. Every element of this group is its own
+  inverse, so non-involutions stay covered by the self-checked 2×2 searches of
+  `tests/mirrored.rs` and by `search.rs`'s unit test. It compares values only,
+  never verdicts, and runs only under the no-suicide rule. `computed`, not
+  proved.
+- **`tests/mirrored.rs`
+  `the_witness_verdicts_skip_mirrored_plays_when_handed_the_maps`.** `verdicts()`
+  at the empty 1×4 root, Black to move, no-suicide rule, komi floor 4. With the
+  maps it skips 8 plays, without them 0. The four verdicts are equal once
+  `mirrored_skips` is set aside, and Black does not win under PSK where White
+  does.
+- **`tests/mirrored.rs`
+  `a_sweep_hands_its_witness_verdicts_the_maps_when_mirrored_moves_are_on`.**
+  `Verdicts` gains `mirrored_skips`, and `Sweep::lines` is
+  `lines_with_verdicts(..).0`. Under each of the four values:
+  - the 1×2 remove-own sweep has two witness blocks, whose searches skip 0
+    plays under every value;
+  - a stated non-separating record at the empty 1×4 root, Black to move,
+    values 4 and 5, is put into a real 1×4 no-suicide sweep, and its witness
+    verdicts at floor 4 skip 0, 0, 8 and 8 plays under off, roots, moves and
+    on;
+  - the lines equal `lines`' in both.
+
+  The record is put in by hand because the one real witness among the results
+  of at most five points, 1×2 with suicide removing its own stones, skips no
+  play under any value (`computed`, same test). In a mutation run by the
+  implementer, passing `None` for
+  the maps failed this test.
+- **`superko-rules` `tests/symmetry.rs`
+  `the_flat_tables_agree_with_the_accessors`.** `code_table` and
+  `point_table` equal `code(g, c)` and `point(g, p)` entry by entry, on every
+  board of at most six points and on 3×3.
+
+**Test times.**
+
+- Debug `cargo test --workspace`: 172 s wall at `c5bf5ab`, including a rebuild
+  (main-session gate, `data/gate2.log`, `debug-test-seconds=172`). That is
+  against about 154 s before the session and 165 s at `51d9914`, so the
+  session's total growth of about 18 s is inside correction 8's 30 s. One run.
+- Debug, `superko-solve`'s test binaries in that gate, in the order the
+  implementer's `data/fast/gate-debug.log` names them: agreement 103.25 s,
+  mirrored 10.09 s, published 36.87 s, symmetry 1.24 s, threads 0.26 s.
+- The three new debug-run tests alone (records agent):
+  - 0.03 s for the two `tests/mirrored.rs` tests together, `cargo test -p
+    superko-solve --test mirrored --
+    the_witness_verdicts_skip_mirrored_plays_when_handed_the_maps
+    a_sweep_hands_its_witness_verdicts_the_maps_when_mirrored_moves_are_on`
+    (`data/records2-debug-mirrored.log`);
+  - 0.08 s for `cargo test -p superko-rules --test symmetry --
+    the_flat_tables_agree_with_the_accessors`
+    (`data/records2-debug-rules-symmetry.log`).
+- Release `cargo test --release -p superko-solve -- --include-ignored`: passed
+  in 56 s (`data/gate2.log`). Per file in that gate at `c5bf5ab`, matched to
+  test files by the order and pass counts of the `Running` lines in the
+  implementer's pre-commit `data/fast/gate-release.log`: agreement 12.22 s,
+  mirrored 25.31 s, published 3.59 s, symmetry 12.14 s, threads 0.04 s.
+- The four-element test alone, `cargo test --release -p superko-solve --test
+  symmetry -- --ignored
+  the_four_element_group_agrees_with_the_plain_sweep_on_2x3_and_3x2`: 2.42 s in
+  the harness, 3 s wall, on the machine's 14 threads (records agent,
+  `data/records2-four-element-release.log`).
+
+The rest of the main-session gate at `c5bf5ab` passed:
+
+- the invariant; `cargo fmt --all --check`; `cargo build --workspace` with 0
+  warnings; `cargo clippy --workspace --all-targets`;
+- `check-ledger`, `check-docs`, `check-mirror` (7 divergence slugs) and
+  `check-oracle`;
+- `verify-results` on the eleven small `separate` results;
+- `superko separate --board 2x3 --suicide forbid --budget 10000000 --threads
+  14`, in 38 s, byte-identical again to
+  `results/separate-2x3-forbid-budget-1e7.txt` (`# elapsed=37.639s`,
+  `# nodes=13484773896`).
+
+### Reviews
+
+Both commits were approved in round 1, and no reviewer refused; this and the
+rest of this paragraph come from the session history and cannot be checked
+from the tree. One finding
+changed the evidence before `c5bf5ab` was committed. The protections reviewer
+saw that `data/fast/after.txt` predated the implementer's last source edit, so
+the invariant had not been shown on the code to be committed. The main session
+resolved it by rerunning the invariant on `c5bf5ab` (`data/fast/gate-head.txt`,
+clean against `before.txt`).
+
+Reviewers flagged five documentation defects as nonblocking. This records step
+fixed them in doc comments only:
+
+1. `search.rs`'s `track()` doc said it "may be called after the insert or
+   before the undo", but `unmake` calls it after the undo. It now says before
+   or after either, and which callers call it when.
+2. The `a_sweep_hands...` doc stated that both rules give the empty 1×4 board
+   4 without a status. It now says `computed`.
+3. `Verdicts::mirrored_skips`'s doc now says the derived `PartialEq` compares
+   it, so a plain-against-mirrored equality check must set it aside.
+4. `search.rs`'s module doc now lists the self-checked value searches from the
+   empty 2×3 and 3×2 roots in `tests/symmetry.rs` among the searches the
+   self-check runs on.
+5. The four-element test's doc now says every element of that group is an
+   involution, and where non-involutions are covered.
+
+Also fixed in doc comments: the pre-existing rustdoc warning (item 4 of the
+list above). `separate.rs`'s module doc no longer links the private `fold`, and
+`cargo doc -p superko-solve --no-deps` prints no warning (records agent,
+`data/records2-doc2.log`).
+
+Docs updated for coverage:
+
+- `crates/superko-solve/src/lib.rs`, `separate.rs`'s transport paragraph,
+  `results/README.md` and `docs/trusted-base.md` now state the 2×3 and 3×2
+  comparison: values only, no-suicide rule, 1 504 of 2 916 root-and-rule pairs
+  per board and value, at 10⁵ nodes per search.
+- `results/README.md` no longer says no test checks that the witness verdict
+  searches skip.
+- The CLI usage text and `main.rs`'s module doc were read and found current.
+
+The review of these records blocked in round 1 on two findings, both fixed
+before commit:
+
+1. `docs/trusted-base.md` and `lib.rs` stated the 2×3 and 3×2 value equality
+   without a status, so "only" read as though the values differ at the
+   uncompared roots. Both now say `computed` equal only at the resolved roots.
+2. `results/README.md` and this entry said no small board's real witness
+   reaches a symmetric state, which nothing checks. Both now state the checked
+   fact: the 1×2 remove-own witness searches skip no play under any value.
+
+Its nonblocking notes were taken where they corrected a number or an
+attribution: the release per-file times now come from `gate2.log`, the
+pre-commit bench files are labeled, and the per-node comparison is made
+within one build. The pointer to this section was added to
+`experiments/005-minimal-psk-ssk-separation/README.md`.
+
+### Known gaps, not closed by this step
+
+- No test holds that `Sweep::lines` itself hands the maps over; the test reads
+  `lines_with_verdicts`, of which `lines` is today a one-line wrapper.
+- The `minimal-liberties` witness block's searches are not checked separately.
+- The flat layout `g · code_count + c` puts one code's images a row apart.
+  Whether that costs cache on 3×4 was not measured.
+- The bitmask was measured on 1×6 (a group of order 2) and 2×3 (order 4) only,
+  never on a square's order 8.
+- `data/fast/invariant.sh` runs `separate` on 2×2 without `--budget`, outside
+  the agent rule's exemptions.
+- `data/fast/final` holds a stale copy of the bitmask build, so `ablate.py
+  final` does not reproduce the committed code.
+- The byte-identity of the 2×2 `on` body and of the `solve` 1×4 bodies is a
+  release diff, not a test.
+- On 2×3 and 3×2, the unmatched-count self-check runs from the empty root
+  only, one search per board and rule, at 10⁴ nodes.
+- The four-element group is compared on values only. On 2×3 and 3×2, the
+  verdicts with mirrored moves, the verdict transport and the suicide-removing
+  convention are not compared.
+- From the earlier gap list, still open: the 2×2 verdict differential runs
+  without the self-check, and no test pins the skip mask under a rotation-only
+  subgroup.
+
+### Which items of "Where the next session picks up" are done
+
+1. The two prerequisites it named are done: a roots-only value (`b827836`) and
+   cheaper mirrored-move bookkeeping (`c5bf5ab`). The rerun itself is not
+   launched; see below.
+2. Not done: the empty 2×3 PSK value under mirrored moves is not promoted.
+3. The consequence sentence was narrowed at `bfeb530` (previous addendum). The
+   three stale `superko-rules` doc comments it names were not touched.
+4. Done in this step (above).
+5. Not done: plan §2.3 to §2.6.
+6. Not done: `data/review-clippy` and `data/review-clippy-bench-r1` still exist.
+
+### Recommendation for the 2×3 run
+
+For the maintainer to launch; none of these was run. Every candidate below
+exceeds the agent caps of `docs/plans/solver-plan.md` section 6 (10⁶ nodes per
+root for a sweep, 10⁸ for a single solve), so no agent may run them, and this
+list is not permission to.
+
+**Measured** (the file or record each comes from):
+
+- The recorded plain sweep at 10⁷ nodes per search took 363 s on one thread.
+  At 14 threads it takes 38 to 40 s for 1.348 × 10¹⁰ nodes: the first part of
+  this entry and `data/gate2.log`, where `# elapsed=37.639s` gives 3.58 × 10⁸
+  nodes per second. It resolved 792 of 1 458 roots, and the least unresolved
+  root is the empty board, Black to move.
+- At 10⁶ nodes per search and 14 threads:
+  - plain: 3.77 to 4.17 s;
+  - roots: 0.547 s for 204 561 993 nodes, 3.74 × 10⁸ nodes per second
+    (`6-records-roots-t14`);
+  - on: 0.792 s for 204 558 495 nodes, 2.58 × 10⁸ nodes per second
+    (`6-records-on-t14`);
+  - moves: 5.28 s.
+  - Under roots and on, 216 roots are searched and 760 resolve.
+- A single search runs at 3.75 × 10⁷ nodes per second plain and 2.50 × 10⁷
+  with mirrored moves (`solve` 2×3 SSK at 10⁸ nodes, medians 2.664 and
+  4.007 s, `timing-records2.txt`).
+- With mirrored moves, the empty 2×3 root resolves to 0 under PSK at
+  93 137 907 nodes. That is a bench measurement under the unlicensed
+  `board-symmetry` divergence, not a result. Under SSK it is unresolved at
+  10⁸ nodes.
+
+**Estimates, derived from those numbers and not measured.** Worst case, every
+search runs to its budget: the 216 representatives, times two searches, times
+the budget, divided by the 14-thread rate. For a sense of scale, the plain run
+at 10⁷ used 46 percent of its own worst case (1.348 × 10¹⁰ of 2.916 × 10¹⁰
+nodes). The last searches run on fewer threads, which adds up to one
+single-thread search. If a root separates, up to eight witness verdict searches
+run on one thread at up to the budget each. Their rate was not measured; the
+last column assumes the plain single-search rate under `roots`, which runs them
+without mirrored moves, and the mirrored rate under `on`.
+
+| candidate | worst-case nodes | worst-case sweep wall (estimate) | + last search alone (estimate) | + witness verdicts if a root separates (estimate) |
+|---|---|---|---|---|
+| `--symmetry roots --budget 10000000` | 4.32 × 10⁹ | about 12 s | 0.3 s | about 2 s |
+| `--symmetry on --budget 10000000` | 4.32 × 10⁹ | about 17 s | 0.4 s | about 3 s |
+| `--symmetry on --budget 100000000` | 4.32 × 10¹⁰ | about 170 s | 4 s | about 30 s |
+| `--symmetry on --budget 1000000000` | 4.32 × 10¹¹ | about 28 min | 40 s | about 5 min |
+
+Candidate commands, in escalating cost, output under `data/`:
+
+```
+target/release/superko separate --board 2x3 --suicide forbid --threads 14 --symmetry roots --budget 10000000 > data/separate-2x3-roots-1e7.txt
+target/release/superko separate --board 2x3 --suicide forbid --threads 14 --symmetry on --budget 10000000 > data/separate-2x3-on-1e7.txt
+target/release/superko separate --board 2x3 --suicide forbid --threads 14 --symmetry on --budget 100000000 > data/separate-2x3-on-1e8.txt
+target/release/superko solve --board 2x3 --rule ssk --suicide forbid --root .../... --budget 1000000000 --symmetry on > data/solve-2x3-ssk-empty-on-1e9.txt
+target/release/superko separate --board 2x3 --suicide forbid --threads 14 --symmetry on --budget 1000000000 > data/separate-2x3-on-1e9.txt
+```
+
+**What makes the next budget worth running.** By `Sweep::unconditional` in
+`separate.rs` (a reading of the code): with no separating root, the board is
+shown free only when nothing is unresolved. With a separating root, its
+minimum is unconditional only when no unresolved root ranks below it. The
+empty board ranks first.
+
+- **The two 10⁷ runs** are cheap. They show what canonical roots and mirrored
+  moves do to the resolved count at the recorded budget (792 plain), and
+  whether any root separates.
+- **10⁸ with `on`** is worth running if the 10⁷ bodies show no separating root.
+  It cannot finish the board. The sweep builds the same mirrored SSK solver for
+  the empty root as the bench case, which is unresolved at 10⁸ (a reading of
+  the code, not checked). So it can be expected to report `unresolved-least=
+  .../...:black` and `minimum-unconditional=false`, and it can only narrow the
+  unresolved set or find a separation.
+- **10⁹ with `on`** is worth running only if both hold:
+  - at 10⁸ nothing separates and the unresolved count fell by a share the
+    maintainer judges worth another tenfold;
+  - the single `solve` above resolves the empty board under SSK at 10⁹. That
+    run's estimated cost is at most about 40 s on one core. Against it: the
+    plain solve of that root is already unresolved at 10⁹ under both rules
+    (26.9 s and 27.0 s, `notebook/2026-09-12-ssk-docstring-and-2x3.md`, and
+    experiment 005's README). And at 10⁸ the mirrored search skipped only 11
+    plays under SSK, against 22 under PSK, where it resolved
+    (`6-records-on-t14`).
+
+  If that solve does not resolve, a 10⁹ sweep still leaves the empty board
+  unresolved, so it cannot show the board free.
+- **If a root separates at any budget,** its witness verdicts are searched
+  under that same budget. A verdict search that exceeds it makes `verdicts`
+  panic ("a verdict search ran out of budget", `separate.rs`) instead of
+  printing a body; that is a reading of the code, not tested at this scale.
+
+**What a promoted body would carry.**
+
+- A body from `roots` or `on` ends its `divergences=` line with
+  `board-symmetry:unlicensed,color-swap:unlicensed`, and one from `moves` with
+  `board-symmetry:unlicensed` alone. A results file promoted from such a run
+  carries them, and C-53, if it cited the file, would have to say its 2×3
+  statement is `computed` under those unlicensed divergences.
+- Such a body also differs from `results/separate-2x3-forbid-budget-1e7.txt`
+  in its symmetry lines and, under a budget, its counts.
+- It needs `# produced-with: threads=14`, and `# slow:` once the witness takes
+  more than a few minutes.
+- `results/README.md`'s file-name pattern `separate-<board>-<suicide>
+  [-budget-<N>].txt` has no field for a symmetry value. The name of such a
+  file is the maintainer's to settle.

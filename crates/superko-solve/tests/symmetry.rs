@@ -759,6 +759,11 @@ const NAIVE_THREE_TRANSPORTED: u64 = 144;
 /// which holds the incremental unmatched counts to the archive for the
 /// half-turn and the two reversals.
 ///
+/// Every element of this group is its own inverse, so this recount does not
+/// exercise the unmatched count of a map that is not an involution. The
+/// self-checked 2×2 searches of `tests/mirrored.rs`, whose quarter turns are
+/// not involutions, and `search.rs`'s unit test cover that.
+///
 /// `cargo test --release -p superko-solve --test symmetry -- --ignored the_four_element_group_agrees_with_the_plain_sweep_on_2x3_and_3x2`
 #[test]
 #[ignore = "release only: 1 458 roots a board, and many searches run to their budget"]

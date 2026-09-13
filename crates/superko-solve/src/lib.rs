@@ -101,6 +101,13 @@
 //! — on 1×5 and 5×1 with suicide removing its own stones only at the 72 of 486
 //! roots each that resolve within the budget that file names — and with the
 //! naive engine's value at every root of every board of at most three points.
+//! On 2×3 and 3×2 under the no-suicide rule, whose group has the four elements
+//! of a non-square rectangle, the values of the sweeps with canonical roots,
+//! with mirrored moves and with both are `computed` equal to the plain sweep's
+//! only at the roots and rules both resolved within 10⁵ nodes a search: 1 504
+//! of 2 916 on each board and setting, the other 1 412 uncompared, and no
+//! verdict compared
+//! (`tests/symmetry.rs`, ignored in debug).
 //!
 //! The mirrored moves of [`search`] skip a play at a state a board symmetry
 //! fixes, archive included, when the symmetry maps an earlier play onto it.
@@ -114,8 +121,12 @@
 //! each). The fast engine with mirrored moves agrees with the naive engine on
 //! every value and verdict of every board of at most three points
 //! (`tests/agreement.rs`), and reproduces the published 1×n values for n ≤ 6
-//! (`tests/published.rs`). It is not proved; the fact it would follow from is
-//! the `board-symmetry` divergence.
+//! (`tests/published.rs`). On 2×3 and 3×2 only values are compared, at the
+//! resolved roots of the paragraph above. The witness verdicts of a sweep are
+//! handed the board's maps exactly when mirrored moves are on: `tests/mirrored.rs`
+//! checks it through `Sweep::lines_with_verdicts`, which `Sweep::lines` wraps,
+//! on a record put by hand into a 1×4 sweep, and under all four settings. It is
+//! not proved; the fact it would follow from is the `board-symmetry` divergence.
 //!
 //! What they do not establish: agreement with `Defs.lean` on any board those
 //! tests do not reach, or anything at all about a board the sweep did not

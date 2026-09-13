@@ -277,4 +277,6 @@ by default. 2×3 has not been swept with either at a larger budget. A bench run
 with mirrored moves resolved the empty 2×3 root under PSK to the value 0 in
 93 137 907 nodes, where the plain search is unresolved at 10⁸ and 10⁹. That is
 a measurement under an unlicensed divergence, not a result, and no claim
-cites it.
+cites it. Since then `separate --symmetry` also takes `roots` and `moves`, one
+half each, and mirrored-move bookkeeping was made cheaper; that notebook's
+follow-up section records both, with its timings.

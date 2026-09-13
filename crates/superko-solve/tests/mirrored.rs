@@ -386,8 +386,9 @@ const WITNESS_VERDICT_SKIPS: u64 = 8;
 /// under any mode, and that is checked here too. So the witness that shows it
 /// is put in by hand. The sweep of 1×4 under the no-suicide rule finds no
 /// separating root; it is given as its `minimal` record the empty root, Black
-/// to move, with the values 4 and 5. That record is not a separation — both
-/// rules give the empty 1×4 board 4 ([`EMPTY_PINNED`]) — but it makes the body
+/// to move, with the values 4 and 5. That record is not a separation — that
+/// both rules give the empty 1×4 board 4 is `computed` ([`EMPTY_PINNED`]) — but
+/// it makes the body
 /// run its witness verdicts at komi floor 4, the searches of
 /// [`the_witness_verdicts_skip_mirrored_plays_when_handed_the_maps`], which
 /// skip [`WITNESS_VERDICT_SKIPS`] plays with the maps and none without.

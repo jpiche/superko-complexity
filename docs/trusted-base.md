@@ -140,7 +140,14 @@ of `superko-solve`'s `tests/mirrored.rs`. That values are invariant under the
 board group and negate under the color exchange is `computed` on the same
 boards, and so is the verdict transport, at the floors of that range whose
 image stays in it; on 1×5 and 5×1 with suicide removing its own stones, only
-at the roots resolved within the budgets of `tests/symmetry.rs`. Verdicts at
+at the roots resolved within the budgets of `tests/symmetry.rs`. On 2×3 and
+3×2 under the no-suicide rule — the four-element group of a non-square
+rectangle, which the 2×3 sweep runs under — the values with mirrored moves,
+with canonical roots and with both are `computed` equal to the plain sweep's
+only at the roots and rules both resolved within 10⁵ nodes a search, 1 504 of
+2 916 on each
+(`tests/symmetry.rs`); the other 1 412 are uncompared and no verdict is
+compared there. Verdicts at
 floors outside that range are not tested. `superko-rules`'s crate docs say a
 witness header prints each divergence's consequence sentence, though no CLI code calls `consequence()` today.
 Neither divergence is proved.
