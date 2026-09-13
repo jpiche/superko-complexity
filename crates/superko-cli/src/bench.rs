@@ -36,6 +36,14 @@
 //! the `Sweep`, which does not depend on it (`superko_solve::separate`'s
 //! module docs, and its `tests/threads.rs`).
 //!
+//! `--symmetry on` reaches the sweep case only: it searches one root of each
+//! orbit under the board's symmetries and the color swap and transports the
+//! rest (`superko_solve::separate`'s module docs). It lowers `nodes` and
+//! `seconds`, and under the case's budget it can move `resolved`, `unresolved`
+//! and the ssk-only counts, since a transported root is resolved exactly when
+//! its representative is. The `empty-` cases are one search each and ignore
+//! it.
+//!
 //! # The line format
 //!
 //! The first line is `flags` followed by the settings in force as `key=value`
@@ -56,12 +64,15 @@
 //!   and joining its threads when there is more than one, each thread's two
 //!   `Solver`s, the per-root decode and legality check, every search, and
 //!   adding up the per-root results.
-//!   Building the table is not timed, since no solver feature changes it; a
-//!   later feature that builds something per board (symmetry's code maps)
-//!   states here whether that build is inside the span;
+//!   Building the table is not timed, since no solver feature changes it.
+//!   Under `--symmetry on` the sweep builds the board's symmetry maps and the
+//!   orbit representatives inside `sweep_with`, so that build is inside the
+//!   span;
 //! - `budget`;
 //! - the counters that apply: `max-depth` and `ssk-only` for a single search,
-//!   `roots`, `ssk-only-plays` and `resolved-with-ssk-only` for the sweep.
+//!   `roots`, `ssk-only-plays` and `resolved-with-ssk-only` for the sweep,
+//!   then `searched` and `transported`: the roots whose searches ran and the
+//!   roots whose values were transported, `transported=0` without symmetry.
 //!
 //! A feature that adds a flag records it on the `flags` line through
 //! [`Settings::header`], and a feature that adds a counter appends it after
@@ -94,12 +105,18 @@ pub struct Settings {
     /// The threads the sweep case spreads its roots over, at least one. The
     /// `empty-` cases are one search each and ignore it.
     pub threads: usize,
+    /// Whether the sweep case searches orbit representatives only. The
+    /// `empty-` cases ignore it.
+    pub symmetry: bool,
 }
 
 impl Default for Settings {
-    /// One thread.
+    /// One thread, no symmetry.
     fn default() -> Self {
-        Self { threads: 1 }
+        Self {
+            threads: 1,
+            symmetry: false,
+        }
     }
 }
 
@@ -109,13 +126,15 @@ impl Settings {
     /// The move order is named although no flag sets it, because it is what a
     /// later ordering feature changes and a baseline that did not say which
     /// order it measured would not be comparable. A line from before the
-    /// thread count existed, `flags order=heuristic`, ran on one thread.
+    /// thread count existed, `flags order=heuristic`, ran on one thread, and a
+    /// line from before symmetry existed ran without it.
     #[must_use]
     pub fn header(&self) -> String {
         format!(
-            "flags order={} threads={}",
+            "flags order={} threads={} symmetry={}",
             order_name(MoveOrder::default()),
-            self.threads
+            self.threads,
+            if self.symmetry { "on" } else { "off" }
         )
     }
 }
@@ -256,6 +275,7 @@ pub fn run_case(case: &Case, settings: &Settings) -> Result<Line, String> {
                 budget: Some(budget),
                 min_stones: 0,
                 threads: settings.threads,
+                symmetry: settings.symmetry,
             };
             let sweep = sep::sweep_with(&table, opts);
             let seconds = started.elapsed().as_secs_f64();
@@ -269,6 +289,8 @@ pub fn run_case(case: &Case, settings: &Settings) -> Result<Line, String> {
             line.push("roots", sweep.roots);
             line.push("ssk-only-plays", sweep.ssk_only_plays);
             line.push("resolved-with-ssk-only", sweep.resolved_with_ssk_only);
+            line.push("searched", sweep.searched);
+            line.push("transported", sweep.transported);
         }
     }
     Ok(line)
@@ -316,11 +338,15 @@ mod tests {
         assert_eq!(MoveOrder::default(), MoveOrder::Heuristic);
         assert_eq!(
             Settings::default().header(),
-            "flags order=heuristic threads=1"
+            "flags order=heuristic threads=1 symmetry=off"
         );
         assert_eq!(
-            Settings { threads: 14 }.header(),
-            "flags order=heuristic threads=14"
+            Settings {
+                threads: 14,
+                symmetry: true
+            }
+            .header(),
+            "flags order=heuristic threads=14 symmetry=on"
         );
     }
 
@@ -446,6 +472,8 @@ mod tests {
                 "roots",
                 "ssk-only-plays",
                 "resolved-with-ssk-only",
+                "searched",
+                "transported",
             ]
         );
         let pinned = owned(&[
@@ -459,11 +487,20 @@ mod tests {
             ("roots", "162"),
             ("ssk-only-plays", "52"),
             ("resolved-with-ssk-only", "0"),
+            ("searched", "162"),
+            ("transported", "0"),
         ]);
         assert_eq!(fields_but_seconds(&line), pinned);
         // The thread count reaches the sweep and moves nothing but `seconds`.
         for threads in [2, 14] {
-            let spread = run_case(&case, &Settings { threads }).unwrap();
+            let spread = run_case(
+                &case,
+                &Settings {
+                    threads,
+                    symmetry: false,
+                },
+            )
+            .unwrap();
             assert_eq!(fields_but_seconds(&spread), pinned, "{threads} threads");
         }
 
@@ -485,7 +522,61 @@ mod tests {
                 ("roots", n(sweep.roots)),
                 ("ssk-only-plays", n(sweep.ssk_only_plays)),
                 ("resolved-with-ssk-only", n(sweep.resolved_with_ssk_only)),
+                ("searched", n(sweep.searched)),
+                ("transported", n(sweep.transported)),
             ]
         );
+    }
+
+    /// `symmetry` reaches the sweep: the line reports the symmetric `Sweep`'s
+    /// own counts, fewer roots are searched than there are, and the thread
+    /// count still moves nothing but `seconds`.
+    #[test]
+    fn a_sweep_case_under_symmetry_reports_the_symmetric_sweep() {
+        let dims = Dims::new(2, 2);
+        let budget = 50;
+        let case = Case::Sweep { dims, budget };
+        let on = Settings {
+            threads: 1,
+            symmetry: true,
+        };
+        let line = run_case(&case, &on).unwrap();
+        let table = RuleTable::build(dims, Suicide::Forbid).unwrap();
+        let sweep = sep::sweep_with(
+            &table,
+            sep::Options {
+                budget: Some(budget),
+                min_stones: 0,
+                threads: 1,
+                symmetry: true,
+            },
+        );
+        assert!(sweep.transported > 0);
+        assert_eq!(sweep.searched + sweep.transported, sweep.roots);
+        let n = |v: u64| v.to_string();
+        let expected = vec![
+            ("case", "sweep-2x2".to_string()),
+            ("rule", "psk,ssk".to_string()),
+            ("resolved", n(sweep.resolved)),
+            ("unresolved", n(sweep.unresolved)),
+            ("separating", n(sweep.separating)),
+            ("nodes", n(sweep.nodes)),
+            ("budget", n(budget)),
+            ("roots", n(sweep.roots)),
+            ("ssk-only-plays", n(sweep.ssk_only_plays)),
+            ("resolved-with-ssk-only", n(sweep.resolved_with_ssk_only)),
+            ("searched", n(sweep.searched)),
+            ("transported", n(sweep.transported)),
+        ];
+        assert_eq!(fields_but_seconds(&line), expected);
+        let spread = run_case(
+            &case,
+            &Settings {
+                threads: 14,
+                symmetry: true,
+            },
+        )
+        .unwrap();
+        assert_eq!(fields_but_seconds(&spread), expected);
     }
 }

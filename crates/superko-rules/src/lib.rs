@@ -46,9 +46,10 @@
 //!
 //! # Status
 //!
-//! The mirror, the table, the archive and the divergence register exist and
-//! are tested. This crate holds no enumerator and produces no count itself;
-//! the enumerators are in `superko-graph`, which calls the items below.
+//! The mirror, the table, the archive, the divergence register and the
+//! symmetry maps exist and are tested. This crate holds no enumerator and
+//! produces no count itself; the enumerators are in `superko-graph`, which
+//! calls the items below.
 //!
 //! What the tests establish is `computed` and bounded: the `Sanity.lean`
 //! checks hold by a second route on the same fixtures; every board function
@@ -59,14 +60,18 @@
 //! as [`reference::psk`] and [`reference::ssk`] on every state a short
 //! enumeration from the empty 1x3 and 2x2 boards reaches;
 //! [`reference::legality`] agrees with the rule predicates over the same walk,
-//! under both repetition rules and both suicide conventions; and
+//! under both repetition rules and both suicide conventions;
 //! [`reference::all_moves`] is pinned to a literal list, because every count
-//! this workspace will produce depends on that order. Separately,
-//! `tests/lean_oracle.rs` replays the fixtures under `test_data/lean-oracle/`,
-//! which the Lean *compiler* produced from the computable twins of
-//! `Defs.lean`: those rows are graded `observed`, the trust surface
-//! `native_decide` has and not the kernel's, so they support no ledger entry
-//! either.
+//! this workspace will produce depends on that order; and the transition
+//! table commutes with every board symmetry and with the color swap of
+//! [`symmetry`] at every code, color and point of every board with
+//! `m * n <= 6` (and, in an ignored release test, of 3x3 and 3x4), which is
+//! the fact the `board-symmetry` and `color-swap` divergences rest on.
+//! Separately, `tests/lean_oracle.rs` replays the fixtures under
+//! `test_data/lean-oracle/`, which the Lean *compiler* produced from the
+//! computable twins of `Defs.lean`: those rows are graded `observed`, the
+//! trust surface `native_decide` has and not the kernel's, so they support no
+//! ledger entry either.
 //!
 //! What they do not establish: that this crate agrees with `Defs.lean` on
 //! anything larger than the boards those tests and fixtures cover. Of the
@@ -83,6 +88,7 @@ pub mod code;
 pub mod config;
 pub mod divergence;
 pub mod reference;
+pub mod symmetry;
 pub mod table;
 
 pub use archive::{Archive, ArchiveKey};

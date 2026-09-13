@@ -51,3 +51,29 @@ thread says so in a header line of the form
 ```
 
 A file without that line was produced on one thread.
+
+A `separate` body produced with `--symmetry on` is a different body, and says
+so. The sweep searches one root of each orbit under the board's symmetries and
+the exchange of the two colors, and gives every other root its representative's
+values — negated when the colors were exchanged — before adding the sweep up
+(`crates/superko-solve/src/separate.rs`). The body then carries
+
+- `board-symmetry:unlicensed` and `color-swap:unlicensed` at the end of the
+  `divergences=` line;
+- after `skipped=`, the lines `symmetry=on`, `symmetry-searched=N`, the roots
+  whose two searches ran, and `symmetry-transported=M`, the roots whose values
+  were transported, with `N + M + skipped = roots`;
+- in each witness block, after `-ssk=`, a line `minimal-transported=` (or
+  `minimal-liberties-transported=`) saying whether that root's values were
+  transported. The witness verdicts are searched on the root itself either way.
+
+That values are unchanged by a board symmetry and negated by the color
+exchange is not proved. It is `computed` at every root of every board of at
+most five points, except on 1x5 and 5x1 with suicide removing its own stones,
+where it is `computed` only at the roots resolved within the node budgets
+`crates/superko-solve/tests/symmetry.rs` names, which leave most of those roots
+uncompared (the two divergences' consequence sentences). Under a node budget a
+transported root is resolved exactly when its representative is, so a budgeted
+body with symmetry on can report different resolved, unresolved and ssk-only
+counts from the same sweep without it. Without `--symmetry on` none of these lines appears
+and the body is unchanged.

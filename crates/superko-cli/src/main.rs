@@ -12,8 +12,8 @@
 //!                         --root POS [--to-move black|white] [--komi-floor K]
 //!                         [--budget N] [--naive]
 //! superko separate        --board MxN --suicide forbid|remove-own [--budget N]
-//!                         [--min-stones K] [--threads N]
-//! superko bench           [--threads N]
+//!                         [--min-stones K] [--threads N] [--symmetry on|off]
+//! superko bench           [--threads N] [--symmetry on|off]
 //! ```
 //!
 //! Argument parsing is hand-rolled, because the workspace has no dependencies:
@@ -38,10 +38,17 @@
 //! promoted result that was produced on more than one thread says so in a
 //! `# produced-with:` header line (`results/README.md`).
 //!
+//! `--symmetry on` does change a `separate` body, and says so in it: the
+//! `divergences=` line gains `board-symmetry` and `color-swap`, three lines
+//! `symmetry=on`, `symmetry-searched=` and `symmetry-transported=` follow
+//! `skipped=`, and each witness block gains a `-transported=` line. With
+//! `--symmetry off`, the default, the body is the one every earlier results
+//! file records.
+//!
 //! `superko bench` is the exception: it prints a **measurement**, not a body.
-//! Its lines carry wall times on purpose, it takes no flag but `--threads`, and
-//! its output goes under `data/bench/`, never to `results/`. The [`bench`]
-//! module describes the suite and the line format.
+//! Its lines carry wall times on purpose, it takes no flags but `--threads`
+//! and `--symmetry`, and its output goes under `data/bench/`, never to
+//! `results/`. The [`bench`] module describes the suite and the line format.
 //!
 //! # Status
 //!
@@ -86,8 +93,8 @@ usage: superko <command> [options]
                   --root POS [--to-move black|white] [--komi-floor K]
                   [--budget N] [--naive]
   separate        --board MxN --suicide forbid|remove-own [--budget N]
-                  [--min-stones K] [--threads N]
-  bench           [--threads N]
+                  [--min-stones K] [--threads N] [--symmetry on|off]
+  bench           [--threads N] [--symmetry on|off]
 
 Standard output is a results body of key=value lines. Timing goes to standard
 error. The witness header of a promoted result is written by hand.
@@ -96,12 +103,18 @@ error. The witness header of a promoted result is written by hand.
 N threads. The body is the same at every thread count; separate's witness
 verdict searches run on one thread.
 
+--symmetry on (default off) makes separate search one root of each orbit under
+the board's symmetries and the color exchange and transport the values to the
+rest. The body then names the board-symmetry and color-swap divergences, adds
+symmetry=on, symmetry-searched= and symmetry-transported= lines, and marks each
+witness root -transported=true or false. Off, the body is unchanged.
+
 bench is the exception: it runs a fixed suite under Suicide::Forbid, each case
 with its own node budget (the empty 1x5, 1x6, 1x7 and 2x3 boards under psk and
 ssk at 10^8 nodes, and a 2x3 separation sweep at 10^6 nodes per search, on
 --threads threads), and prints a flags line then one line per case of key=value
-fields, wall seconds included. It is a measurement for data/bench/, not a
-results body.";
+fields, wall seconds included; --symmetry reaches its sweep only. It is a
+measurement for data/bench/, not a results body.";
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -148,6 +161,7 @@ struct Flags {
     komi_floor: Option<String>,
     budget: Option<String>,
     min_stones: Option<String>,
+    symmetry: Option<String>,
     naive: bool,
 }
 
@@ -181,6 +195,7 @@ impl Flags {
                 "--komi-floor" => &mut out.komi_floor,
                 "--budget" => &mut out.budget,
                 "--min-stones" => &mut out.min_stones,
+                "--symmetry" => &mut out.symmetry,
                 other => return Err(format!("unknown option {other:?}")),
             };
             if slot.is_some() {
@@ -297,6 +312,15 @@ impl Flags {
             .map_err(|_| format!("--min-stones takes a non-negative integer, not {text:?}"))
     }
 
+    /// Whether a sweep searches orbit representatives only. Off by default.
+    fn symmetry(&self) -> Result<bool, String> {
+        match self.symmetry.as_deref() {
+            None | Some("off") => Ok(false),
+            Some("on") => Ok(true),
+            Some(other) => Err(format!("--symmetry is on or off, not {other:?}")),
+        }
+    }
+
     /// Refuse a flag a command does not take, rather than ignoring it.
     fn reject(&self, unwanted: &[&str]) -> Result<(), String> {
         for name in unwanted {
@@ -311,6 +335,7 @@ impl Flags {
                 "--komi-floor" => self.komi_floor.is_some(),
                 "--budget" => self.budget.is_some(),
                 "--min-stones" => self.min_stones.is_some(),
+                "--symmetry" => self.symmetry.is_some(),
                 "--naive" => self.naive,
                 _ => false,
             };
@@ -357,6 +382,7 @@ fn divergences(under: &[Divergence]) -> String {
 
 /// `superko count-games`.
 fn count_games(flags: &Flags) -> Result<String, String> {
+    flags.reject(&["--symmetry"])?;
     let dims = flags.board()?;
     let rep = flags.rule()?;
     let suicide = flags.suicide()?;
@@ -431,6 +457,7 @@ fn scc_census(flags: &Flags) -> Result<String, String> {
         "--depth-cap",
         "--naive",
         "--min-stones",
+        "--symmetry",
     ])?;
     let dims = flags.board()?;
     let suicide = flags.suicide()?;
@@ -459,7 +486,14 @@ fn scc_census(flags: &Flags) -> Result<String, String> {
 }
 
 fn count_positions(flags: &Flags) -> Result<String, String> {
-    flags.reject(&["--rule", "--suicide", "--threads", "--depth-cap", "--naive"])?;
+    flags.reject(&[
+        "--rule",
+        "--suicide",
+        "--threads",
+        "--depth-cap",
+        "--naive",
+        "--symmetry",
+    ])?;
     let dims = flags.board()?;
     let started = Instant::now();
     let positions = legal_positions(dims);
@@ -485,6 +519,7 @@ fn graph_census(flags: &Flags) -> Result<String, String> {
         "--depth-cap",
         "--naive",
         "--min-stones",
+        "--symmetry",
     ])?;
     let dims = flags.board()?;
     let suicide = flags.suicide()?;
@@ -545,7 +580,7 @@ fn solver_divergences(
 /// they come from a separate search rather than from the value. See the
 /// `superko_solve` crate docs for why the distinction is kept.
 fn solve(flags: &Flags) -> Result<String, String> {
-    flags.reject(&["--threads", "--depth-cap", "--min-stones"])?;
+    flags.reject(&["--threads", "--depth-cap", "--min-stones", "--symmetry"])?;
     let dims = flags.board()?;
     let rep = flags.rule()?;
     let suicide = flags.suicide()?;
@@ -628,6 +663,11 @@ fn solve(flags: &Flags) -> Result<String, String> {
 /// `--threads` spreads the sweep's roots over that many threads and changes
 /// nothing in the body; the witness verdict searches for the minimal roots run
 /// on this thread afterwards.
+///
+/// `--symmetry on` searches orbit representatives only and transports the
+/// values to the other roots, which puts the run under the `board-symmetry`
+/// and `color-swap` divergences on every board, 1×1's trivial group included,
+/// and adds the lines the module docs list. Off, the body is unchanged.
 fn separate(flags: &Flags) -> Result<String, String> {
     flags.reject(&[
         "--rule",
@@ -642,9 +682,14 @@ fn separate(flags: &Flags) -> Result<String, String> {
     let budget = flags.budget()?;
     let min_stones = flags.min_stones()?;
     let threads = flags.threads()?;
+    let symmetry = flags.symmetry()?;
     // Both rules are swept, so both rules' divergences are in force, and the
     // witness verdicts are decided at a komi floor.
-    let under = solver_divergences(false, Repetition::Psk, suicide, true);
+    let mut under = solver_divergences(false, Repetition::Psk, suicide, true);
+    if symmetry {
+        under.push(Divergence::BoardSymmetry);
+        under.push(Divergence::ColorSwap);
+    }
 
     let table = RuleTable::build(dims, suicide).map_err(|e| e.to_string())?;
     let started = Instant::now();
@@ -652,6 +697,7 @@ fn separate(flags: &Flags) -> Result<String, String> {
         budget,
         min_stones,
         threads,
+        symmetry,
     };
     let report = sep::sweep_with(&table, opts);
     let elapsed = started.elapsed();
@@ -674,7 +720,7 @@ fn separate(flags: &Flags) -> Result<String, String> {
 }
 
 /// Every option `Flags::parse` accepts.
-const ALL_OPTIONS: [&str; 11] = [
+const ALL_OPTIONS: [&str; 12] = [
     "--board",
     "--rule",
     "--suicide",
@@ -685,18 +731,19 @@ const ALL_OPTIONS: [&str; 11] = [
     "--komi-floor",
     "--budget",
     "--min-stones",
+    "--symmetry",
     "--naive",
 ];
 
 /// The settings a bench run is under, read from its command line.
 ///
-/// `--threads` is read; every other flag is refused, `--budget` included: each
-/// case carries its own budget, and a bench whose budgets moved with the
-/// command line would not be comparable with the baseline. A feature that
-/// gives the bench a flag takes it out of the refusal here and reads it into
-/// [`bench::Settings`].
+/// `--threads` and `--symmetry` are read; every other flag is refused,
+/// `--budget` included: each case carries its own budget, and a bench whose
+/// budgets moved with the command line would not be comparable with the
+/// baseline. A feature that gives the bench a flag takes it out of the refusal
+/// here and reads it into [`bench::Settings`].
 fn bench_settings(flags: &Flags) -> Result<bench::Settings, String> {
-    const READ: [&str; 1] = ["--threads"];
+    const READ: [&str; 2] = ["--threads", "--symmetry"];
     let refused: Vec<&str> = ALL_OPTIONS
         .into_iter()
         .filter(|name| !READ.contains(name))
@@ -704,6 +751,7 @@ fn bench_settings(flags: &Flags) -> Result<bench::Settings, String> {
     flags.reject(&refused)?;
     Ok(bench::Settings {
         threads: flags.threads()?,
+        symmetry: flags.symmetry()?,
     })
 }
 
@@ -792,23 +840,33 @@ mod tests {
     }
 
     #[test]
-    fn bench_takes_only_a_thread_count() {
+    fn bench_takes_only_a_thread_count_and_symmetry() {
         let none = Flags::parse(&[]).unwrap();
         assert_eq!(bench_settings(&none), Ok(bench::Settings::default()));
         assert_eq!(
             bench_settings(&none).unwrap().header(),
-            "flags order=heuristic threads=1"
+            "flags order=heuristic threads=1 symmetry=off"
         );
-        let three = Flags::parse(&args("--threads 3")).unwrap();
-        assert_eq!(bench_settings(&three), Ok(bench::Settings { threads: 3 }));
+        let three = Flags::parse(&args("--threads 3 --symmetry on")).unwrap();
+        assert_eq!(
+            bench_settings(&three),
+            Ok(bench::Settings {
+                threads: 3,
+                symmetry: true
+            })
+        );
+        let off = Flags::parse(&args("--symmetry off")).unwrap();
+        assert_eq!(bench_settings(&off), Ok(bench::Settings::default()));
         let zero = Flags::parse(&args("--threads 0")).unwrap();
         assert!(bench_settings(&zero).is_err());
+        let maybe = Flags::parse(&args("--symmetry maybe")).unwrap();
+        assert!(bench_settings(&maybe).is_err());
         // Each is refused before any case runs, so none of these starts the
         // suite.
         // Driven from ALL_OPTIONS, so a name there that `Flags::parse` does not
         // accept, or that `Flags::reject` has no arm for, fails here.
         for name in ALL_OPTIONS {
-            if name == "--threads" {
+            if name == "--threads" || name == "--symmetry" {
                 continue;
             }
             let flag = match name {
@@ -827,7 +885,78 @@ mod tests {
                 "bench ran with {flag}"
             );
         }
-        assert!(run(&args("bench --symmetry on")).is_err());
+        // Well formed but for --budget, which bench refuses before any case
+        // runs.
+        assert!(run(&args("bench --symmetry on --budget 5")).is_err());
+    }
+
+    /// With `--symmetry off`, spelled out or left to the default, a `separate`
+    /// body is byte for byte the body without the flag at every thread count.
+    /// With it on, the body names the two divergences, adds the symmetry lines
+    /// and marks the witness, and every other line of this board — all of
+    /// whose roots resolve — is the same.
+    #[test]
+    fn symmetry_changes_a_separate_body_only_when_on() {
+        for board in ["1x3 --suicide forbid", "1x2 --suicide remove-own"] {
+            let plain = run(&args(&format!("separate --board {board}"))).unwrap();
+            for threads in [1, 14] {
+                let off = run(&args(&format!(
+                    "separate --board {board} --symmetry off --threads {threads}"
+                )))
+                .unwrap();
+                assert_eq!(off, plain, "{board} at {threads} threads");
+            }
+            assert!(!plain.contains("symmetry"), "{board}");
+            // The witness line symmetry adds is named for transport, not
+            // symmetry; the 1x2 body has a witness block to carry it.
+            assert!(!plain.contains("transported"), "{board}");
+            let on = run(&args(&format!("separate --board {board} --symmetry on"))).unwrap();
+            let spread = run(&args(&format!(
+                "separate --board {board} --symmetry on --threads 14"
+            )))
+            .unwrap();
+            assert_eq!(
+                spread, on,
+                "{board}: a symmetric body moved with the threads"
+            );
+            assert!(on.contains("symmetry=on\n"));
+            assert!(on.contains("symmetry-transported="));
+            let divergences = on.lines().find(|l| l.starts_with("divergences=")).unwrap();
+            assert!(divergences.ends_with(",board-symmetry:unlicensed,color-swap:unlicensed"));
+            // Every line but the divergences, the ssk-only counts (a property
+            // of the representative's search) and the lines symmetry adds.
+            let kept = |body: &str| -> Vec<String> {
+                body.lines()
+                    .filter(|l| {
+                        !l.starts_with("divergences=")
+                            && !l.starts_with("symmetry")
+                            && !l.contains("-transported=")
+                            && !l.starts_with("ssk-only-plays=")
+                            && !l.starts_with("roots-with-ssk-only=")
+                            && !l.starts_with("resolved-with-ssk-only=")
+                    })
+                    .map(str::to_string)
+                    .collect()
+            };
+            assert_eq!(kept(&on), kept(&plain), "{board}");
+        }
+        let separating = run(&args(
+            "separate --board 1x2 --suicide remove-own --symmetry on",
+        ))
+        .unwrap();
+        // The minimal separating root is the least root of its orbit, so it is
+        // always a representative and never transported.
+        assert!(separating.contains("minimal-transported=false\n"));
+        assert!(
+            run(&args(
+                "separate --board 1x3 --suicide forbid --symmetry yes"
+            ))
+            .is_err()
+        );
+        let solve = "solve --board 1x3 --rule psk --suicide forbid --root ... --budget 1000";
+        assert!(run(&args(solve)).is_ok());
+        assert!(run(&args(&format!("{solve} --symmetry on"))).is_err());
+        assert!(run(&args(&format!("{solve} --symmetry off"))).is_err());
     }
 
     /// `--threads` reaches `separate` and changes nothing in its body, the

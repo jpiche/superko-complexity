@@ -70,6 +70,23 @@
 //! scores under positional superko reproduce the transcribed table of C-24 for
 //! n ≤ 6.
 //!
+//! The symmetric sweep of [`separate`] transports values along orbits of the
+//! board's symmetries and the color swap. That a value is unchanged by a
+//! board symmetry and negated by the swap, and that a verdict at komi floor
+//! `k` moves to the other color at floor `-k - 1` under the swap, is
+//! `computed` under both rules — for verdicts, at every komi floor of
+//! `tests/agreement.rs`'s range whose transported floor stays in that range —
+//! at every root of every board of at most four points and of 2×2 under both
+//! suicide conventions, and of 1×5 and 5×1 under
+//! the no-suicide rule; on 1×5 and 5×1 with suicide removing its own stones it
+//! is `computed` only at the roots resolved within the budgets
+//! `tests/symmetry.rs` names, which leave 1 628 of 2 916 value pairs and
+//! 28 136 of 71 928 verdict comparisons on each uncompared. It is not proved.
+//! The sweep with symmetry agrees with the sweep without it on the same boards
+//! — on 1×5 and 5×1 with suicide removing its own stones only at the 72 of 486
+//! roots each that resolve within the budget that file names — and with the
+//! naive engine's value at every root of every board of at most three points.
+//!
 //! What they do not establish: agreement with `Defs.lean` on any board those
 //! tests do not reach, or anything at all about a board the sweep did not
 //! resolve within its node budget — a budget the sweep reports rather than

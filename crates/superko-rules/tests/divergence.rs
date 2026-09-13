@@ -8,7 +8,7 @@ use superko_rules::divergence::Divergence;
 
 #[test]
 fn all_lists_every_variant_once() {
-    let mut seen = [false; 5];
+    let mut seen = [false; 7];
     for d in Divergence::ALL {
         let i = match d {
             Divergence::DimsAreRuntime => 0,
@@ -16,6 +16,8 @@ fn all_lists_every_variant_once() {
             Divergence::PskArchiveProjection => 2,
             Divergence::RuleTableMemo => 3,
             Divergence::WinnerViaFloorKomi => 4,
+            Divergence::BoardSymmetry => 5,
+            Divergence::ColorSwap => 6,
         };
         assert!(!seen[i], "{d} appears twice in ALL");
         seen[i] = true;

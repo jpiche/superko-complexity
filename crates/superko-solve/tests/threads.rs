@@ -39,6 +39,7 @@ fn same_at_every_thread_count(
             budget,
             min_stones,
             threads,
+            symmetry: false,
         };
         let parallel = sweep_with(&table, opts);
         assert_eq!(

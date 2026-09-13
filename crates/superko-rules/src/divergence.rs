@@ -7,10 +7,16 @@
 //! it fails on both.
 //!
 //! A **license** is a Lean theorem that makes the departure invisible in the
-//! result. Two of the five have none: one is licensed by construction and
-//! tested, the other has no Lean counterpart at all. Every witness header
-//! prints the consequence sentence of each divergence the run was under, so a
-//! number is never quoted without them.
+//! result. One of the seven has one, `winner-via-floor-komi`; the other six
+//! have no `lean_witness`, and each one's consequence sentence says what stands
+//! in its place. Every witness header prints the consequence sentence of each
+//! divergence the run was under, so a number is never quoted without them.
+//!
+//! `board-symmetry` and `color-swap` differ from the other five in kind: they
+//! are not readings of a `Defs.lean` item but facts about the rules a search
+//! relies on to skip work, and a run is under them only when it asked for that
+//! (`superko separate --symmetry on`). Their markers are in
+//! [`crate::symmetry`].
 
 use core::fmt;
 
@@ -27,16 +33,24 @@ pub enum Divergence {
     RuleTableMemo,
     /// The winner is decided over ℤ at the floor of komi.
     WinnerViaFloorKomi,
+    /// A search takes values from the image of a root under a symmetry of the
+    /// board.
+    BoardSymmetry,
+    /// A search takes values, negated, from the root with the colors
+    /// exchanged.
+    ColorSwap,
 }
 
 impl Divergence {
     /// Every divergence, in the order a witness header prints them.
-    pub const ALL: [Self; 5] = [
+    pub const ALL: [Self; 7] = [
         Self::DimsAreRuntime,
         Self::SuicideRemoveOwn,
         Self::PskArchiveProjection,
         Self::RuleTableMemo,
         Self::WinnerViaFloorKomi,
+        Self::BoardSymmetry,
+        Self::ColorSwap,
     ];
 
     /// The slug, which is what a `DIVERGENCE:` marker in the source names and
@@ -49,6 +63,8 @@ impl Divergence {
             Self::PskArchiveProjection => "psk-archive-projection",
             Self::RuleTableMemo => "rule-table-memo",
             Self::WinnerViaFloorKomi => "winner-via-floor-komi",
+            Self::BoardSymmetry => "board-symmetry",
+            Self::ColorSwap => "color-swap",
         }
     }
 
@@ -63,7 +79,9 @@ impl Divergence {
             Self::DimsAreRuntime
             | Self::SuicideRemoveOwn
             | Self::PskArchiveProjection
-            | Self::RuleTableMemo => None,
+            | Self::RuleTableMemo
+            | Self::BoardSymmetry
+            | Self::ColorSwap => None,
             Self::WinnerViaFloorKomi => Some("Superko.winnerZ_eq_winner"),
         }
     }
@@ -99,6 +117,26 @@ impl Divergence {
                 "The winner is decided by comparing the floor of komi against the difference \
                  of the two area scores rather than by a rational subtraction, which \
                  `Superko.winnerZ_eq_winner` proves is the same verdict."
+            }
+            Self::BoardSymmetry => {
+                "Some roots take their values from the root a symmetry of the board maps \
+                 them to instead of being searched; that the transition table commutes with \
+                 every symmetry of the board is `computed` for boards of at most six points \
+                 and for 3x3 and 3x4; that values are invariant under it is `computed` at \
+                 every root of every board of at most five points except 1x5 and 5x1 with \
+                 suicide removing its own stones, where it is `computed` only at the roots \
+                 resolved within the node budgets `superko-solve`'s tests/symmetry.rs names \
+                 (1288 of 2916 pairs of a root and any of its images, both rules, on each); and neither is proved."
+            }
+            Self::ColorSwap => {
+                "Some roots take their values, negated, from the root with every stone's \
+                 color exchanged and the other color to move instead of being searched; that \
+                 the transition table commutes with the exchange is `computed` for boards of \
+                 at most six points and for 3x3 and 3x4; that values negate under it is \
+                 `computed` at every root of every board of at most five points except 1x5 \
+                 and 5x1 with suicide removing its own stones, where it is `computed` only at \
+                 the roots resolved within the node budgets `superko-solve`'s \
+                 tests/symmetry.rs names; and neither is proved."
             }
         }
     }

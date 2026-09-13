@@ -56,6 +56,60 @@
 //! the calling thread. That is a property of this code, not of Go, and
 //! `tests/threads.rs` holds it on the boards it names at one, two and fourteen
 //! threads.
+//!
+//! # Symmetry
+//!
+//! With [`Options::symmetry`] set, the sweep searches one root of each orbit
+//! and fills in the others by transport. The orbit of a root `(c, t)` is every
+//! `(s(c), t)` and every `(s(swap(c)), t.other)` for `s` a symmetry of the
+//! board, `swap` exchanging the color of every stone
+//! ([`superko_rules::symmetry`]). Every member of an orbit has the same number
+//! of stones, so its **representative** — its least member in the sweep order,
+//! code ascending and Black to move before White — is also its least member in
+//! the order minimality is taken in. Representatives are searched under both
+//! rules, over the threads the options name, exactly as every root is without
+//! symmetry. Every other root takes its representative's two [`Solution`]s:
+//! the value negated when the map between them exchanges the colors and
+//! unchanged when it does not, and the resolution, the depth and the count of
+//! plays only situational superko permits copied. Its stones and liberties are
+//! read off the root itself.
+//!
+//! Then every root, searched or transported, goes through the one [`fold`] in
+//! the sweep order, so each field of the [`Sweep`] — resolved and unresolved
+//! counts, the least unresolved roots, the separating counts and minima, the
+//! empty board's values, the ssk-only counts, the unconditional flags — is
+//! what the fold makes of those per-root results. Two fields count the work
+//! rather than the roots: [`Sweep::nodes`] adds up the searches that ran, and a
+//! transported root adds nothing to it; [`Sweep::searched`] and
+//! [`Sweep::transported`] say how many roots were of each kind.
+//!
+//! **The status of the transport.** It rests on the value of a root being
+//! unchanged by a board symmetry and negated by the color swap. That is not
+//! proved. It is `computed` root by root with the plain solver
+//! (`tests/symmetry.rs`), under both rules, at every root of every board of at
+//! most four points and of 2×2 under both suicide conventions and of 1×5 and
+//! 5×1 under the no-suicide rule. On 1×5 and 5×1 with suicide removing its own
+//! stones it is `computed` only at the roots resolved within the budgets that
+//! file names, which leave most of them uncompared (1 628 of 2 916 value pairs
+//! on each at 10⁵ nodes a search). The facts about the rules it would follow
+//! from are the divergences `board-symmetry` and `color-swap`, which a body
+//! produced under it names.
+//!
+//! What the transport copies besides the value is a property of the
+//! representative's search, not of the root's. A board symmetry permutes the
+//! points, and with them the `all_moves` tie-break of the move order, so the
+//! root's own search could spend a different number of nodes, make a different
+//! number of ssk-only plays before its cutoffs, and — under a node budget —
+//! resolve where the representative's did not, or the reverse. So under a
+//! budget the resolved and unresolved counts of a symmetric sweep can differ
+//! from a plain one's; a transported root is resolved exactly when its
+//! representative is. The color swap alone permutes nothing: the transported
+//! search is the same search, node for node, which `tests/symmetry.rs` checks
+//! on the boards it names.
+//!
+//! The verdict searches [`Sweep::lines`] adds for a witness are not
+//! transported: they run on the witness root itself, whether its values were
+//! searched or transported, and a witness block says which.
 
 use core::fmt;
 use std::panic;
@@ -66,6 +120,7 @@ use superko_graph::census::is_legal;
 use superko_rules::code::{PosCode, code_space, decode, render};
 use superko_rules::config::{Dims, Repetition, Suicide};
 use superko_rules::reference::Color;
+use superko_rules::symmetry::Symmetries;
 use superko_rules::table::{RuleTable, TooLarge};
 
 use crate::search::{Solution, Solver};
@@ -85,6 +140,10 @@ pub struct Separating {
     pub stones: u32,
     /// Whether no chain of the position lacks a liberty.
     pub liberties: bool,
+    /// Whether a symmetric sweep took the two values from the root's orbit
+    /// representative rather than searching the root. Always false without
+    /// symmetry.
+    pub transported: bool,
 }
 
 /// The key minimality is taken in: stones, then position code, then Black to
@@ -216,7 +275,8 @@ pub struct Sweep {
     pub empty_psk: Option<i32>,
     /// The empty board's value under situational superko, when resolved.
     pub empty_ssk: Option<i32>,
-    /// Nodes visited across every search of the sweep.
+    /// Nodes visited across every search the sweep ran. A transported root
+    /// ran none and adds nothing.
     pub nodes: u64,
     /// Plays positional superko would have refused that the
     /// situational-superko searches made — counted when made, so a play a
@@ -236,6 +296,15 @@ pub struct Sweep {
     pub skipped: u64,
     /// The stone-count floor the sweep ran under; zero sweeps everything.
     pub min_stones: u32,
+    /// Whether the sweep searched orbit representatives only and transported
+    /// the rest (the module docs).
+    pub symmetry: bool,
+    /// Roots whose two searches ran: every root the floor did not skip without
+    /// symmetry, the representatives among them with it.
+    pub searched: u64,
+    /// Roots whose values were transported from their representative; zero
+    /// without symmetry. `searched + transported + skipped == roots`.
+    pub transported: u64,
 }
 
 impl Sweep {
@@ -325,6 +394,13 @@ impl Sweep {
             format!("min-stones={}", self.min_stones),
             format!("skipped={}", self.skipped),
         ];
+        // Only a symmetric sweep prints these, so that a body without symmetry
+        // is the body every earlier results file records.
+        if self.symmetry {
+            out.push("symmetry=on".to_string());
+            out.push(format!("symmetry-searched={}", self.searched));
+            out.push(format!("symmetry-transported={}", self.transported));
+        }
         if let Some(sep) = self.minimal {
             out.extend(self.witness_lines("minimal", &sep, table, budget));
         }
@@ -351,6 +427,9 @@ impl Sweep {
             format!("{prefix}-psk={}", sep.psk),
             format!("{prefix}-ssk={}", sep.ssk),
         ];
+        if self.symmetry {
+            out.push(format!("{prefix}-transported={}", sep.transported));
+        }
         let floors = sep.komi_floors();
         out.push(format!(
             "{prefix}-komi-floors={}",
@@ -439,6 +518,7 @@ pub fn sweep_on_above(table: &RuleTable, budget: Option<u64>, min_stones: u32) -
             budget,
             min_stones,
             threads: 1,
+            symmetry: false,
         },
     )
 }
@@ -446,7 +526,9 @@ pub fn sweep_on_above(table: &RuleTable, budget: Option<u64>, min_stones: u32) -
 /// How a sweep runs.
 ///
 /// `budget` and `min_stones` decide what the [`Sweep`] says. `threads` decides
-/// only how long it takes: see the module docs.
+/// only how long it takes. `symmetry` decides how many roots are searched, and
+/// with them the node count and, under a budget, which roots resolve: see the
+/// module docs.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Options {
     /// The node budget of each search, when there is one.
@@ -456,15 +538,19 @@ pub struct Options {
     /// The number of threads the roots are spread over, at least one. More
     /// threads than roots is allowed; the surplus is not started.
     pub threads: usize,
+    /// Search one root of each orbit under the board's symmetries and the
+    /// color swap, and transport the values to the rest.
+    pub symmetry: bool,
 }
 
 impl Default for Options {
-    /// Every root, no budget, one thread.
+    /// Every root searched, no budget, one thread.
     fn default() -> Self {
         Self {
             budget: None,
             min_stones: 0,
             threads: 1,
+            symmetry: false,
         }
     }
 }
@@ -478,22 +564,214 @@ impl Default for Options {
 /// any thread.
 #[must_use]
 pub fn sweep_with(table: &RuleTable, opts: Options) -> Sweep {
+    let roots = solve_roots(table, opts);
+    fold(table.dims(), opts.min_stones, opts.symmetry, &roots)
+}
+
+/// What a sweep recorded for one root, before anything is added up.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct RootOutcome {
+    /// The root position.
+    pub code: PosCode,
+    /// Who moves first from it.
+    pub to_move: Color,
+    /// The search under positional superko, or `None` when the stone-count
+    /// floor skipped the root. For a transported root, the representative's
+    /// search with its value transported.
+    pub psk: Option<Solution>,
+    /// The search under situational superko, likewise.
+    pub ssk: Option<Solution>,
+    /// Whether the values were transported from the root's representative.
+    /// A transported root's `nodes` and `max_depth` are the representative's
+    /// too, so summing `nodes` over outcomes counts each orbit's search once
+    /// per member; [`Sweep::nodes`] counts it once.
+    pub transported: bool,
+}
+
+/// Every root of a sweep with what the sweep recorded for it, in the sweep
+/// order: the per-root results [`sweep_with`] folds, for a caller that checks
+/// them one by one.
+///
+/// # Panics
+///
+/// As [`sweep_with`].
+#[must_use]
+pub fn root_outcomes(table: &RuleTable, opts: Options) -> Vec<RootOutcome> {
+    solve_roots(table, opts)
+        .iter()
+        .enumerate()
+        .map(|(index, root)| {
+            let (code, to_move) = root_at(index);
+            match *root {
+                Root::Skipped => RootOutcome {
+                    code,
+                    to_move,
+                    psk: None,
+                    ssk: None,
+                    transported: false,
+                },
+                Root::Searched {
+                    psk,
+                    ssk,
+                    transported,
+                    ..
+                } => RootOutcome {
+                    code,
+                    to_move,
+                    psk: Some(psk),
+                    ssk: Some(ssk),
+                    transported,
+                },
+            }
+        })
+        .collect()
+}
+
+/// A root's value from the value of the root a symmetry maps it to: negated
+/// when the map exchanges the colors, unchanged when it does not.
+///
+/// This is the transport the module docs describe, and its status is theirs.
+#[must_use]
+pub const fn transported_value(value: i32, swapped: bool) -> i32 {
+    if swapped { -value } else { value }
+}
+
+/// The komi floor a verdict is transported to.
+///
+/// A leaf is won by Black at komi floor `k` exactly when `k` is below Black's
+/// area less White's (`superko_rules::reference::winner_z`), and a tie goes to
+/// White. Exchanging the colors negates the difference, so "`x` wins at floor
+/// `k`" on a root becomes "`x.other` wins at floor `-k - 1`" on the swapped
+/// root: `k < d` exactly when `-k - 1 >= -d`, the tie included. A board
+/// symmetry leaves the floor where it is. This is exact over the integers and
+/// does not route through the threshold agreement of the crate docs; that the
+/// verdict search respects it is `computed` in `tests/symmetry.rs`.
+#[must_use]
+pub const fn transported_floor(komi_floor: i64, swapped: bool) -> i64 {
+    if swapped { -komi_floor - 1 } else { komi_floor }
+}
+
+/// Every root of a sweep, searched or transported.
+fn solve_roots(table: &RuleTable, opts: Options) -> Vec<Root> {
     assert!(opts.threads > 0, "a sweep needs at least one thread");
     let dims = table.dims();
     let count =
         usize::try_from(u64::from(code_space(dims)) * 2).expect("the root count fits a usize");
-    let roots = solve_indexed(
-        count,
-        opts.threads,
-        || {
-            (
-                Solver::new(table, Repetition::Psk).with_budget(opts.budget),
-                Solver::new(table, Repetition::Ssk).with_budget(opts.budget),
-            )
-        },
-        |(psk, ssk), index| solve_at(psk, ssk, dims, opts.min_stones, index),
-    );
-    fold(dims, opts.min_stones, &roots)
+    let solvers = || {
+        (
+            Solver::new(table, Repetition::Psk).with_budget(opts.budget),
+            Solver::new(table, Repetition::Ssk).with_budget(opts.budget),
+        )
+    };
+    if !opts.symmetry {
+        return solve_indexed(count, opts.threads, solvers, |(psk, ssk), index| {
+            solve_at(psk, ssk, dims, opts.min_stones, index)
+        });
+    }
+
+    let sym = Symmetries::new(dims).expect("the board has a transition table, so it has maps");
+    let orbits = representatives(&sym);
+    let reps: Vec<usize> = (0..count).filter(|&i| orbits[i].0 == i).collect();
+    let searched = solve_indexed(reps.len(), opts.threads, solvers, |(psk, ssk), k| {
+        solve_at(psk, ssk, dims, opts.min_stones, reps[k])
+    });
+    let mut at: Vec<Option<Root>> = vec![None; count];
+    for (&index, root) in reps.iter().zip(searched) {
+        at[index] = Some(root);
+    }
+    (0..count)
+        .map(|index| {
+            let (rep, swapped) = orbits[index];
+            let from = at[rep].expect("every representative was searched");
+            if rep == index {
+                from
+            } else {
+                transport(from, swapped, dims, index)
+            }
+        })
+        .collect()
+}
+
+/// For every place in the sweep order, the place of its orbit's
+/// representative and whether the map from the root to it exchanges the
+/// colors.
+///
+/// The representative is the least place in the orbit, which is the least
+/// root in [`rank_of`] order because the orbit's roots share a stone count.
+/// When the least place is reached by a map with the swap and by one without,
+/// the one without is taken. If the transport is sound the two give the same
+/// value — the orbit's values are then their own negations, so zero — and if
+/// it is not, `tests/symmetry.rs` fails on that orbit.
+fn representatives(sym: &Symmetries) -> Vec<(usize, bool)> {
+    let dims = sym.dims();
+    let codes = code_space(dims);
+    let mut out = Vec::with_capacity(codes as usize * 2);
+    for raw in 0..codes {
+        let code = PosCode(raw);
+        let swapped = sym.swap(code);
+        for to_move in [Color::Black, Color::White] {
+            let mut best = (place(code, to_move), false);
+            for g in 0..sym.order() {
+                let plain = (place(sym.code(g, code), to_move), false);
+                let exchanged = (place(sym.code(g, swapped), to_move.other()), true);
+                best = best.min(plain).min(exchanged);
+            }
+            out.push(best);
+        }
+    }
+    out
+}
+
+/// The place of a root in the sweep order, the inverse of [`root_at`].
+fn place(code: PosCode, to_move: Color) -> usize {
+    let base = code.0 as usize * 2;
+    match to_move {
+        Color::Black => base,
+        Color::White => base + 1,
+    }
+}
+
+/// A root's result from its representative's: the stones and liberties of the
+/// root itself, the representative's two searches with their values
+/// transported.
+fn transport(from: Root, swapped: bool, dims: Dims, index: usize) -> Root {
+    let (code, _) = root_at(index);
+    let board = decode(dims, code);
+    let own_stones = stone_count(&board);
+    let own_liberties = is_legal(&board);
+    match from {
+        Root::Skipped => Root::Skipped,
+        Root::Searched {
+            stones,
+            liberties,
+            psk,
+            ssk,
+            ..
+        } => {
+            // The maps move and recolor stones and add or remove none, and
+            // `superko-rules`'s tests/symmetry.rs checks that they keep a
+            // position's liberties; a disagreement here is a wrong map.
+            assert_eq!(stones, own_stones, "an orbit changed the stone count");
+            assert_eq!(liberties, own_liberties, "an orbit changed legality");
+            let carry = |s: Solution| Solution {
+                value: s.value.map(|v| transported_value(v, swapped)),
+                ..s
+            };
+            Root::Searched {
+                stones: own_stones,
+                liberties: own_liberties,
+                psk: carry(psk),
+                ssk: carry(ssk),
+                transported: true,
+            }
+        }
+    }
+}
+
+/// Stones on a board, both colors.
+fn stone_count(board: &superko_rules::reference::Position) -> u32 {
+    u32::try_from(board.cells().iter().filter(|cell| cell.is_some()).count())
+        .expect("stone count fits a u32")
 }
 
 /// What one root of a sweep came to, before anything is added up.
@@ -516,6 +794,8 @@ enum Root {
         psk: Solution,
         /// The search under situational superko.
         ssk: Solution,
+        /// Whether the two solutions are a representative's, transported.
+        transported: bool,
     },
 }
 
@@ -543,8 +823,7 @@ fn solve_at(
 ) -> Root {
     let (code, to_move) = root_at(index);
     let board = decode(dims, code);
-    let stones = u32::try_from(board.cells().iter().filter(|cell| cell.is_some()).count())
-        .expect("stone count fits a u32");
+    let stones = stone_count(&board);
     if stones < min_stones {
         return Root::Skipped;
     }
@@ -553,6 +832,7 @@ fn solve_at(
         liberties: is_legal(&board),
         psk: psk.solve_root(code, to_move),
         ssk: ssk.solve_root(code, to_move),
+        transported: false,
     }
 }
 
@@ -638,7 +918,7 @@ impl Drop for StopOnPanic<'_> {
 /// Add up a sweep from its roots, taken in the sweep order.
 ///
 /// The only place a [`Sweep`] is assembled, whatever the thread count.
-fn fold(dims: Dims, min_stones: u32, roots: &[Root]) -> Sweep {
+fn fold(dims: Dims, min_stones: u32, symmetry: bool, roots: &[Root]) -> Sweep {
     let empty = PosCode(0);
     let mut out = Sweep {
         dims,
@@ -659,6 +939,9 @@ fn fold(dims: Dims, min_stones: u32, roots: &[Root]) -> Sweep {
         resolved_with_ssk_only: 0,
         skipped: 0,
         min_stones,
+        symmetry,
+        searched: 0,
+        transported: 0,
     };
     assert_eq!(
         u64::try_from(roots.len()).expect("the root count fits a u64"),
@@ -673,16 +956,22 @@ fn fold(dims: Dims, min_stones: u32, roots: &[Root]) -> Sweep {
             liberties,
             psk: a,
             ssk: b,
+            transported,
         } = *root
         else {
             out.skipped += 1;
             continue;
         };
-        out.nodes = out
-            .nodes
-            .checked_add(a.nodes)
-            .and_then(|n| n.checked_add(b.nodes))
-            .expect("a node count overflowed");
+        if transported {
+            out.transported += 1;
+        } else {
+            out.searched += 1;
+            out.nodes = out
+                .nodes
+                .checked_add(a.nodes)
+                .and_then(|n| n.checked_add(b.nodes))
+                .expect("a node count overflowed");
+        }
         out.ssk_only_plays = out
             .ssk_only_plays
             .checked_add(b.ssk_only)
@@ -726,6 +1015,7 @@ fn fold(dims: Dims, min_stones: u32, roots: &[Root]) -> Sweep {
             ssk: sv,
             stones,
             liberties,
+            transported,
         };
         out.separating += 1;
         if out.minimal.is_none_or(|best| found.rank() < best.rank()) {
