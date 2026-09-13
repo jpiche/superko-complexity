@@ -143,11 +143,14 @@ impl Transform {
 pub struct Symmetries {
     dims: Dims,
     transforms: Vec<Transform>,
-    /// `points[g][i]`: the row-major index of the image of point `i` under
+    /// `points[g · point_count + i]`: the row-major index of the image of point
+    /// `i` under element `g`.
+    points: Vec<usize>,
+    /// The number of position codes of the board, `3^(m·n)`.
+    code_count: usize,
+    /// `codes[g · code_count + c]`: the code of the image of position `c` under
     /// element `g`.
-    points: Vec<Vec<usize>>,
-    /// `codes[g][c]`: the code of the image of position `c` under element `g`.
-    codes: Vec<Vec<u32>>,
+    codes: Vec<u32>,
     /// `swap[c]`: the code of position `c` with every stone's color exchanged.
     swap: Vec<u32>,
     /// `compose[a][b]`: the element that applies `b` and then `a`.
@@ -196,14 +199,14 @@ impl Symmetries {
             })
             .collect();
 
-        let codes_count = code_space(dims) as usize;
-        let mut codes = vec![vec![0u32; codes_count]; order];
-        let mut swap = vec![0u32; codes_count];
-        for raw in 0..codes_count {
+        let code_count = code_space(dims) as usize;
+        let mut codes = vec![0u32; order * code_count];
+        let mut swap = vec![0u32; code_count];
+        for raw in 0..code_count {
             let code = PosCode(u32::try_from(raw).expect("a code fits a u32"));
             let b = decode(dims, code);
             for (g, perm) in points.iter().enumerate() {
-                codes[g][raw] = encode(&moved(&b, perm)).0;
+                codes[g * code_count + raw] = encode(&moved(&b, perm)).0;
             }
             swap[raw] = encode(&swapped(&b)).0;
         }
@@ -211,7 +214,8 @@ impl Symmetries {
         Ok(Self {
             dims,
             transforms,
-            points,
+            points: points.concat(),
+            code_count,
             codes,
             swap,
             compose,
@@ -248,7 +252,9 @@ impl Symmetries {
     /// Panics when `g` is not an element or the point is off the board.
     #[must_use]
     pub fn point(&self, g: usize, p: Point) -> Point {
-        self.dims.point_at(self.points[g][self.dims.index(p)])
+        assert!(g < self.order(), "not an element");
+        self.dims
+            .point_at(self.points[g * self.dims.point_count() + self.dims.index(p)])
     }
 
     /// The image of a position code under element `g`.
@@ -258,7 +264,33 @@ impl Symmetries {
     /// Panics when `g` is not an element or the code is not of this board.
     #[must_use]
     pub fn code(&self, g: usize, code: PosCode) -> PosCode {
-        PosCode(self.codes[g][code.0 as usize])
+        assert!(g < self.order(), "not an element");
+        let c = code.0 as usize;
+        assert!(c < self.code_count, "code is not a position of this board");
+        PosCode(self.codes[g * self.code_count + c])
+    }
+
+    /// The number of position codes of the board, `3^(m·n)`: the stride of
+    /// [`Symmetries::code_table`].
+    #[must_use]
+    pub const fn code_count(&self) -> usize {
+        self.code_count
+    }
+
+    /// Every element's code map in one table: entry `g · code_count + c` is
+    /// the raw code [`Symmetries::code`] returns for element `g` and code `c`.
+    /// For a search that reads it in its inner loop without a call per entry.
+    #[must_use]
+    pub fn code_table(&self) -> &[u32] {
+        &self.codes
+    }
+
+    /// Every element's point map in one table: entry `g · point_count + i` is
+    /// the row-major index of the image of the point of row-major index `i`
+    /// under element `g`, the point [`Symmetries::point`] returns.
+    #[must_use]
+    pub fn point_table(&self) -> &[usize] {
+        &self.points
     }
 
     /// A position code with every stone's color exchanged.

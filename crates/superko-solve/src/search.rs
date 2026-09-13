@@ -82,6 +82,15 @@
 //! points, and the value and verdict searches on the empty 1×4 and 2×2 roots.
 //! The other searches under test, the verdict differential on 2×2 among them,
 //! run without it.
+//!
+//! Whether mirrored moves are on is decided once per root rather than at every
+//! node: [`Solver::solve_root`] and [`Solver::decide_root`] run the value or the
+//! verdict recursion with a compile-time parameter, `MIRROR`, and every
+//! mirrored-move branch in the recursion and in make, unmake and the node count
+//! is a test of that constant. So there is one source for each recursion,
+//! compiled once with mirrored moves and once without, and the differential
+//! tests of `tests/mirrored.rs`, which compare a solver without mirrored moves
+//! against one with them, run both compilations of each.
 
 use superko_rules::archive::{Archive, ArchiveKey};
 use superko_rules::code::{PosCode, code_space, encode};
@@ -185,6 +194,18 @@ pub struct Solver<'t> {
 #[derive(Clone, Debug)]
 struct Mirror<'t> {
     sym: &'t Symmetries,
+    /// The number of board symmetries, the identity included.
+    order: usize,
+    /// [`Symmetries::code_table`]: entry `g · code_count + c` is element `g`'s
+    /// image of code `c`.
+    codes: &'t [u32],
+    /// [`Symmetries::code_count`].
+    code_count: usize,
+    /// [`Symmetries::point_table`]: entry `g · point_count + i` is element
+    /// `g`'s image of the point of index `i`.
+    points: &'t [usize],
+    /// The board's point count, the stride of `points`.
+    point_count: usize,
     /// `inverse[g]`: the element that undoes `g`.
     inverse: [usize; MAX_SYMMETRIES],
     /// `unmatched[g]`: archived keys whose image under `g` is not archived.
@@ -293,6 +314,11 @@ impl<'t> Solver<'t> {
         }
         self.mirror = Some(Mirror {
             sym,
+            order: sym.order(),
+            codes: sym.code_table(),
+            code_count: sym.code_count(),
+            points: sym.point_table(),
+            point_count: sym.dims().point_count(),
             inverse,
             unmatched: [0; MAX_SYMMETRIES],
             self_check: false,
@@ -378,16 +404,22 @@ impl<'t> Solver<'t> {
         }
     }
 
-    /// Take a move whose legality has been decided.
-    fn make(&mut self, mv: Move, succ: PosCode) -> Undo {
+    /// Take a move whose legality has been decided, keeping the unmatched
+    /// counts when `MIRROR` is set.
+    ///
+    /// `MIRROR` is the search's choice, made once per root by
+    /// [`Solver::solve_root`] and [`Solver::decide_root`]: true exactly when
+    /// mirrored moves are on. A search without them is compiled with every
+    /// mirrored-move branch removed rather than testing for them at each node.
+    fn make<const MIRROR: bool>(&mut self, mv: Move, succ: PosCode) -> Undo {
         let key = self.key(succ, self.to_move.other());
+        let was_new = self.archive.insert(key);
+        if MIRROR && was_new {
+            self.track(key, true);
+        }
         let undo = Undo {
             key,
-            was_new: if self.mirror.is_some() {
-                self.archive_insert(key)
-            } else {
-                self.archive.insert(key)
-            },
+            was_new,
             code: self.code,
             to_move: self.to_move,
             passes: self.passes,
@@ -403,32 +435,29 @@ impl<'t> Solver<'t> {
     }
 
     /// Take a move back, clearing only what its insert set.
-    fn unmake(&mut self, undo: Undo) {
-        // Mirrored moves are tested for here, and at each call site below,
-        // rather than inside the helpers, so that a solver without them makes
-        // no extra call per node: a debug build does not inline them, and the
-        // tests run in one.
-        if self.mirror.is_some() {
-            self.archive_undo(undo.key, undo.was_new);
-        } else {
-            self.archive.undo(undo.key, undo.was_new);
+    fn unmake<const MIRROR: bool>(&mut self, undo: Undo) {
+        self.archive.undo(undo.key, undo.was_new);
+        if MIRROR && undo.was_new {
+            self.track(undo.key, false);
         }
         self.code = undo.code;
         self.to_move = undo.to_move;
         self.passes = undo.passes;
         self.depth -= 1;
-        if self.mirror.is_some() {
+        if MIRROR {
             self.check_unmatched();
         }
     }
 
     /// Archive a key, keeping the unmatched counts when mirrored moves are on,
-    /// and say whether it was new.
+    /// and say whether it was new. For the root seeding and the unit tests;
+    /// the recursion archives through [`Solver::make`].
     fn archive_insert(&mut self, key: ArchiveKey) -> bool {
-        if self.mirror.is_some() && !self.archive.contains_ssk(key) {
+        let was_new = self.archive.insert(key);
+        if was_new && self.mirror.is_some() {
             self.track(key, true);
         }
-        self.archive.insert(key)
+        was_new
     }
 
     /// Undo [`Solver::archive_insert`], counts included.
@@ -439,21 +468,38 @@ impl<'t> Solver<'t> {
         }
     }
 
-    /// Apply, or with `inserting` false reverse, the change archiving a key
-    /// makes to every element's unmatched count. The archive must be the set
-    /// before the insert: without `key`, whichever way the change goes.
+    /// Apply, or with `inserting` false reverse, the change archiving a new
+    /// key makes to every element's unmatched count.
+    ///
+    /// The change is the module docs' `[s(k) ≠ k and s(k) ∉ A] − [s⁻¹(k) ≠ k
+    /// and s⁻¹(k) ∈ A]` with `A` the archive without `k`. It reads the archive
+    /// only at keys other than `k`, so it is the same whether `k` itself is
+    /// archived yet or not, and may be called after the insert or before the
+    /// undo. The preimage of `k` under `g` is its image under `g⁻¹`, so each
+    /// element's image is looked up once and serves as its own image and as
+    /// its inverse's preimage.
     fn track(&mut self, key: ArchiveKey, inserting: bool) {
         let archive = &self.archive;
         let Some(m) = self.mirror.as_mut() else {
             return;
         };
-        for g in 1..m.sym.order() {
-            let image = ArchiveKey::new(m.sym.code(g, key.code), key.to_move);
-            let preimage = ArchiveKey::new(m.sym.code(m.inverse[g], key.code), key.to_move);
+        let c = key.code.0 as usize;
+        // moves[g]: element g moves the key. present[g]: and its image is
+        // archived.
+        let mut moves = [false; MAX_SYMMETRIES];
+        let mut present = [false; MAX_SYMMETRIES];
+        for g in 1..m.order {
+            let image = m.codes[g * m.code_count + c];
+            moves[g] = image != key.code.0;
+            present[g] =
+                moves[g] && archive.contains_ssk(ArchiveKey::new(PosCode(image), key.to_move));
+        }
+        for g in 1..m.order {
+            let h = m.inverse[g];
             // The new key's own image is missing.
-            let gained = u32::from(image != key && !archive.contains_ssk(image));
+            let gained = u32::from(moves[g] && !present[g]);
             // A key whose image was the new key stops being unmatched.
-            let lost = u32::from(preimage != key && archive.contains_ssk(preimage));
+            let lost = u32::from(moves[h] && present[h]);
             let u = &mut m.unmatched[g];
             *u = if inserting {
                 (*u + gained)
@@ -506,12 +552,14 @@ impl<'t> Solver<'t> {
 
     /// The non-identity board symmetries that fix the state standing now:
     /// the position is its own image and no archived key's image is missing.
+    /// In ascending element order.
     fn fixing(&self) -> ([usize; MAX_SYMMETRIES], usize) {
         let mut out = [0; MAX_SYMMETRIES];
         let mut len = 0;
         if let Some(m) = &self.mirror {
-            for g in 1..m.sym.order() {
-                if m.unmatched[g] == 0 && m.sym.code(g, self.code) == self.code {
+            let c = self.code.0 as usize;
+            for g in 1..m.order {
+                if m.unmatched[g] == 0 && m.codes[g * m.code_count + c] == self.code.0 {
                     out[len] = g;
                     len += 1;
                 }
@@ -543,11 +591,12 @@ impl<'t> Solver<'t> {
             let Move::Play(p) = *mv else {
                 continue;
             };
-            if covered & (1 << dims.index(p)) != 0 {
+            let at = dims.index(p);
+            if covered & (1 << at) != 0 {
                 skip |= 1 << i;
             } else {
                 for &g in &fixing[..len] {
-                    covered |= 1 << dims.index(m.sym.point(g, p));
+                    covered |= 1 << m.points[g * m.point_count + at];
                 }
             }
         }
@@ -585,8 +634,8 @@ impl<'t> Solver<'t> {
     }
 
     /// Count this node, and say whether the budget has run out.
-    fn enter(&mut self) -> bool {
-        if self.mirror.is_some() {
+    fn enter<const MIRROR: bool>(&mut self) -> bool {
+        if MIRROR {
             self.check_unmatched();
         }
         self.nodes = self.nodes.checked_add(1).expect("a node count overflowed");
@@ -691,8 +740,11 @@ impl<'t> Solver<'t> {
     ///
     /// The value returned is exact when the window contains the whole score
     /// range, which is what [`Solver::solve_root`] passes.
-    fn alphabeta(&mut self, mut alpha: i32, mut beta: i32) -> i32 {
-        if self.enter() {
+    ///
+    /// `MIRROR` is as [`Solver::make`] says: one source, compiled once with
+    /// mirrored moves and once without.
+    fn alphabeta<const MIRROR: bool>(&mut self, mut alpha: i32, mut beta: i32) -> i32 {
+        if self.enter::<MIRROR>() {
             return alpha;
         }
         if self.passes >= 2 {
@@ -703,7 +755,7 @@ impl<'t> Solver<'t> {
         // ended always visits a child.
         let mut best = if maximizing { alpha - 1 } else { beta + 1 };
         let (moves, len) = self.ordered_moves();
-        let mut skip = if self.mirror.is_some() {
+        let mut skip = if MIRROR {
             self.mirrored(&moves[..len])
         } else {
             0
@@ -715,12 +767,12 @@ impl<'t> Solver<'t> {
                 self.mirrored_skips += 1;
                 continue;
             }
-            let undo = self.make(mv, succ);
+            let undo = self.make::<MIRROR>(mv, succ);
             if gap {
                 self.ssk_only += 1;
             }
-            let v = self.alphabeta(alpha, beta);
-            self.unmake(undo);
+            let v = self.alphabeta::<MIRROR>(alpha, beta);
+            self.unmake::<MIRROR>(undo);
             if self.over_budget {
                 return best;
             }
@@ -740,8 +792,11 @@ impl<'t> Solver<'t> {
 
     /// The verdict recursion: whether `c` wins, by the branch structure
     /// `Superko.decideWins` uses.
-    fn verdict(&mut self, komi_floor: i64, c: Color) -> bool {
-        if self.enter() {
+    ///
+    /// `MIRROR` is as [`Solver::make`] says: one source, compiled once with
+    /// mirrored moves and once without.
+    fn verdict<const MIRROR: bool>(&mut self, komi_floor: i64, c: Color) -> bool {
+        if self.enter::<MIRROR>() {
             return false;
         }
         if self.passes >= 2 {
@@ -749,7 +804,7 @@ impl<'t> Solver<'t> {
         }
         let mover = self.to_move == c;
         let (moves, len) = self.ordered_moves();
-        let mut skip = if self.mirror.is_some() {
+        let mut skip = if MIRROR {
             self.mirrored(&moves[..len])
         } else {
             0
@@ -761,12 +816,12 @@ impl<'t> Solver<'t> {
                 self.mirrored_skips += 1;
                 continue;
             }
-            let undo = self.make(mv, succ);
+            let undo = self.make::<MIRROR>(mv, succ);
             if gap {
                 self.ssk_only += 1;
             }
-            let won = self.verdict(komi_floor, c);
-            self.unmake(undo);
+            let won = self.verdict::<MIRROR>(komi_floor, c);
+            self.unmake::<MIRROR>(undo);
             if self.over_budget {
                 return false;
             }
@@ -789,7 +844,12 @@ impl<'t> Solver<'t> {
     /// Panics when the code is not a position of this solver's board.
     pub fn solve_root(&mut self, code: PosCode, to_move: Color) -> Solution {
         let seed = self.seat(code, to_move);
-        let value = self.alphabeta(-self.span - 1, self.span + 1);
+        let (alpha, beta) = (-self.span - 1, self.span + 1);
+        let value = if self.mirror.is_some() {
+            self.alphabeta::<true>(alpha, beta)
+        } else {
+            self.alphabeta::<false>(alpha, beta)
+        };
         self.unmake_seed(seed);
         Solution {
             value: (!self.over_budget).then_some(value),
@@ -813,7 +873,11 @@ impl<'t> Solver<'t> {
         c: Color,
     ) -> Decision {
         let seed = self.seat(code, to_move);
-        let wins = self.verdict(komi_floor, c);
+        let wins = if self.mirror.is_some() {
+            self.verdict::<true>(komi_floor, c)
+        } else {
+            self.verdict::<false>(komi_floor, c)
+        };
         self.unmake_seed(seed);
         Decision {
             wins: (!self.over_budget).then_some(wins),

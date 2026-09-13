@@ -117,6 +117,40 @@ fn the_elements_are_distinct_permutations_of_the_points() {
     }
 }
 
+/// The flat tables are what the per-entry accessors say: `code_table` at
+/// `g · code_count + c` is `code(g, c)`, and `point_table` at
+/// `g · point_count + i` is the index of `point(g, i)`.
+#[test]
+fn the_flat_tables_agree_with_the_accessors() {
+    for dims in boards_to_six().into_iter().chain([Dims::new(3, 3)]) {
+        let sym = Symmetries::new(dims).expect("a small board");
+        let codes = code_space(dims) as usize;
+        let points = dims.point_count();
+        assert_eq!(sym.code_count(), codes, "{dims}");
+        assert_eq!(sym.code_table().len(), sym.order() * codes, "{dims}");
+        assert_eq!(sym.point_table().len(), sym.order() * points, "{dims}");
+        for raw in 0..code_space(dims) {
+            let code = PosCode(raw);
+            for g in 0..sym.order() {
+                assert_eq!(
+                    sym.code_table()[g * codes + raw as usize],
+                    sym.code(g, code).0,
+                    "{dims} element {g} code {code}"
+                );
+            }
+        }
+        for g in 0..sym.order() {
+            for p in dims.points() {
+                assert_eq!(
+                    sym.point_table()[g * points + dims.index(p)],
+                    dims.index(sym.point(g, p)),
+                    "{dims} element {g}"
+                );
+            }
+        }
+    }
+}
+
 /// Every element's code map and the swap are bijections that keep the stone
 /// count — per color for a board symmetry, exchanged for the swap — keep a
 /// position's liberties, and move each stone where the point map sends it.

@@ -35,7 +35,8 @@ use superko_rules::table::RuleTable;
 use superko_solve::naive;
 use superko_solve::search::{Solution, Solver};
 use superko_solve::separate::{
-    Options, Separating, Sweep, root_outcomes, sweep_with, transported_floor, transported_value,
+    Options, Separating, Sweep, SymmetryMode, root_outcomes, sweep_with, transported_floor,
+    transported_value,
 };
 
 const RULES: [Repetition; 2] = [Repetition::Psk, Repetition::Ssk];
@@ -744,3 +745,115 @@ fn a_symmetric_sweep_agrees_with_the_naive_engine_on_three_points() {
 
 /// Transported roots of 1×3 and 3×1 under both conventions.
 const NAIVE_THREE_TRANSPORTED: u64 = 144;
+
+/// The four-element group under the solver, the group the 2×3 sweep runs
+/// under: 2×3 and 3×2 under the no-suicide rule, both rules, every root, 10⁵
+/// nodes a search. Against the plain sweep's per-root values
+/// ([`root_outcomes`]): the sweep with mirrored moves, and the symmetric sweeps
+/// with canonical roots, without and with mirrored moves, at every root and
+/// rule both resolved. Per board and mode the comparisons made and not made,
+/// the transported roots and the plays skipped are pinned, so no comparison
+/// passes vacuously. Then, on each board, the value search from the empty root
+/// with mirrored moves at 10⁴ nodes returns the same [`Solution`] with
+/// [`Solver::with_unmatched_self_check`] as without it, and the recount runs,
+/// which holds the incremental unmatched counts to the archive for the
+/// half-turn and the two reversals.
+///
+/// `cargo test --release -p superko-solve --test symmetry -- --ignored the_four_element_group_agrees_with_the_plain_sweep_on_2x3_and_3x2`
+#[test]
+#[ignore = "release only: 1 458 roots a board, and many searches run to their budget"]
+fn the_four_element_group_agrees_with_the_plain_sweep_on_2x3_and_3x2() {
+    let threads = std::thread::available_parallelism().map_or(1, usize::from);
+    let mut got = Vec::new();
+    for (rows, cols) in [(2, 3), (3, 2)] {
+        let dims = Dims::new(rows, cols);
+        let table = RuleTable::build(dims, Suicide::Forbid).expect("a board within the table");
+        let sym = Symmetries::new(dims).expect("a board within the table");
+        assert_eq!(sym.order(), 4, "{dims}");
+        let base = Options {
+            budget: Some(100_000),
+            threads,
+            ..Options::default()
+        };
+        let plain = root_outcomes(&table, base);
+        for mode in [SymmetryMode::Moves, SymmetryMode::Roots, SymmetryMode::On] {
+            let outcomes = root_outcomes(
+                &table,
+                Options {
+                    symmetry: mode.roots(),
+                    mirrored_moves: mode.moves(),
+                    ..base
+                },
+            );
+            assert_eq!(outcomes.len(), plain.len(), "{dims} {}", mode.name());
+            let (mut compared, mut uncompared, mut transported, mut skips) = (0u64, 0, 0, 0);
+            for (a, b) in plain.iter().zip(&outcomes) {
+                assert_eq!((a.code, a.to_move), (b.code, b.to_move));
+                assert!(!a.transported);
+                transported += u64::from(b.transported);
+                for (rep, x, y) in [("psk", a.psk, b.psk), ("ssk", a.ssk, b.ssk)] {
+                    let (x, y) = (x.expect("no floor"), y.expect("no floor"));
+                    assert_eq!(x.mirrored_skips, 0);
+                    if !b.transported {
+                        skips += y.mirrored_skips;
+                    }
+                    match (x.value, y.value) {
+                        (Some(v), Some(w)) => {
+                            assert_eq!(
+                                v,
+                                w,
+                                "{dims} {} {rep} root {} {} to move: {v} plain, {w} with symmetry",
+                                mode.name(),
+                                b.code,
+                                b.to_move
+                            );
+                            compared += 1;
+                        }
+                        _ => uncompared += 1,
+                    }
+                }
+            }
+            got.push((
+                format!("{dims} {}", mode.name()),
+                compared,
+                uncompared,
+                transported,
+                skips,
+            ));
+        }
+        for rep in RULES {
+            let unchecked = Solver::new(&table, rep)
+                .with_budget(Some(10_000))
+                .with_mirrored_moves(&sym)
+                .solve_root(PosCode(0), Color::Black);
+            let mut checked = Solver::new(&table, rep)
+                .with_budget(Some(10_000))
+                .with_mirrored_moves(&sym)
+                .with_unmatched_self_check();
+            let solution: Solution = checked.solve_root(PosCode(0), Color::Black);
+            assert_eq!(solution, unchecked, "{dims} {rep}");
+            assert!(checked.self_checks() > 0, "{dims} {rep}");
+        }
+    }
+    let expected: Vec<(String, u64, u64, u64, u64)> = FOUR_ELEMENT_PINNED
+        .iter()
+        .map(|&(name, a, b, c, d)| (name.to_string(), a, b, c, d))
+        .collect();
+    assert_eq!(
+        got, expected,
+        "per board and mode: values compared, not compared, roots transported, plays skipped"
+    );
+}
+
+/// Per board and mode of
+/// [`the_four_element_group_agrees_with_the_plain_sweep_on_2x3_and_3x2`]: the
+/// root-and-rule values compared and not compared, the roots transported, and
+/// the plays skipped by the searches that ran.
+const FOUR_ELEMENT_PINNED: [(&str, u64, u64, u64, u64); 6] = [
+    ("2x3 moves", 1_504, 1_412, 0, 788),
+    ("2x3 roots", 1_504, 1_412, 1_242, 0),
+    ("2x3 on", 1_504, 1_412, 1_242, 228),
+    ("3x2 moves", 1_504, 1_412, 0, 764),
+    ("3x2 roots", 1_504, 1_412, 1_242, 0),
+    ("3x2 on", 1_504, 1_412, 1_242, 216),
+];

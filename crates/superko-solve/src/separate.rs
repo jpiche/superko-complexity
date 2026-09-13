@@ -205,6 +205,11 @@ pub struct Verdicts {
     pub ssk_black: bool,
     /// White has a winning strategy under situational superko.
     pub ssk_white: bool,
+    /// Plays the four searches skipped as mirror images, added up
+    /// ([`crate::search::Decision::mirrored_skips`]). Zero when [`verdicts`]
+    /// was given no maps. Printed in no body: it is what a test reads to see
+    /// that the maps reached the searches.
+    pub mirrored_skips: u64,
 }
 
 impl Verdicts {
@@ -247,17 +252,23 @@ pub fn verdicts(
         if let Some(sym) = mirror {
             solver = solver.with_mirrored_moves(sym);
         }
-        solver
-            .decide_root(code, to_move, komi_floor, c)
-            .wins
-            .expect("a verdict search ran out of budget")
+        let d = solver.decide_root(code, to_move, komi_floor, c);
+        (
+            d.wins.expect("a verdict search ran out of budget"),
+            d.mirrored_skips,
+        )
     };
+    let (psk_black, a) = ask(Repetition::Psk, Color::Black);
+    let (psk_white, b) = ask(Repetition::Psk, Color::White);
+    let (ssk_black, c) = ask(Repetition::Ssk, Color::Black);
+    let (ssk_white, d) = ask(Repetition::Ssk, Color::White);
     Verdicts {
         komi_floor,
-        psk_black: ask(Repetition::Psk, Color::Black),
-        psk_white: ask(Repetition::Psk, Color::White),
-        ssk_black: ask(Repetition::Ssk, Color::Black),
-        ssk_white: ask(Repetition::Ssk, Color::White),
+        psk_black,
+        psk_white,
+        ssk_black,
+        ssk_white,
+        mirrored_skips: a + b + c + d,
     }
 }
 
@@ -400,6 +411,24 @@ impl Sweep {
     /// neither half on, none of these lines appears.
     #[must_use]
     pub fn lines(&self, table: &RuleTable, budget: Option<u64>) -> Vec<String> {
+        self.lines_with_verdicts(table, budget).0
+    }
+
+    /// [`Sweep::lines`], with the witness verdicts those lines were printed
+    /// from, the `minimal` block's first: none when nothing separated, and one
+    /// per witness block otherwise.
+    ///
+    /// `lines` is this with the verdicts dropped, so a test that reads
+    /// [`Verdicts::mirrored_skips`] here reads what the printed body's searches
+    /// did — in particular that with mirrored moves on they were handed the
+    /// board's maps.
+    #[must_use]
+    pub fn lines_with_verdicts(
+        &self,
+        table: &RuleTable,
+        budget: Option<u64>,
+    ) -> (Vec<String>, Vec<Verdicts>) {
+        let mut witnessed = Vec::new();
         let mut out = vec![
             format!("roots={}", self.roots),
             format!("resolved={}", self.resolved),
@@ -442,17 +471,22 @@ impl Sweep {
         let sym = (self.mirrored_moves
             && (self.minimal.is_some() || self.minimal_liberties.is_some()))
         .then(|| Symmetries::new(self.dims).expect("a swept board has symmetry maps"));
-        if let Some(sep) = self.minimal {
-            out.extend(self.witness_lines("minimal", &sep, table, budget, sym.as_ref()));
+        for (prefix, found) in [
+            ("minimal", self.minimal),
+            ("minimal-liberties", self.minimal_liberties),
+        ] {
+            if let Some(sep) = found {
+                let (lines, v) = self.witness_lines(prefix, &sep, table, budget, sym.as_ref());
+                out.extend(lines);
+                witnessed.extend(v);
+            }
         }
-        if let Some(sep) = self.minimal_liberties {
-            out.extend(self.witness_lines("minimal-liberties", &sep, table, budget, sym.as_ref()));
-        }
-        out
+        (out, witnessed)
     }
 
     /// The lines describing one separating root and the verdicts that confirm
-    /// it at the lowest komi floor the two rules differ at.
+    /// it at the lowest komi floor the two rules differ at, with those
+    /// verdicts.
     fn witness_lines(
         &self,
         prefix: &str,
@@ -460,7 +494,7 @@ impl Sweep {
         table: &RuleTable,
         budget: Option<u64>,
         mirror: Option<&Symmetries>,
-    ) -> Vec<String> {
+    ) -> (Vec<String>, Option<Verdicts>) {
         let mut out = vec![
             format!("{prefix}-root={}", render(&decode(self.dims, sep.code))),
             format!("{prefix}-to-move={}", sep.to_move),
@@ -481,8 +515,10 @@ impl Sweep {
                 .collect::<Vec<_>>()
                 .join(",")
         ));
+        let mut found = None;
         if let Some(&floor) = floors.first() {
             let v = verdicts(table, sep.code, sep.to_move, floor, budget, mirror);
+            found = Some(v);
             out.push(format!("{prefix}-witness-komi-floor={}", v.komi_floor));
             out.push(format!("{prefix}-witness-psk-black-wins={}", v.psk_black));
             out.push(format!("{prefix}-witness-psk-white-wins={}", v.psk_white));
@@ -491,7 +527,7 @@ impl Sweep {
             out.push(format!("{prefix}-witness-separates={}", v.separates()));
             out.push(format!("{prefix}-witness-determined={}", v.determined()));
         }
-        out
+        (out, found)
     }
 }
 

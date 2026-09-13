@@ -21,6 +21,10 @@
 //! 2. **Non-vacuity.** Plays are skipped on the empty 1×4 and 2×2 boards, and
 //!    the self-check runs, so the differential compares searches that differ.
 //!
+//! 3. **Witness verdicts.** `superko_solve::separate::verdicts` skips mirrored
+//!    plays when handed the board's maps and not otherwise, and
+//!    `Sweep::lines` hands them over exactly when mirrored moves are on.
+//!
 //! Every comparison that can skip a root — one search over its budget — counts
 //! what it compared and pins the count, so no check passes vacuously.
 //!
@@ -38,6 +42,9 @@ use superko_rules::reference::Color;
 use superko_rules::symmetry::Symmetries;
 use superko_rules::table::RuleTable;
 use superko_solve::search::Solver;
+use superko_solve::separate::{
+    Options, Separating, Sweep, SymmetryMode, Verdicts, sweep_with, verdicts,
+};
 
 const RULES: [Repetition; 2] = [Repetition::Psk, Repetition::Ssk];
 const SUICIDES: [Suicide; 2] = [Suicide::Forbid, Suicide::RemoveOwn];
@@ -338,4 +345,108 @@ const EMPTY_PINNED: [(&str, i32, u64, u64, u64, u64); 4] = [
     ("1x4 ssk", 4, 303, 183, 4, 2),
     ("2x2 psk", 1, 981, 342, 14, 5),
     ("2x2 ssk", 1, 1101, 378, 14, 5),
+];
+
+/// [`verdicts`], the four witness searches a separating root's block prints,
+/// skips mirrored plays when handed the maps and not otherwise: on the empty
+/// 1×4 board, Black to move, under the no-suicide rule, at komi floor 4 — the
+/// value, where Black does not win, so both colors' searches reach every
+/// Black play at the root — the four verdicts with the maps equal those
+/// without, the searches without skip nothing, and the searches with them
+/// skip the pinned count.
+#[test]
+fn the_witness_verdicts_skip_mirrored_plays_when_handed_the_maps() {
+    let dims = Dims::new(1, 4);
+    let table = RuleTable::build(dims, Suicide::Forbid).expect("a small board");
+    let sym = Symmetries::new(dims).expect("a small board");
+    let plain = verdicts(&table, PosCode(0), Color::Black, 4, None, None);
+    let mirrored = verdicts(&table, PosCode(0), Color::Black, 4, None, Some(&sym));
+    assert_eq!(plain.mirrored_skips, 0);
+    assert_eq!(
+        Verdicts {
+            mirrored_skips: 0,
+            ..mirrored
+        },
+        plain
+    );
+    assert!(!plain.psk_black && plain.psk_white);
+    assert_eq!(mirrored.mirrored_skips, WITNESS_VERDICT_SKIPS);
+}
+
+/// Plays the four verdict searches of
+/// [`the_witness_verdicts_skip_mirrored_plays_when_handed_the_maps`] skip.
+const WITNESS_VERDICT_SKIPS: u64 = 8;
+
+/// `Sweep::lines` hands the board's maps to its witness verdicts exactly when
+/// mirrored moves are on, under each [`SymmetryMode`].
+///
+/// A real witness does not show it: the sweep of 1×2 with suicide removing its
+/// own stones, the one results file of at most five points with a witness
+/// block, has two witness blocks whose eight verdict searches skip no play
+/// under any mode, and that is checked here too. So the witness that shows it
+/// is put in by hand. The sweep of 1×4 under the no-suicide rule finds no
+/// separating root; it is given as its `minimal` record the empty root, Black
+/// to move, with the values 4 and 5. That record is not a separation — both
+/// rules give the empty 1×4 board 4 ([`EMPTY_PINNED`]) — but it makes the body
+/// run its witness verdicts at komi floor 4, the searches of
+/// [`the_witness_verdicts_skip_mirrored_plays_when_handed_the_maps`], which
+/// skip [`WITNESS_VERDICT_SKIPS`] plays with the maps and none without.
+///
+/// In both, the lines are the ones `Sweep::lines_with_verdicts` returns with
+/// the verdicts, so a `lines` that passed no maps to [`verdicts`] under
+/// `moves` or `on` fails the pinned counts.
+#[test]
+fn a_sweep_hands_its_witness_verdicts_the_maps_when_mirrored_moves_are_on() {
+    let run = |dims: Dims, suicide: Suicide, mode: SymmetryMode| {
+        let table = RuleTable::build(dims, suicide).expect("a small board");
+        let sweep = sweep_with(
+            &table,
+            Options {
+                symmetry: mode.roots(),
+                mirrored_moves: mode.moves(),
+                ..Options::default()
+            },
+        );
+        (table, sweep)
+    };
+    let mut got = Vec::new();
+    for mode in SymmetryMode::ALL {
+        let (table, sweep) = run(Dims::new(1, 2), Suicide::RemoveOwn, mode);
+        let (lines, witnessed) = sweep.lines_with_verdicts(&table, None);
+        assert_eq!(lines, sweep.lines(&table, None), "1x2 {}", mode.name());
+        assert_eq!(witnessed.len(), 2, "1x2 {}", mode.name());
+        let real: u64 = witnessed.iter().map(|v| v.mirrored_skips).sum();
+
+        let (table, sweep) = run(Dims::new(1, 4), Suicide::Forbid, mode);
+        assert_eq!(sweep.minimal, None, "1x4 {}", mode.name());
+        let put = Sweep {
+            minimal: Some(Separating {
+                code: PosCode(0),
+                to_move: Color::Black,
+                psk: 4,
+                ssk: 5,
+                stones: 0,
+                liberties: true,
+                transported: false,
+            }),
+            ..sweep
+        };
+        let (lines, witnessed) = put.lines_with_verdicts(&table, None);
+        assert_eq!(lines, put.lines(&table, None), "1x4 {}", mode.name());
+        assert_eq!(witnessed.len(), 1, "1x4 {}", mode.name());
+        assert_eq!(witnessed[0].komi_floor, 4, "1x4 {}", mode.name());
+        got.push((mode.name(), real, witnessed[0].mirrored_skips));
+    }
+    assert_eq!(got, SWEEP_WITNESS_SKIPS);
+}
+
+/// Per mode of
+/// [`a_sweep_hands_its_witness_verdicts_the_maps_when_mirrored_moves_are_on`]:
+/// the plays the 1×2 sweep's eight witness verdict searches skip, and the plays
+/// the four of the record put into the 1×4 sweep skip.
+const SWEEP_WITNESS_SKIPS: [(&str, u64, u64); 4] = [
+    ("off", 0, 0),
+    ("roots", 0, 0),
+    ("moves", 0, WITNESS_VERDICT_SKIPS),
+    ("on", 0, WITNESS_VERDICT_SKIPS),
 ];
