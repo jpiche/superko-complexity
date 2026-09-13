@@ -15,8 +15,9 @@
 //! `board-symmetry` and `color-swap` differ from the other five in kind: they
 //! are not readings of a `Defs.lean` item but facts about the rules a search
 //! relies on to skip work, and a run is under them only when it asked for that
-//! (`superko separate --symmetry on`, under both, and `superko solve --symmetry
-//! on`, under `board-symmetry` alone). Their markers are in
+//! (`superko separate --symmetry roots` or `on`, under both; `superko separate
+//! --symmetry moves` and `superko solve --symmetry on`, under `board-symmetry`
+//! alone). Their markers are in
 //! [`crate::symmetry`].
 
 use core::fmt;

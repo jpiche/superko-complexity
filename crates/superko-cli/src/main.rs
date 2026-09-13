@@ -10,9 +10,10 @@
 //! superko scc-census      --board MxN --suicide forbid|remove-own
 //! superko solve           --board MxN --rule psk|ssk --suicide forbid|remove-own
 //!                         --root POS [--to-move black|white] [--komi-floor K]
-//!                         [--budget N] [--naive] [--symmetry on|off]
+//!                         [--budget N] [--naive] [--symmetry off|on]
 //! superko separate        --board MxN --suicide forbid|remove-own [--budget N]
-//!                         [--min-stones K] [--threads N] [--symmetry on|off]
+//!                         [--min-stones K] [--threads N]
+//!                         [--symmetry off|roots|moves|on]
 //! superko bench           [--threads N] [--symmetry off|roots|moves|on]
 //! ```
 //!
@@ -38,30 +39,40 @@
 //! promoted result that was produced on more than one thread says so in a
 //! `# produced-with:` header line (`results/README.md`).
 //!
-//! `--symmetry on` does change a `separate` body, and says so in it. It turns
-//! on both halves of the symmetry feature: canonical roots (one root of each
-//! orbit searched, the rest transported) and mirrored moves (a play skipped at
-//! a state a board symmetry fixes when the symmetry maps an earlier play onto
-//! it, in every search, the witness verdicts included). The `divergences=`
-//! line gains `board-symmetry` and `color-swap`, four lines `symmetry=on`,
-//! `symmetry-searched=`, `symmetry-transported=` and
-//! `symmetry-mirrored-moves=on` follow `skipped=`, and each witness block gains
-//! a `-transported=` line. With `--symmetry off`, the default, the body is the
-//! one every earlier results file records.
+//! `--symmetry` does change a `separate` body when it is not `off`, and says so
+//! in it. It takes the four values of
+//! [`SymmetryMode`](superko_solve::separate::SymmetryMode), which `bench` takes
+//! too, through the same parser: `roots` turns on canonical roots (one root of
+//! each orbit searched, the rest transported), `moves` turns on mirrored moves
+//! (a play skipped at a state a board symmetry fixes when the symmetry maps an
+//! earlier play onto it, in every search, the witness verdicts included), and
+//! `on` turns on both. The `divergences=` line gains `board-symmetry` under
+//! each of the three and `color-swap` under `roots` and `on`. After
+//! `skipped=` come `symmetry=` naming the value, then `symmetry-searched=` and
+//! `symmetry-transported=` when canonical roots are on, then
+//! `symmetry-mirrored-moves=on` when mirrored moves are; each witness block
+//! gains a `-transported=` line when canonical roots are on. With `--symmetry
+//! off`, the default, the body is the one every earlier results file records,
+//! and with `--symmetry on` it is the body `superko separate --symmetry on`
+//! printed before `roots` and `moves` were values of `separate` (commit
+//! `bfeb530`).
 //!
 //! `--symmetry on` changes a `solve` body too: it turns on mirrored moves only,
 //! in the value search and in the verdict searches of `--komi-floor`, so the
 //! `divergences=` line gains `board-symmetry` and not `color-swap`, and two
 //! lines `symmetry-mirrored-moves=on` and `symmetry-mirrored-skips=`, the
-//! value search's skipped plays, follow `max-depth=`. The naive engine skips
-//! nothing, so `--naive` refuses `--symmetry on`. With `--symmetry off`, the
-//! default, the body is unchanged.
+//! value search's skipped plays, follow `max-depth=`. A single root has no
+//! orbit to transport along, so mirrored moves are the only half `solve` has:
+//! it refuses `roots` and `moves`, and `on` is its only symmetric mode. The
+//! naive engine skips nothing, so `--naive` refuses `--symmetry on`. With
+//! `--symmetry off`, the default, the body is unchanged.
 //!
 //! `superko bench` is the exception: it prints a **measurement**, not a body.
 //! Its lines carry wall times on purpose, it takes no flags but `--threads`
-//! and `--symmetry`, whose `roots` and `moves` values turn on one half of the
-//! symmetry feature at a time, and its output goes under `data/bench/`, never to
-//! `results/`. The [`bench`] module describes the suite and the line format.
+//! and `--symmetry`, whose four values mean what they mean for `separate`
+//! (canonical roots reaching its sweep case only), and its output goes under
+//! `data/bench/`, never to `results/`. The [`bench`] module describes the
+//! suite and the line format.
 //!
 //! # Status
 //!
@@ -93,6 +104,7 @@ use superko_rules::divergence::Divergence;
 use superko_rules::reference::{Color, Position};
 use superko_rules::symmetry::Symmetries;
 use superko_rules::table::RuleTable;
+use superko_solve::separate::SymmetryMode;
 use superko_solve::{naive, search, separate as sep};
 
 const USAGE: &str = "\
@@ -105,9 +117,10 @@ usage: superko <command> [options]
   scc-census      --board MxN --suicide forbid|remove-own
   solve           --board MxN --rule psk|ssk --suicide forbid|remove-own
                   --root POS [--to-move black|white] [--komi-floor K]
-                  [--budget N] [--naive] [--symmetry on|off]
+                  [--budget N] [--naive] [--symmetry off|on]
   separate        --board MxN --suicide forbid|remove-own [--budget N]
-                  [--min-stones K] [--threads N] [--symmetry on|off]
+                  [--min-stones K] [--threads N]
+                  [--symmetry off|roots|moves|on]
   bench           [--threads N] [--symmetry off|roots|moves|on]
 
 Standard output is a results body of key=value lines. Timing goes to standard
@@ -117,24 +130,26 @@ error. The witness header of a promoted result is written by hand.
 N threads. The body is the same at every thread count; separate's witness
 verdict searches run on one thread.
 
---symmetry on (default off) makes separate search one root of each orbit under
-the board's symmetries and the color exchange and transport the values to the
-rest, and makes every search skip a play at a state a board symmetry fixes
-when the symmetry maps an earlier play onto it (mirrored moves). The body then
-names the board-symmetry and color-swap divergences, adds symmetry=on,
-symmetry-searched=, symmetry-transported= and symmetry-mirrored-moves=on lines,
-and marks each witness root -transported=true or false. For solve it turns on
-mirrored moves only: the body names board-symmetry and adds
-symmetry-mirrored-moves=on and symmetry-mirrored-skips= lines; --naive refuses
-it. Off, a body is unchanged.
+--symmetry (default off) takes off, roots, moves or on for separate and bench.
+roots makes a sweep search one root of each orbit under the board's symmetries
+and the color exchange and transport the values to the rest (canonical roots);
+moves makes every search skip a play at a state a board symmetry fixes when the
+symmetry maps an earlier play onto it (mirrored moves); on does both. A
+separate body then names the board-symmetry divergence, and color-swap with
+roots or on, and adds a symmetry= line naming the value; with roots or on,
+symmetry-searched= and symmetry-transported= lines and a -transported=true or
+false line in each witness block; with moves or on, a
+symmetry-mirrored-moves=on line. solve has only mirrored moves and takes off
+or on: on names board-symmetry and adds symmetry-mirrored-moves=on and
+symmetry-mirrored-skips= lines; --naive refuses it. Off, a body is unchanged.
 
 bench is the exception: it runs a fixed suite under Suicide::Forbid, each case
 with its own node budget (the empty 1x5, 1x6, 1x7 and 2x3 boards under psk and
 ssk at 10^8 nodes, and a 2x3 separation sweep at 10^6 nodes per search, on
 --threads threads), and prints a flags line then one line per case of key=value
-fields, wall seconds included. Its --symmetry takes roots (canonical roots in
-the sweep), moves (mirrored moves in every search), on (both) or off. It is a
-measurement for data/bench/, not a results body.";
+fields, wall seconds included. Its --symmetry values mean what they mean for
+separate, canonical roots reaching the sweep case only. It is a measurement for
+data/bench/, not a results body.";
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -332,25 +347,17 @@ impl Flags {
             .map_err(|_| format!("--min-stones takes a non-negative integer, not {text:?}"))
     }
 
-    /// Whether `separate` and `solve` use the board's symmetries. Off by
-    /// default.
-    fn symmetry(&self) -> Result<bool, String> {
-        match self.symmetry.as_deref() {
-            None | Some("off") => Ok(false),
-            Some("on") => Ok(true),
-            Some(other) => Err(format!("--symmetry is on or off, not {other:?}")),
-        }
-    }
-
-    /// Which halves of the symmetry feature a bench run has on. Off by
-    /// default.
-    fn bench_symmetry(&self) -> Result<bench::Symmetry, String> {
+    /// Which halves of the symmetry feature a command has on: `off`, `roots`,
+    /// `moves` or `on`, and off by default. The one parser `separate`, `bench`
+    /// and `solve` read the flag through; `solve`, which has only mirrored
+    /// moves, refuses `roots` and `moves` itself.
+    fn symmetry(&self) -> Result<SymmetryMode, String> {
         let Some(text) = self.symmetry.as_deref() else {
-            return Ok(bench::Symmetry::Off);
+            return Ok(SymmetryMode::Off);
         };
-        bench::Symmetry::ALL
+        SymmetryMode::ALL
             .into_iter()
-            .find(|s| s.name() == text)
+            .find(|mode| mode.name() == text)
             .ok_or_else(|| format!("--symmetry is off, roots, moves or on, not {text:?}"))
     }
 
@@ -584,14 +591,15 @@ fn graph_census(flags: &Flags) -> Result<String, String> {
 /// `Superko.winnerZ_eq_winner` licenses. The naive engine runs the
 /// transliteration itself and reads neither the table nor the projection.
 ///
-/// A search with mirrored moves relies on the rules commuting with the board's
-/// symmetries, and is under `board-symmetry` for it.
+/// A run that uses the board's symmetries — skipping mirrored moves, or
+/// transporting a root's values to its images — relies on the rules commuting
+/// with them, and is under `board-symmetry` for it.
 fn solver_divergences(
     naive: bool,
     rep: Repetition,
     suicide: Suicide,
     komi: bool,
-    mirrored: bool,
+    board_symmetry: bool,
 ) -> Vec<Divergence> {
     let mut under = vec![Divergence::DimsAreRuntime];
     if matches!(suicide, Suicide::RemoveOwn) {
@@ -606,7 +614,7 @@ fn solver_divergences(
     if komi {
         under.push(Divergence::WinnerViaFloorKomi);
     }
-    if mirrored {
+    if board_symmetry {
         under.push(Divergence::BoardSymmetry);
     }
     under
@@ -621,7 +629,8 @@ fn solver_divergences(
 /// `superko_solve` crate docs for why the distinction is kept.
 ///
 /// `--symmetry on` turns on mirrored moves in every search this runs, and
-/// only them: a single root has no orbit to transport along.
+/// only them: a single root has no orbit to transport along, so `roots` and
+/// `moves` are refused rather than read as `off` and `on`.
 fn solve(flags: &Flags) -> Result<String, String> {
     flags.reject(&["--threads", "--depth-cap", "--min-stones"])?;
     let dims = flags.board()?;
@@ -636,7 +645,17 @@ fn solve(flags: &Flags) -> Result<String, String> {
         // cap that was not in force.
         return Err("--budget applies to the fast engine; drop it with --naive".to_string());
     }
-    let mirrored = flags.symmetry()?;
+    let mirrored = match flags.symmetry()? {
+        SymmetryMode::Off => false,
+        SymmetryMode::On => true,
+        half @ (SymmetryMode::Roots | SymmetryMode::Moves) => {
+            return Err(format!(
+                "solve has only mirrored moves, so --symmetry on is its only symmetric mode, \
+                 not {:?}",
+                half.name()
+            ));
+        }
+    };
     if flags.naive && mirrored {
         // The naive engine skips nothing, and a body naming the divergence
         // would claim a shortcut that was not taken.
@@ -742,11 +761,13 @@ fn solve(flags: &Flags) -> Result<String, String> {
 /// nothing in the body; the witness verdict searches for the minimal roots run
 /// on this thread afterwards.
 ///
-/// `--symmetry on` searches orbit representatives only and transports the
-/// values to the other roots, and has every search, the witness verdicts
-/// included, skip mirrored plays. That puts the run under the `board-symmetry`
-/// and `color-swap` divergences on every board, 1×1's trivial group included,
-/// and adds the lines the module docs list. Off, the body is unchanged.
+/// `--symmetry roots` searches orbit representatives only and transports the
+/// values to the other roots; `--symmetry moves` has every search, the witness
+/// verdicts included, skip mirrored plays; `--symmetry on` does both. Either
+/// half puts the run under the `board-symmetry` divergence, and canonical
+/// roots under `color-swap` as well, on every board, 1×1's trivial group
+/// included, and adds the lines the module docs list. Off, the body is
+/// unchanged.
 fn separate(flags: &Flags) -> Result<String, String> {
     flags.reject(&[
         "--rule",
@@ -761,11 +782,18 @@ fn separate(flags: &Flags) -> Result<String, String> {
     let budget = flags.budget()?;
     let min_stones = flags.min_stones()?;
     let threads = flags.threads()?;
-    let symmetry = flags.symmetry()?;
+    let mode = flags.symmetry()?;
     // Both rules are swept, so both rules' divergences are in force, and the
-    // witness verdicts are decided at a komi floor.
-    let mut under = solver_divergences(false, Repetition::Psk, suicide, true, symmetry);
-    if symmetry {
+    // witness verdicts are decided at a komi floor. Either half of symmetry
+    // uses the board's symmetries; only canonical roots use the color swap.
+    let mut under = solver_divergences(
+        false,
+        Repetition::Psk,
+        suicide,
+        true,
+        mode != SymmetryMode::Off,
+    );
+    if mode.roots() {
         under.push(Divergence::ColorSwap);
     }
 
@@ -775,8 +803,8 @@ fn separate(flags: &Flags) -> Result<String, String> {
         budget,
         min_stones,
         threads,
-        symmetry,
-        mirrored_moves: symmetry,
+        symmetry: mode.roots(),
+        mirrored_moves: mode.moves(),
     };
     let report = sep::sweep_with(&table, opts);
     let elapsed = started.elapsed();
@@ -795,7 +823,7 @@ fn separate(flags: &Flags) -> Result<String, String> {
     eprintln!("# threads={threads}");
     eprintln!("# elapsed={:.3}s", elapsed.as_secs_f64());
     eprintln!("# nodes={}", report.nodes);
-    if symmetry {
+    if mode.moves() {
         eprintln!("# mirrored-skips={}", report.mirrored_skips);
     }
     Ok(body)
@@ -819,9 +847,8 @@ const ALL_OPTIONS: [&str; 12] = [
 
 /// The settings a bench run is under, read from its command line.
 ///
-/// `--threads` and `--symmetry` are read, the second with the bench's own
-/// `roots` and `moves` values as well as `on` and `off`; every other flag is
-/// refused,
+/// `--threads` and `--symmetry` are read, the second through the parser
+/// `separate` reads it through; every other flag is refused,
 /// `--budget` included: each case carries its own budget, and a bench whose
 /// budgets moved with the command line would not be comparable with the
 /// baseline. A feature that gives the bench a flag takes it out of the refusal
@@ -835,7 +862,7 @@ fn bench_settings(flags: &Flags) -> Result<bench::Settings, String> {
     flags.reject(&refused)?;
     Ok(bench::Settings {
         threads: flags.threads()?,
-        symmetry: flags.bench_symmetry()?,
+        symmetry: flags.symmetry()?,
     })
 }
 
@@ -931,7 +958,7 @@ mod tests {
             bench_settings(&none).unwrap().header(),
             "flags order=heuristic threads=1 symmetry=off"
         );
-        for symmetry in bench::Symmetry::ALL {
+        for symmetry in SymmetryMode::ALL {
             let three = Flags::parse(&args(&format!(
                 "--threads 3 --symmetry {}",
                 symmetry.name()
@@ -980,80 +1007,318 @@ mod tests {
         assert!(run(&args("bench --symmetry on --budget 5")).is_err());
     }
 
-    /// With `--symmetry off`, spelled out or left to the default, a `separate`
-    /// body is byte for byte the body without the flag at every thread count.
-    /// With it on, the body names the two divergences, adds the symmetry lines
-    /// and marks the witness, and every other line of this board — all of
-    /// whose roots resolve — is the same.
+    /// `Flags::symmetry` is the one parser of `--symmetry`: absent is `off`,
+    /// each of the four spellings is its own value, and anything else is
+    /// refused with the four named, by `separate` and `bench` alike.
     #[test]
-    fn symmetry_changes_a_separate_body_only_when_on() {
-        // The bench's half-way values are the bench's own.
-        for half in ["roots", "moves"] {
-            assert!(
-                run(&args(&format!(
-                    "separate --board 1x3 --suicide forbid --symmetry {half}"
-                )))
-                .is_err(),
-                "separate took --symmetry {half}"
-            );
+    fn the_symmetry_flag_takes_four_values() {
+        assert_eq!(Flags::parse(&[]).unwrap().symmetry(), Ok(SymmetryMode::Off));
+        for mode in SymmetryMode::ALL {
+            let flags = Flags::parse(&args(&format!("--symmetry {}", mode.name()))).unwrap();
+            assert_eq!(flags.symmetry(), Ok(mode));
         }
-        for board in ["1x3 --suicide forbid", "1x2 --suicide remove-own"] {
-            let plain = run(&args(&format!("separate --board {board}"))).unwrap();
-            for threads in [1, 14] {
-                let off = run(&args(&format!(
-                    "separate --board {board} --symmetry off --threads {threads}"
-                )))
-                .unwrap();
-                assert_eq!(off, plain, "{board} at {threads} threads");
-            }
-            assert!(!plain.contains("symmetry"), "{board}");
-            // The witness line symmetry adds is named for transport, not
-            // symmetry; the 1x2 body has a witness block to carry it.
-            assert!(!plain.contains("transported"), "{board}");
-            let on = run(&args(&format!("separate --board {board} --symmetry on"))).unwrap();
-            let spread = run(&args(&format!(
-                "separate --board {board} --symmetry on --threads 14"
-            )))
-            .unwrap();
-            assert_eq!(
-                spread, on,
-                "{board}: a symmetric body moved with the threads"
-            );
-            assert!(on.contains("symmetry=on\n"));
-            assert!(on.contains("symmetry-transported="));
-            assert!(on.contains("\nsymmetry-mirrored-moves=on\n"));
-            let divergences = on.lines().find(|l| l.starts_with("divergences=")).unwrap();
-            assert!(divergences.ends_with(",board-symmetry:unlicensed,color-swap:unlicensed"));
-            // Every line but the divergences, the ssk-only counts (a property
-            // of the representative's search) and the lines symmetry adds.
-            let kept = |body: &str| -> Vec<String> {
-                body.lines()
-                    .filter(|l| {
-                        !l.starts_with("divergences=")
-                            && !l.starts_with("symmetry")
-                            && !l.contains("-transported=")
-                            && !l.starts_with("ssk-only-plays=")
-                            && !l.starts_with("roots-with-ssk-only=")
-                            && !l.starts_with("resolved-with-ssk-only=")
-                    })
-                    .map(str::to_string)
-                    .collect()
-            };
-            assert_eq!(kept(&on), kept(&plain), "{board}");
+        for bad in ["yes", "ON", "both", ""] {
+            let flags = Flags::parse(&[format!("--symmetry={bad}")]).unwrap();
+            let refused = flags.symmetry().unwrap_err();
+            assert!(refused.contains("off, roots, moves or on"), "{refused}");
         }
-        let separating = run(&args(
-            "separate --board 1x2 --suicide remove-own --symmetry on",
-        ))
-        .unwrap();
-        // The minimal separating root is the least root of its orbit, so it is
-        // always a representative and never transported.
-        assert!(separating.contains("minimal-transported=false\n"));
         assert!(
             run(&args(
                 "separate --board 1x3 --suicide forbid --symmetry yes"
             ))
             .is_err()
         );
+        assert!(run(&args("bench --symmetry yes")).is_err());
+    }
+
+    /// The lines of a `separate` body outside those a symmetry value may
+    /// change: all but `divergences=`, the `symmetry` lines, the witness
+    /// blocks' `-transported=` lines, and, with either half on, the three
+    /// ssk-only counts. Canonical roots copy them from the representative's
+    /// search, and mirrored moves change which plays a search makes; both are
+    /// in `superko_solve::separate`'s module docs, and on 1×2 with suicide
+    /// removing its own stones it is mirrored moves that change them.
+    fn outside_symmetry_lines(body: &str, mode: SymmetryMode) -> Vec<String> {
+        body.lines()
+            .filter(|l| {
+                !l.starts_with("divergences=")
+                    && !l.starts_with("symmetry")
+                    && !l.contains("-transported=")
+                    && !(mode != SymmetryMode::Off
+                        && (l.starts_with("ssk-only-plays=")
+                            || l.starts_with("roots-with-ssk-only=")
+                            || l.starts_with("resolved-with-ssk-only=")))
+            })
+            .map(str::to_string)
+            .collect()
+    }
+
+    /// With `--symmetry off`, spelled out or left to the default, a `separate`
+    /// body is byte for byte the body without the flag at one and fourteen
+    /// threads. With each of `roots`, `moves` and `on`, the body is the same at
+    /// both thread counts and differs from the `off` body only in the lines
+    /// [`outside_symmetry_lines`] sets aside: every other line of these boards,
+    /// all of whose roots resolve, is the `off` body's, in its order, the
+    /// witness verdicts of the 1×2 body included.
+    #[test]
+    fn each_symmetry_value_changes_a_separate_body_only_in_its_lines() {
+        for board in ["1x3 --suicide forbid", "1x2 --suicide remove-own"] {
+            let plain = run(&args(&format!("separate --board {board}"))).unwrap();
+            assert!(!plain.contains("symmetry"), "{board}");
+            // The witness line canonical roots add is named for transport, not
+            // symmetry; the 1x2 body has a witness block to carry it.
+            assert!(!plain.contains("transported"), "{board}");
+            assert!(plain.contains("resolved=18\n") || plain.contains("resolved=54\n"));
+            assert!(plain.contains("unresolved=0\n"), "{board}");
+            for mode in SymmetryMode::ALL {
+                let at = |threads: usize| {
+                    run(&args(&format!(
+                        "separate --board {board} --symmetry {} --threads {threads}",
+                        mode.name()
+                    )))
+                    .unwrap()
+                };
+                let one = at(1);
+                assert_eq!(at(14), one, "{board} {mode:?}: moved with the threads");
+                if mode == SymmetryMode::Off {
+                    assert_eq!(one, plain, "{board}");
+                    continue;
+                }
+                assert_ne!(one, plain, "{board} {mode:?}");
+                assert_eq!(
+                    outside_symmetry_lines(&one, mode),
+                    outside_symmetry_lines(&plain, mode),
+                    "{board} {mode:?}"
+                );
+            }
+        }
+    }
+
+    /// Exactly the symmetry lines and divergences each value names, on the
+    /// 1×2 board with suicide removing its own stones, whose body has both
+    /// witness blocks. The expected body is the `off` body with its
+    /// `divergences=` line extended, the symmetry lines inserted after
+    /// `skipped=`, and a `-transported=` line inserted after each witness
+    /// block's `-ssk=`; it is compared line for line except the three
+    /// ssk-only counts, which are pinned separately for each value.
+    #[test]
+    fn each_symmetry_value_names_exactly_its_lines_and_divergences() {
+        let board = "separate --board 1x2 --suicide remove-own";
+        let plain = run(&args(board)).unwrap();
+        let base = plain
+            .lines()
+            .find_map(|l| l.strip_prefix("divergences="))
+            .unwrap()
+            .to_string();
+        assert_eq!(
+            base,
+            "dims-are-runtime:unlicensed,suicide-remove-own:unlicensed,\
+             psk-archive-projection:unlicensed,rule-table-memo:unlicensed,\
+             winner-via-floor-komi:Superko.winnerZ_eq_winner"
+        );
+        let expected = |symmetry: &[&str], extra: &str, transported: bool| -> Vec<String> {
+            let mut out = Vec::new();
+            for line in plain.lines() {
+                if line.starts_with("divergences=") {
+                    out.push(format!("divergences={base}{extra}"));
+                    continue;
+                }
+                out.push(line.to_string());
+                if line.starts_with("skipped=") {
+                    out.extend(symmetry.iter().map(|s| (*s).to_string()));
+                }
+                for prefix in ["minimal", "minimal-liberties"] {
+                    if transported && line.starts_with(&format!("{prefix}-ssk=")) {
+                        out.push(format!("{prefix}-transported=false"));
+                    }
+                }
+            }
+            out
+        };
+        let both = ",board-symmetry:unlicensed,color-swap:unlicensed";
+        let board_only = ",board-symmetry:unlicensed";
+        let cases: [(SymmetryMode, Vec<String>, &str); 3] = [
+            (
+                SymmetryMode::Roots,
+                expected(
+                    &[
+                        "symmetry=roots",
+                        "symmetry-searched=6",
+                        "symmetry-transported=12",
+                    ],
+                    both,
+                    true,
+                ),
+                "ssk-only-plays=12 roots-with-ssk-only=6 resolved-with-ssk-only=6",
+            ),
+            (
+                SymmetryMode::Moves,
+                expected(
+                    &["symmetry=moves", "symmetry-mirrored-moves=on"],
+                    board_only,
+                    false,
+                ),
+                "ssk-only-plays=10 roots-with-ssk-only=6 resolved-with-ssk-only=6",
+            ),
+            (
+                SymmetryMode::On,
+                expected(
+                    &[
+                        "symmetry=on",
+                        "symmetry-searched=6",
+                        "symmetry-transported=12",
+                        "symmetry-mirrored-moves=on",
+                    ],
+                    both,
+                    true,
+                ),
+                "ssk-only-plays=10 roots-with-ssk-only=6 resolved-with-ssk-only=6",
+            ),
+        ];
+        let ssk_only = |body: &[String]| -> String {
+            body.iter()
+                .filter(|l| {
+                    l.starts_with("ssk-only-plays=")
+                        || l.starts_with("roots-with-ssk-only=")
+                        || l.starts_with("resolved-with-ssk-only=")
+                })
+                .cloned()
+                .collect::<Vec<_>>()
+                .join(" ")
+        };
+        let plain_lines: Vec<String> = plain.lines().map(str::to_string).collect();
+        assert_eq!(
+            ssk_only(&plain_lines),
+            "ssk-only-plays=12 roots-with-ssk-only=6 resolved-with-ssk-only=6"
+        );
+        for (mode, want, counts) in cases {
+            let body = run(&args(&format!("{board} --symmetry {}", mode.name()))).unwrap();
+            let got: Vec<String> = body.lines().map(str::to_string).collect();
+            assert_eq!(ssk_only(&got), counts, "{mode:?}");
+            let without_counts = |lines: &[String]| -> Vec<String> {
+                lines
+                    .iter()
+                    .filter(|l| {
+                        !(l.starts_with("ssk-only-plays=")
+                            || l.starts_with("roots-with-ssk-only=")
+                            || l.starts_with("resolved-with-ssk-only="))
+                    })
+                    .cloned()
+                    .collect()
+            };
+            assert_eq!(without_counts(&got), without_counts(&want), "{mode:?}");
+        }
+    }
+
+    /// `separate --symmetry on` at commit `bfeb530`, recorded from the release
+    /// binary built there with `superko separate --board 1x3 --suicide forbid
+    /// --threads 14 --symmetry on --budget 1000000`.
+    const BFEB530_SEPARATE_1X3_FORBID_ON: &str = "\
+board=1x3
+suicide=forbid
+divergences=dims-are-runtime:unlicensed,psk-archive-projection:unlicensed,rule-table-memo:unlicensed,winner-via-floor-komi:Superko.winnerZ_eq_winner,board-symmetry:unlicensed,color-swap:unlicensed
+roots=54
+resolved=54
+unresolved=0
+unresolved-least=none
+minimum-unconditional=true
+minimum-liberties-unconditional=true
+empty-psk=3
+empty-ssk=3
+separating=0
+separating-liberties=0
+ssk-only-plays=0
+roots-with-ssk-only=0
+resolved-with-ssk-only=0
+min-stones=0
+skipped=0
+symmetry=on
+symmetry-searched=18
+symmetry-transported=36
+symmetry-mirrored-moves=on
+budget=1000000
+";
+
+    /// As above, for `superko separate --board 1x2 --suicide remove-own
+    /// --threads 14 --symmetry on --budget 1000000`.
+    const BFEB530_SEPARATE_1X2_REMOVE_OWN_ON: &str = "\
+board=1x2
+suicide=remove-own
+divergences=dims-are-runtime:unlicensed,suicide-remove-own:unlicensed,psk-archive-projection:unlicensed,rule-table-memo:unlicensed,winner-via-floor-komi:Superko.winnerZ_eq_winner,board-symmetry:unlicensed,color-swap:unlicensed
+roots=18
+resolved=18
+unresolved=0
+unresolved-least=none
+minimum-unconditional=true
+minimum-liberties-unconditional=true
+empty-psk=0
+empty-ssk=0
+separating=4
+separating-liberties=4
+ssk-only-plays=10
+roots-with-ssk-only=6
+resolved-with-ssk-only=6
+min-stones=0
+skipped=0
+symmetry=on
+symmetry-searched=6
+symmetry-transported=12
+symmetry-mirrored-moves=on
+minimal-root=X.
+minimal-to-move=black
+minimal-stones=1
+minimal-liberties=true
+minimal-psk=-2
+minimal-ssk=0
+minimal-transported=false
+minimal-komi-floors=-2,-1
+minimal-witness-komi-floor=-2
+minimal-witness-psk-black-wins=false
+minimal-witness-psk-white-wins=true
+minimal-witness-ssk-black-wins=true
+minimal-witness-ssk-white-wins=false
+minimal-witness-separates=true
+minimal-witness-determined=true
+minimal-liberties-root=X.
+minimal-liberties-to-move=black
+minimal-liberties-stones=1
+minimal-liberties-liberties=true
+minimal-liberties-psk=-2
+minimal-liberties-ssk=0
+minimal-liberties-transported=false
+minimal-liberties-komi-floors=-2,-1
+minimal-liberties-witness-komi-floor=-2
+minimal-liberties-witness-psk-black-wins=false
+minimal-liberties-witness-psk-white-wins=true
+minimal-liberties-witness-ssk-black-wins=true
+minimal-liberties-witness-ssk-white-wins=false
+minimal-liberties-witness-separates=true
+minimal-liberties-witness-determined=true
+budget=1000000
+";
+
+    /// `separate --symmetry on` prints, byte for byte, the body the build at
+    /// `bfeb530` printed, before `roots` and `moves` were values of
+    /// `separate`, at one and fourteen threads. The minimal separating root is
+    /// the least root of its orbit, so it is a representative and never
+    /// transported.
+    #[test]
+    fn separate_symmetry_on_prints_the_body_bfeb530_printed() {
+        for (board, recorded) in [
+            ("1x3 --suicide forbid", BFEB530_SEPARATE_1X3_FORBID_ON),
+            (
+                "1x2 --suicide remove-own",
+                BFEB530_SEPARATE_1X2_REMOVE_OWN_ON,
+            ),
+        ] {
+            for threads in [1, 14] {
+                let body = run(&args(&format!(
+                    "separate --board {board} --threads {threads} --symmetry on --budget 1000000"
+                )))
+                .unwrap();
+                assert_eq!(body, recorded, "{board} at {threads} threads");
+            }
+        }
     }
 
     /// With `--symmetry off`, spelled out or left to the default, a `solve`
@@ -1110,7 +1375,38 @@ mod tests {
             run(&args(naive))
         );
         assert!(run(&args(&format!("{naive} --symmetry on"))).is_err());
-        assert!(run(&args(&format!("{solve} --symmetry roots"))).is_err());
+        // The body `bfeb530` printed for the same command line, recorded from
+        // its release binary.
+        assert_eq!(
+            on,
+            "board=1x4\nrule=psk\nsuicide=forbid\n\
+             divergences=dims-are-runtime:unlicensed,psk-archive-projection:unlicensed,\
+             rule-table-memo:unlicensed,winner-via-floor-komi:Superko.winnerZ_eq_winner,\
+             board-symmetry:unlicensed\n\
+             root=....\nto-move=black\nvalue=4\nnodes=183\nmax-depth=8\n\
+             symmetry-mirrored-moves=on\nsymmetry-mirrored-skips=4\n\
+             komi-floor=1\nblack-wins=true\nwhite-wins=false\nbudget=1000000\n"
+        );
+    }
+
+    /// `solve` has only mirrored moves, so it refuses the two half-way values
+    /// of `--symmetry` with a message saying `on` is its only symmetric mode,
+    /// on either engine.
+    #[test]
+    fn solve_refuses_roots_and_moves() {
+        let solve = "solve --board 1x2 --rule psk --suicide forbid --root .. --budget 1000";
+        let naive = "solve --board 1x2 --rule psk --suicide forbid --root .. --naive";
+        for half in ["roots", "moves"] {
+            for command in [solve, naive] {
+                let refused = run(&args(&format!("{command} --symmetry {half}"))).unwrap_err();
+                assert!(
+                    refused.contains("solve has only mirrored moves")
+                        && refused.contains("--symmetry on is its only symmetric mode"),
+                    "{command} --symmetry {half}: {refused}"
+                );
+            }
+        }
+        assert!(run(&args(&format!("{solve} --symmetry on"))).is_ok());
     }
 
     /// `--threads` reaches `separate` and changes nothing in its body, the

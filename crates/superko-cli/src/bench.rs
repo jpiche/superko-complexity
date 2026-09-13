@@ -55,8 +55,10 @@
 //! board symmetry fixes when the symmetry maps an earlier play onto it
 //! (`superko_solve::search`'s module docs). They move `nodes`, `seconds`,
 //! `max-depth` and the ssk-only counts, and under a budget whether a search
-//! resolves; `mirrored-skips` counts the plays skipped. `superko separate
-//! --symmetry on` turns both halves on, as `on` does here.
+//! resolves; `mirrored-skips` counts the plays skipped. `superko separate`
+//! takes the same four values, parsed by the same function, and gives them the
+//! same meaning; `superko solve` takes `off` and `on`, which turns on mirrored
+//! moves, its only half.
 //!
 //! `superko bench` built before mirrored moves existed printed `symmetry=on`
 //! for what this build calls `roots`: a `flags` line is read against the build
@@ -110,55 +112,13 @@ use superko_rules::reference::Color;
 use superko_rules::symmetry::Symmetries;
 use superko_rules::table::RuleTable;
 use superko_solve::search::{MoveOrder, Solver};
-use superko_solve::separate as sep;
+use superko_solve::separate::{self as sep, SymmetryMode};
 
 /// The largest budget a single search in the suite may carry.
 pub const SOLVE_BUDGET_CAP: u64 = 100_000_000;
 
 /// The largest budget a search of a sweep in the suite may carry.
 pub const SWEEP_BUDGET_CAP: u64 = 1_000_000;
-
-/// Which halves of the symmetry feature a bench run has on (the module docs).
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub enum Symmetry {
-    /// Neither half.
-    #[default]
-    Off,
-    /// Canonical roots in the sweep case only.
-    Roots,
-    /// Mirrored moves in every search only.
-    Moves,
-    /// Both halves, as `superko separate --symmetry on`.
-    On,
-}
-
-impl Symmetry {
-    /// Every value, in the order the usage text names them.
-    pub const ALL: [Self; 4] = [Self::Off, Self::Roots, Self::Moves, Self::On];
-
-    /// The spelling `--symmetry` takes and the `flags` line prints.
-    #[must_use]
-    pub const fn name(self) -> &'static str {
-        match self {
-            Self::Off => "off",
-            Self::Roots => "roots",
-            Self::Moves => "moves",
-            Self::On => "on",
-        }
-    }
-
-    /// Whether the sweep case searches orbit representatives only.
-    #[must_use]
-    pub const fn roots(self) -> bool {
-        matches!(self, Self::Roots | Self::On)
-    }
-
-    /// Whether every search skips mirrored plays.
-    #[must_use]
-    pub const fn moves(self) -> bool {
-        matches!(self, Self::Moves | Self::On)
-    }
-}
 
 /// The settings a bench run is under.
 ///
@@ -171,7 +131,7 @@ pub struct Settings {
     /// `empty-` cases are one search each and ignore it.
     pub threads: usize,
     /// Which halves of the symmetry feature are on.
-    pub symmetry: Symmetry,
+    pub symmetry: SymmetryMode,
 }
 
 impl Default for Settings {
@@ -179,7 +139,7 @@ impl Default for Settings {
     fn default() -> Self {
         Self {
             threads: 1,
-            symmetry: Symmetry::Off,
+            symmetry: SymmetryMode::Off,
         }
     }
 }
@@ -414,7 +374,7 @@ mod tests {
             Settings::default().header(),
             "flags order=heuristic threads=1 symmetry=off"
         );
-        for symmetry in Symmetry::ALL {
+        for symmetry in SymmetryMode::ALL {
             assert_eq!(
                 Settings {
                     threads: 14,
@@ -427,7 +387,7 @@ mod tests {
                 )
             );
         }
-        let halves: Vec<(bool, bool)> = Symmetry::ALL
+        let halves: Vec<(bool, bool)> = SymmetryMode::ALL
             .iter()
             .map(|s| (s.roots(), s.moves()))
             .collect();
@@ -559,10 +519,10 @@ mod tests {
                 .unwrap(),
             )
         };
-        let plain = at(Symmetry::Off);
-        assert_eq!(at(Symmetry::Roots), plain);
-        let moves = at(Symmetry::Moves);
-        assert_eq!(at(Symmetry::On), moves);
+        let plain = at(SymmetryMode::Off);
+        assert_eq!(at(SymmetryMode::Roots), plain);
+        let moves = at(SymmetryMode::Moves);
+        assert_eq!(at(SymmetryMode::On), moves);
         let field = |line: &[(&'static str, String)], key: &str| {
             line.iter()
                 .find(|(k, _)| *k == key)
@@ -628,7 +588,7 @@ mod tests {
                 &case,
                 &Settings {
                     threads,
-                    symmetry: Symmetry::Off,
+                    symmetry: SymmetryMode::Off,
                 },
             )
             .unwrap();
@@ -666,12 +626,12 @@ mod tests {
     /// thread count still moves nothing but `seconds`.
     #[test]
     fn a_sweep_case_under_symmetry_reports_the_symmetric_sweep() {
-        for symmetry in [Symmetry::Roots, Symmetry::Moves, Symmetry::On] {
+        for symmetry in [SymmetryMode::Roots, SymmetryMode::Moves, SymmetryMode::On] {
             a_sweep_case_reports_the_sweep_under(symmetry);
         }
     }
 
-    fn a_sweep_case_reports_the_sweep_under(symmetry: Symmetry) {
+    fn a_sweep_case_reports_the_sweep_under(symmetry: SymmetryMode) {
         let dims = Dims::new(2, 2);
         let budget = 50;
         let case = Case::Sweep { dims, budget };

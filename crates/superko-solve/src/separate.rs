@@ -391,6 +391,13 @@ impl Sweep {
     /// absent when none was, and likewise `witness-`: a body that printed
     /// placeholder values for a witness that does not exist would read as one
     /// that does.
+    ///
+    /// With either half of symmetry on, `symmetry=` follows `skipped=` and
+    /// names the [`SymmetryMode`]; then `symmetry-searched=` and
+    /// `symmetry-transported=` when canonical roots are on, and
+    /// `symmetry-mirrored-moves=on` when mirrored moves are. Each witness
+    /// block carries a `-transported=` line when canonical roots are on. With
+    /// neither half on, none of these lines appears.
     #[must_use]
     pub fn lines(&self, table: &RuleTable, budget: Option<u64>) -> Vec<String> {
         let mut out = vec![
@@ -421,8 +428,11 @@ impl Sweep {
         ];
         // Only a symmetric sweep prints these, so that a body without symmetry
         // is the body every earlier results file records.
+        let mode = SymmetryMode::from_halves(self.symmetry, self.mirrored_moves);
+        if mode != SymmetryMode::Off {
+            out.push(format!("symmetry={}", mode.name()));
+        }
         if self.symmetry {
-            out.push("symmetry=on".to_string());
             out.push(format!("symmetry-searched={}", self.searched));
             out.push(format!("symmetry-transported={}", self.transported));
         }
@@ -589,6 +599,63 @@ impl Default for Options {
             symmetry: false,
             mirrored_moves: false,
         }
+    }
+}
+
+/// Which halves of the symmetry feature are on, under the four names
+/// `superko separate --symmetry` and `superko bench --symmetry` take and a
+/// body's `symmetry=` line prints: `off`, `roots` ([`Options::symmetry`]),
+/// `moves` ([`Options::mirrored_moves`]) and `on` (both).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum SymmetryMode {
+    /// Neither half.
+    #[default]
+    Off,
+    /// Canonical roots only: one root of each orbit searched, the rest
+    /// transported.
+    Roots,
+    /// Mirrored moves only: every search skips mirrored plays.
+    Moves,
+    /// Both halves.
+    On,
+}
+
+impl SymmetryMode {
+    /// Every value, in the order a usage text names them.
+    pub const ALL: [Self; 4] = [Self::Off, Self::Roots, Self::Moves, Self::On];
+
+    /// The value with the two halves given.
+    #[must_use]
+    pub const fn from_halves(roots: bool, moves: bool) -> Self {
+        match (roots, moves) {
+            (false, false) => Self::Off,
+            (true, false) => Self::Roots,
+            (false, true) => Self::Moves,
+            (true, true) => Self::On,
+        }
+    }
+
+    /// The spelling a command line takes and a body or `flags` line prints.
+    #[must_use]
+    pub const fn name(self) -> &'static str {
+        match self {
+            Self::Off => "off",
+            Self::Roots => "roots",
+            Self::Moves => "moves",
+            Self::On => "on",
+        }
+    }
+
+    /// Whether a sweep searches orbit representatives only.
+    #[must_use]
+    pub const fn roots(self) -> bool {
+        matches!(self, Self::Roots | Self::On)
+    }
+
+    /// Whether every search skips mirrored plays.
+    #[must_use]
+    pub const fn moves(self) -> bool {
+        matches!(self, Self::Moves | Self::On)
     }
 }
 
@@ -1097,6 +1164,19 @@ impl fmt::Display for Separating {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Each mode is the one its two halves name, and its spelling is its own.
+    #[test]
+    fn a_symmetry_mode_is_its_two_halves() {
+        for mode in SymmetryMode::ALL {
+            assert_eq!(SymmetryMode::from_halves(mode.roots(), mode.moves()), mode);
+        }
+        let names: Vec<&str> = SymmetryMode::ALL.iter().map(|m| m.name()).collect();
+        assert_eq!(names, ["off", "roots", "moves", "on"]);
+        assert_eq!(SymmetryMode::default(), SymmetryMode::Off);
+        assert!(!SymmetryMode::Roots.moves() && SymmetryMode::Roots.roots());
+        assert!(SymmetryMode::Moves.moves() && !SymmetryMode::Moves.roots());
+    }
 
     /// Results come back in index order at every thread count, a surplus of
     /// threads over indices and no indices at all included, and each thread

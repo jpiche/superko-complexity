@@ -128,8 +128,9 @@ results body names the ones its run was under in its `divergences=` line:
 `rule-table-memo`, `winner-via-floor-komi` — the one a Lean theorem licenses,
 `Superko.winnerZ_eq_winner` — and `board-symmetry` and `color-swap`. The last
 two are not readings of a definition but properties of the rules that a
-search assumes to skip work, and a run is under them only when it asks
-(`--symmetry on`). That the transition table commutes with every board
+search assumes to skip work, and a run is under them only when it asks:
+`board-symmetry` under any `--symmetry` value but `off`, `color-swap` under
+`separate`'s `roots` and `on`. That the transition table commutes with every board
 symmetry and with the color exchange is `computed` on boards of at most six
 points and on 3×3 and 3×4. That the solver's values, and its verdicts at komi
 floors `-(m·n) - 1` to `m·n + 1`, are the same with mirrored moves as without

@@ -67,25 +67,34 @@ text, saying why the body does not depend on it, while `threads=N` is the form
 for `separate`, which no committed `separate` file carries yet. Both are header
 lines, outside the body `verify-results.sh` diffs.
 
-A `separate` body produced with `--symmetry on` is a different body, and says
-so. The sweep searches one root of each orbit under the board's symmetries and
-the exchange of the two colors, and gives every other root its representative's
-values — negated when the colors were exchanged — before adding the sweep up
-(`crates/superko-solve/src/separate.rs`). The body then carries
+A `separate` body produced with `--symmetry` other than `off` is a different
+body, and says so. The flag takes four values. `roots` turns on canonical
+roots: the sweep searches one root of each orbit under the board's symmetries
+and the exchange of the two colors, and gives every other root its
+representative's values — negated when the colors were exchanged — before
+adding the sweep up (`crates/superko-solve/src/separate.rs`). `moves` turns on
+mirrored moves: every search, the witness verdicts included, skips a play at a
+state a board symmetry fixes, archive included, when the symmetry maps an
+earlier play onto it (`crates/superko-solve/src/search.rs`). `on` turns on
+both. The body then carries
 
-- `board-symmetry:unlicensed` and `color-swap:unlicensed` at the end of the
-  `divergences=` line;
-- after `skipped=`, the lines `symmetry=on`, `symmetry-searched=N`, the roots
-  whose two searches ran, and `symmetry-transported=M`, the roots whose values
-  were transported, with `N + M + skipped = roots`;
-- after those, the line `symmetry-mirrored-moves=on`: every search, the
-  witness verdicts included, skips a play at a state a board symmetry fixes,
-  archive included, when the symmetry maps an earlier play onto it
-  (`crates/superko-solve/src/search.rs`). No test checks that the witness
-  verdict searches skip; that they do is read from the code;
-- in each witness block, after `-ssk=`, a line `minimal-transported=` (or
-  `minimal-liberties-transported=`) saying whether that root's values were
-  transported. The witness verdicts are searched on the root itself either way.
+- `board-symmetry:unlicensed` at the end of the `divergences=` line under each
+  of the three, followed by `color-swap:unlicensed` under `roots` and `on`;
+- after `skipped=`, the line `symmetry=` naming the value (`roots`, `moves` or
+  `on`);
+- with `roots` or `on`, after that, `symmetry-searched=N`, the roots whose two
+  searches ran, and `symmetry-transported=M`, the roots whose values were
+  transported, with `N + M + skipped = roots`;
+- with `moves` or `on`, after those, the line `symmetry-mirrored-moves=on`. No
+  test checks that the witness verdict searches skip; that they do is read
+  from the code;
+- with `roots` or `on`, in each witness block, after `-ssk=`, a line
+  `minimal-transported=` (or `minimal-liberties-transported=`) saying whether
+  that root's values were transported. The witness verdicts are searched on the
+  root itself either way.
+
+A body produced with `--symmetry on` is the body `superko separate --symmetry
+on` printed before `roots` and `moves` were values of `separate`.
 
 That values are unchanged by a board symmetry and negated by the color
 exchange is not proved. It is `computed` at every root of every board of at
@@ -103,11 +112,12 @@ points, except on 1x5 and 5x1 with suicide removing its own stones, where it is
 `computed` only where both searches resolved within the budgets
 `crates/superko-solve/tests/mirrored.rs` names (440 of 972 values and 15 976 of
 25 272 verdicts, both rules, on each). Verdicts at floors outside that range are
-not tested, and none of it is proved. Without `--symmetry on` none of these lines appears
-and the body is unchanged.
+not tested, and none of it is proved. With `--symmetry off`, the default, none
+of these lines appears and the body is unchanged.
 
 A `solve` body produced with `--symmetry on` turns on mirrored moves alone,
-in the value search and in any verdict search. It carries
+in the value search and in any verdict search; mirrored moves are the only half
+`solve` has, and it refuses `roots` and `moves`. It carries
 `board-symmetry:unlicensed` at the end of the `divergences=` line, and after
 `max-depth=` the lines `symmetry-mirrored-moves=on` and
 `symmetry-mirrored-skips=N`, the plays the value search skipped. Its `nodes=`
