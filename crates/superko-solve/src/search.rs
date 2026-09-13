@@ -862,6 +862,59 @@ impl<'t> Solver<'t> {
         }
     }
 
+    /// The minimax area difference after a line of moves from a root of play:
+    /// the root is seated as [`Solver::solve_root`] seats it, each move of the
+    /// line is made in turn with its situation archived, and the search runs
+    /// from the state that leaves. With an empty line this is `solve_root`.
+    ///
+    /// The line's moves are made, not searched: the node count and depth are
+    /// those of the search that follows it, and `ssk_only` counts only the
+    /// search's plays.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the code is not a position of this solver's board, or when
+    /// a move of the line is refused by the rules at the state it is made
+    /// from, or is made at an ended state.
+    pub fn solve_line(&mut self, code: PosCode, to_move: Color, line: &[Move]) -> Solution {
+        let seed = self.seat(code, to_move);
+        let mut undos = Vec::with_capacity(line.len());
+        for &mv in line {
+            assert!(self.passes < 2, "a line moves from an ended state");
+            let (succ, _) = self
+                .legal_succ(mv)
+                .unwrap_or_else(|| panic!("a line holds a refused move: {mv}"));
+            undos.push(if self.mirror.is_some() {
+                self.make::<true>(mv, succ)
+            } else {
+                self.make::<false>(mv, succ)
+            });
+        }
+        let (alpha, beta) = (-self.span - 1, self.span + 1);
+        let value = if self.passes >= 2 {
+            self.leaf()
+        } else if self.mirror.is_some() {
+            self.alphabeta::<true>(alpha, beta)
+        } else {
+            self.alphabeta::<false>(alpha, beta)
+        };
+        for undo in undos.into_iter().rev() {
+            if self.mirror.is_some() {
+                self.unmake::<true>(undo);
+            } else {
+                self.unmake::<false>(undo);
+            }
+        }
+        self.unmake_seed(seed);
+        Solution {
+            value: (!self.over_budget).then_some(value),
+            nodes: self.nodes,
+            max_depth: self.max_depth,
+            ssk_only: self.ssk_only,
+            mirrored_skips: self.mirrored_skips,
+        }
+    }
+
     /// Whether `c` wins from a root of play at this komi floor.
     ///
     /// # Panics
@@ -880,6 +933,57 @@ impl<'t> Solver<'t> {
         } else {
             self.verdict::<false>(komi_floor, c)
         };
+        self.unmake_seed(seed);
+        Decision {
+            wins: (!self.over_budget).then_some(wins),
+            nodes: self.nodes,
+            max_depth: self.max_depth,
+            mirrored_skips: self.mirrored_skips,
+        }
+    }
+
+    /// Whether `c` wins after a line of moves from a root of play, as
+    /// [`Solver::solve_line`] seats and makes the line and
+    /// [`Solver::decide_root`] asks the question.
+    ///
+    /// # Panics
+    ///
+    /// As [`Solver::solve_line`].
+    pub fn decide_line(
+        &mut self,
+        code: PosCode,
+        to_move: Color,
+        line: &[Move],
+        komi_floor: i64,
+        c: Color,
+    ) -> Decision {
+        let seed = self.seat(code, to_move);
+        let mut undos = Vec::with_capacity(line.len());
+        for &mv in line {
+            assert!(self.passes < 2, "a line moves from an ended state");
+            let (succ, _) = self
+                .legal_succ(mv)
+                .unwrap_or_else(|| panic!("a line holds a refused move: {mv}"));
+            undos.push(if self.mirror.is_some() {
+                self.make::<true>(mv, succ)
+            } else {
+                self.make::<false>(mv, succ)
+            });
+        }
+        let wins = if self.passes >= 2 {
+            self.winner_at(komi_floor) == c
+        } else if self.mirror.is_some() {
+            self.verdict::<true>(komi_floor, c)
+        } else {
+            self.verdict::<false>(komi_floor, c)
+        };
+        for undo in undos.into_iter().rev() {
+            if self.mirror.is_some() {
+                self.unmake::<true>(undo);
+            } else {
+                self.unmake::<false>(undo);
+            }
+        }
         self.unmake_seed(seed);
         Decision {
             wins: (!self.over_budget).then_some(wins),
