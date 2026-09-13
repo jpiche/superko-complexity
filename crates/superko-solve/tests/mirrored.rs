@@ -62,8 +62,8 @@ struct Compared {
 
 /// The differential on one board under one suicide convention, both rules:
 /// every root's value, and with `verdicts` every root's verdicts at every komi
-/// floor for both colors, with mirrored moves on and off, held equal wherever
-/// both resolved within `budget`.
+/// floor of [`floors`] for both colors, with mirrored moves on and off, held
+/// equal wherever both resolved within `budget`.
 fn differential(
     dims: Dims,
     suicide: Suicide,
@@ -140,7 +140,7 @@ fn differential(
 const BUDGET: Option<u64> = Some(1_000_000);
 
 /// One line board, both conventions, both rules: values, and verdicts at
-/// every komi floor for both colors, with the self-check on. Everything
+/// every komi floor of [`floors`] for both colors, with the self-check on. Everything
 /// resolves, so every value and verdict is compared. Returns the plays
 /// skipped under the no-suicide rule and with suicide removing its own stones.
 fn a_checked_board_agrees(dims: Dims) -> (u64, u64) {
@@ -197,9 +197,9 @@ const LINE_SKIPS: [(usize, u64, u64); 4] = [(1, 0, 0), (2, 64, 64), (3, 128, 356
 
 /// 2×2, the one square board a debug build reaches and the one whose quarter
 /// turns are not their own inverses, under one convention, both rules: values
-/// with the self-check on, then values and verdicts at every komi floor for
-/// both colors with it off, which a debug build cannot afford with the recount
-/// at every node of every verdict search. Everything resolves. Returns the
+/// with the self-check on, then values and verdicts at every komi floor of
+/// [`floors`] for both colors with it off, which a debug build cannot afford
+/// with the recount at every node of every verdict search. Everything resolves. Returns the
 /// plays the second run skipped, value and verdict searches both.
 fn the_square_agrees(suicide: Suicide) -> u64 {
     let dims = Dims::new(2, 2);

@@ -15,8 +15,9 @@
 //! 2. **Recursions.** The score search and the verdict search are written
 //!    separately and neither is computed from the other, so holding
 //!    `black wins at komi floor k` equal to `value > k` at every komi floor
-//!    checks the threshold agreement the crate docs mark `computed` rather
-//!    than assuming it.
+//!    from `-(m·n) - 1` to `m·n + 1` checks the threshold agreement the crate
+//!    docs mark `computed` rather than assuming it. Floors outside that range
+//!    are not tested.
 //!
 //! 3. **Determinacy.** Exactly one color wins from every state (C-28,
 //!    `proved`). The verdict searches are held to it.
@@ -121,8 +122,9 @@ fn the_engines_agree_on_every_verdict_of_every_board_of_three_points() {
 }
 
 /// The fast engine with mirrored moves against the naive engine on the named
-/// boards: every root's value, and both colors' verdicts at every komi floor,
-/// under both rules and both suicide conventions. Returns the plays the value
+/// boards: every root's value, and both colors' verdicts at every komi floor
+/// of [`floors`], `-(m·n) - 1` to `m·n + 1`, under both rules and both suicide
+/// conventions. Returns the plays the value
 /// searches and the verdict searches skipped.
 fn mirrored_engines_agree(boards: &[(usize, usize)]) -> (u64, u64) {
     let (mut value_skips, mut verdict_skips) = (0u64, 0u64);

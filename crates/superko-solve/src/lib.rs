@@ -24,7 +24,11 @@
 //! or in Lean**: it is `computed`, checked by the fast engine in
 //! `tests/agreement.rs` at every komi floor from `-(m·n) - 1` to `m·n + 1`, at
 //! every root position of 1×1, 1×2, 1×3, 1×4 and 2×2, under both rules and both
-//! suicide conventions (C-55).
+//! suicide conventions (C-55). Floors outside that range are not tested. At
+//! such a floor every leaf's winner test gives what it gives at the nearer end
+//! floor of the range, because the area difference lies between `-(m·n)` and
+//! `m·n` (read from `winner_at` and `RuleTable::area`, not tested); that the
+//! searches return the same verdict there as well is not checked.
 //!
 //! A separating **witness** does not rest on it: it is stated as two verdicts
 //! at one named komi, each produced by the decision recursion of job 1, which
@@ -63,12 +67,23 @@
 //!
 //! The two engines and the separation sweep exist. What the tests establish is
 //! `computed` and bounded: the two engines agree on the value and on both
-//! colors' verdicts at every komi floor, at every root position, on every
-//! board with `m · n <= 3` under both rules and both suicide conventions; on
+//! colors' verdicts at every komi floor from `-(m·n) - 1` to `m·n + 1`, at every
+//! root position, on every board with `m · n <= 3` under both rules and both
+//! suicide conventions; on
 //! 1×1, 1×2, 1×3, 1×4 and 2×2 the fast engine's verdicts satisfy determinacy
 //! (C-28, `proved`) and the threshold agreement (C-55); and the 1×n empty-board
 //! scores under positional superko reproduce the transcribed table of C-24 for
 //! n ≤ 6.
+//!
+//! The sweep of [`separate`] can spread its roots over threads
+//! (`separate::Options::threads`, one by default): each thread owns its own
+//! solvers over the shared transition table, and one fold adds the per-root
+//! results up in root order. That the sweep and its body are the same at one,
+//! two and fourteen threads is `computed` by `tests/threads.rs` on the boards
+//! it names. The thread count is a performance choice and changes no body.
+//! The two symmetry features below are performance features too, but a run
+//! that uses them is under two unlicensed divergences and prints a different
+//! body, and they are off by default.
 //!
 //! The symmetric sweep of [`separate`] transports values along orbits of the
 //! board's symmetries and the color swap. That a value is unchanged by a
@@ -76,8 +91,8 @@
 //! `k` moves to the other color at floor `-k - 1` under the swap, is
 //! `computed` under both rules — for verdicts, at every komi floor of
 //! `tests/agreement.rs`'s range whose transported floor stays in that range —
-//! at every root of every board of at most four points and of 2×2 under both
-//! suicide conventions, and of 1×5 and 5×1 under
+//! at every root of every board of at most four points, 2×2 among them, under
+//! both suicide conventions, and of 1×5 and 5×1 under
 //! the no-suicide rule; on 1×5 and 5×1 with suicide removing its own stones it
 //! is `computed` only at the roots resolved within the budgets
 //! `tests/symmetry.rs` names, which leave 1 628 of 2 916 value pairs and

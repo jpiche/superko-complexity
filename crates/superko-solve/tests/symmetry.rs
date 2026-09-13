@@ -242,11 +242,12 @@ fn values_are_invariant_on_boards_of_five_points() {
 /// removing its own stones, at 10⁵ nodes per search.
 const REMOVE_OWN_FIVE_VALUES: (u64, u64) = (1_288, 1_628);
 
-/// Every board of at most four points and 2×2, both orientations of each
-/// line, both conventions, both rules: verdicts at every komi floor, for both
-/// colors. Every search resolves at the budget, and the comparisons made are
-/// pinned per board — the same under both conventions, since the count is
-/// roots × images × floors whose transport stays in range × colors × rules.
+/// Every board of at most four points, 2×2 among them, both orientations of
+/// each line, both conventions, both rules: verdicts at every komi floor of
+/// [`floors`] whose transported floor is also in it, for both colors. Every
+/// search resolves at the budget, and the comparisons made are pinned per
+/// board — the same under both conventions, since the count is roots × images
+/// × floors whose transport stays in range × colors × rules.
 #[test]
 fn verdicts_are_transported_on_boards_of_four_points() {
     for (rows, cols, pinned) in [

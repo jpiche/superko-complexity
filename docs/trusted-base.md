@@ -119,6 +119,33 @@ object, and says which reading the core takes and why. A reader who disagrees
 with a choice can find it rather than having to notice its absence. The choices
 still under debate are marked **OPEN** there.
 
+The Rust code's own departures from a literal reading of `Defs.lean` are a
+closed list, `superko_rules::divergence::Divergence`, which
+[`../tools/check-mirror.sh`](../tools/check-mirror.sh) holds equal to the
+`DIVERGENCE:` markers in `crates/superko-rules/src`. There are seven, and a
+results body names the ones its run was under in its `divergences=` line:
+`dims-are-runtime`, `suicide-remove-own`, `psk-archive-projection`,
+`rule-table-memo`, `winner-via-floor-komi` — the one a Lean theorem licenses,
+`Superko.winnerZ_eq_winner` — and `board-symmetry` and `color-swap`. The last
+two are not readings of a definition but properties of the rules that a
+search assumes to skip work, and a run is under them only when it asks
+(`--symmetry on`). That the transition table commutes with every board
+symmetry and with the color exchange is `computed` on boards of at most six
+points and on 3×3 and 3×4. That the solver's values, and its verdicts at komi
+floors `-(m·n) - 1` to `m·n + 1`, are the same with mirrored moves as without
+is `computed` on boards of at most five points; on 1×5 and 5×1 with suicide
+removing its own stones, only where both searches resolved within the budgets
+of `superko-solve`'s `tests/mirrored.rs`. That values are invariant under the
+board group and negate under the color exchange is `computed` on the same
+boards, and so is the verdict transport, at the floors of that range whose
+image stays in it; on 1×5 and 5×1 with suicide removing its own stones, only
+at the roots resolved within the budgets of `tests/symmetry.rs`. Verdicts at
+floors outside that range are not tested. The `board-symmetry` consequence
+sentence in `divergence.rs` says "at every root and komi floor" and so
+overstates the tested floor range; `superko-rules`'s crate docs say a witness
+header prints that sentence, though no CLI code calls `consequence()` today.
+Neither divergence is proved.
+
 **Independent numerical agreement.** This is the strong one. The definitions
 are made to reproduce quantities that other people computed, independently,
 from their own formalizations:
@@ -127,7 +154,7 @@ from their own formalizations:
 |---|---|---|---|
 | 2×2 games under positional superko | 386,356,909,593 | Tromp | reproduced under this project's rules and under Tromp's (C-39, C-38, `computed`) |
 | Legal positions `L(m,n)` | table | Tromp–Farnebäck | reproduced to 3×3 (`cargo test -p superko-graph --test census`, `computed`) |
-| 1×n minimax scores under PSK | table | Weninger–Hayward | reproduced for n ≤ 6 under `Defs.lean`'s rule, whose suicide convention is the one the transcribed table names (C-24, `computed`); 1×7 and 1×8 unresolved within 4 × 10⁷ nodes, 1×9 not attempted |
+| 1×n minimax scores under PSK | table | Weninger–Hayward | reproduced for n ≤ 6 under `Defs.lean`'s rule, whose suicide convention is the one the transcribed table names (C-24, `computed`); 1×7 and 1×8 unresolved within 4 × 10⁷ nodes, 1×9 not attempted. Reproduced for n ≤ 6 again with the solver's mirrored moves on, which rest on the unlicensed `board-symmetry` divergence (`crates/superko-solve/tests/published.rs`) |
 
 A definition of Go that is subtly wrong will not produce 386,356,909,593. The
 argument is not airtight — a definition could be wrong in a way these

@@ -33,7 +33,17 @@ visibly, unless `SUPERKO_VERIFY_SLOW=1` is set.
 | `axioms.txt` | the `#print axioms` dump for every headline theorem, checked by `check-lean.sh` |
 | `count-games-<board>-<rule>-<suicide>.txt` | one game count from the empty board by the Rust mirror (`computed`): the body `superko count-games` prints, with the resolved rules, the divergence list, the count, the node count and the refusal census. Cited by C-23, C-36, C-37 and, once the 2×2 runs land, C-9 and C-38 |
 | `scc-census-<board>-<suicide>.txt` | the strongly connected components of one board's situation graph (`computed`): vertices, edges, components, the largest, the empty board's, the count outside the largest, and the condensation depth, under both readings of the vertex set — `legal-` over the positions play can reach, `all-` over every coloring `Defs.lean` admits. `outside-largest` is the number C-46 cites: it bounds what C-42's forward-cone prune can remove. Cited by C-45 and C-46 |
-| `separate-<board>-<suicide>[-budget-<N>].txt` | the separation sweep of one board (`computed`): every root under both superko rules, the resolved and unresolved counts, the empty board's value under each rule, the number of separating roots, the plays positional superko would refuse that situational superko's searches made and the roots — the resolved ones separately — whose search made one, whether each of the two minima is unconditional, and, when a root separates, the least in experiment 005's order with its four witness verdicts at one komi floor. A sweep run under a node budget names the budget in the file name as well as in the body, and what it shows holds at its resolved roots only. Cited by C-53 and C-54 |
+| `separate-<board>-<suicide>[-budget-<N>].txt` | the separation sweep of one board (`computed`), described below. Cited by C-53 and C-54 |
+
+A `separate` file holds every root under both superko rules, the resolved and
+unresolved counts, the empty board's value under each rule, the number of
+separating roots, the plays positional superko would refuse that situational
+superko's searches made and the roots — the resolved ones separately — whose
+search made one, whether each of the two minima is unconditional, and, when a
+root separates, the least in experiment 005's order with its four witness
+verdicts at one komi floor. A sweep run under a node budget names the budget in
+the file name as well as in the body, and what it shows holds at its resolved
+roots only.
 
 A `count-games` body is thread-independent; the witness command runs
 single-threaded and a `# produced-with:` line says how many threads the
@@ -50,7 +60,12 @@ thread says so in a header line of the form
 # produced-with: threads=14
 ```
 
-A file without that line was produced on one thread.
+A file without that line was produced on one thread. The two forms differ: the
+`count-games` files already committed carry a free-form line that begins
+`# produced-with: --threads N` (N is 4, 7 or 14 among them) and goes on in free
+text, saying why the body does not depend on it, while `threads=N` is the form
+for `separate`, which no committed `separate` file carries yet. Both are header
+lines, outside the body `verify-results.sh` diffs.
 
 A `separate` body produced with `--symmetry on` is a different body, and says
 so. The sweep searches one root of each orbit under the board's symmetries and
@@ -66,7 +81,8 @@ values — negated when the colors were exchanged — before adding the sweep up
 - after those, the line `symmetry-mirrored-moves=on`: every search, the
   witness verdicts included, skips a play at a state a board symmetry fixes,
   archive included, when the symmetry maps an earlier play onto it
-  (`crates/superko-solve/src/search.rs`);
+  (`crates/superko-solve/src/search.rs`). No test checks that the witness
+  verdict searches skip; that they do is read from the code;
 - in each witness block, after `-ssk=`, a line `minimal-transported=` (or
   `minimal-liberties-transported=`) saying whether that root's values were
   transported. The witness verdicts are searched on the root itself either way.
@@ -80,11 +96,17 @@ uncompared (the two divergences' consequence sentences). Under a node budget a
 transported root is resolved exactly when its representative is, so a budgeted
 body with symmetry on can report different resolved, unresolved and ssk-only
 counts from the same sweep without it; mirrored moves change the ssk-only
-counts too, and under a budget which roots resolve. That values and verdicts
-are the same with mirrored plays skipped as without is `computed` on the boards
-`crates/superko-solve/tests/mirrored.rs` names and is not proved (the
-`board-symmetry` consequence sentence). Without `--symmetry on` none of these
-lines appears and the body is unchanged.
+counts too, and under a budget which roots resolve. That values, and verdicts
+at komi floors `-(m·n) - 1` to `m·n + 1`, are the same with mirrored plays
+skipped as without is `computed` at every root of every board of at most five
+points, except on 1x5 and 5x1 with suicide removing its own stones, where it is
+`computed` only where both searches resolved within the budgets
+`crates/superko-solve/tests/mirrored.rs` names (440 of 972 values and 15 976 of
+25 272 verdicts, both rules, on each). Verdicts at floors outside that range are
+not tested, and none of it is proved. The `board-symmetry` consequence sentence
+says "at every root and komi floor" and so overstates the tested floor range
+(`../docs/trusted-base.md`). Without `--symmetry on` none of these lines appears
+and the body is unchanged.
 
 A `solve` body produced with `--symmetry on` turns on mirrored moves alone,
 in the value search and in any verdict search. It carries

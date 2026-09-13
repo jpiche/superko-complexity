@@ -46,8 +46,8 @@
 //! it fixes the position, `s(code) = code`, and maps the set `A` of archived
 //! keys onto itself; a key is moved by moving its position and keeping its
 //! color, and under positional superko a key's color is always Black
-//! ([`Solver`]'s `key`). The states a node's position and archive are fixed by
-//! form a subgroup `H` of the board's group. At a node where `H` has more than
+//! ([`Solver`]'s `key`). The board symmetries that fix a node's position and
+//! archive form a subgroup `H` of the board's group. At a node where `H` has more than
 //! the identity, a play `p` is skipped when some `h` in `H` maps a play `q`
 //! earlier in the ordered move list to `p`, so the first play of each
 //! `H`-orbit is searched and the rest are not. The pass is never skipped.
@@ -75,7 +75,13 @@
 //! archived changes nothing. The count does not assume `s` is its own inverse,
 //! which the quarter turns of a square board are not.
 //! [`Solver::with_unmatched_self_check`] recounts every `u_s` from the archive
-//! at every node and panics on a disagreement; the tests run with it on.
+//! at every node and panics on a disagreement. It is on in this module's unit
+//! test and in `tests/mirrored.rs` on the searches that file names: the value
+//! searches of every board it compares but the five-point lines with suicide
+//! removing its own stones, the verdict searches of the lines of at most four
+//! points, and the value and verdict searches on the empty 1×4 and 2×2 roots.
+//! The other searches under test, the verdict differential on 2×2 among them,
+//! run without it.
 
 use superko_rules::archive::{Archive, ArchiveKey};
 use superko_rules::code::{PosCode, code_space, encode};

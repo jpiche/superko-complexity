@@ -83,9 +83,9 @@ fn a_separating_sweep_is_the_same_at_every_thread_count() {
     assert!(sweep.minimal.is_some());
 }
 
-/// The empty 1×5 board under a budget of 1 000 nodes per search leaves 82 of
-/// the 486 roots unresolved, so the unresolved counts and the least
-/// unresolved root are compared across thread counts.
+/// The 1×5 sweep, over every root of the board, under a budget of 1 000 nodes
+/// per search leaves 82 of its 486 roots unresolved, so the unresolved counts
+/// and the least unresolved root are compared across thread counts.
 #[test]
 fn a_budgeted_sweep_is_the_same_at_every_thread_count() {
     let sweep = same_at_every_thread_count(Dims::new(1, 5), Suicide::Forbid, Some(1_000), 0);
