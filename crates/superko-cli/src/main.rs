@@ -12,8 +12,8 @@
 //!                         --root POS [--to-move black|white] [--komi-floor K]
 //!                         [--budget N] [--naive]
 //! superko separate        --board MxN --suicide forbid|remove-own [--budget N]
-//!                         [--min-stones K]
-//! superko bench
+//!                         [--min-stones K] [--threads N]
+//! superko bench           [--threads N]
 //! ```
 //!
 //! Argument parsing is hand-rolled, because the workspace has no dependencies:
@@ -33,10 +33,15 @@
 //! promoted to `results/`, because they assert things about the working tree
 //! that this binary cannot check.
 //!
+//! `--threads` never appears in a body. `count-games` and `separate` print the
+//! same body at every thread count and write the count to standard error; a
+//! promoted result that was produced on more than one thread says so in a
+//! `# produced-with:` header line (`results/README.md`).
+//!
 //! `superko bench` is the exception: it prints a **measurement**, not a body.
-//! Its lines carry wall times on purpose, it takes no flags beyond the ones its
-//! own module names (none yet), and its output goes under `data/bench/`, never
-//! to `results/`. The [`bench`] module describes the suite and the line format.
+//! Its lines carry wall times on purpose, it takes no flag but `--threads`, and
+//! its output goes under `data/bench/`, never to `results/`. The [`bench`]
+//! module describes the suite and the line format.
 //!
 //! # Status
 //!
@@ -81,17 +86,22 @@ usage: superko <command> [options]
                   --root POS [--to-move black|white] [--komi-floor K]
                   [--budget N] [--naive]
   separate        --board MxN --suicide forbid|remove-own [--budget N]
-                  [--min-stones K]
-  bench
+                  [--min-stones K] [--threads N]
+  bench           [--threads N]
 
 Standard output is a results body of key=value lines. Timing goes to standard
 error. The witness header of a promoted result is written by hand.
 
+--threads N (default 1) spreads count-games' search, and separate's roots, over
+N threads. The body is the same at every thread count; separate's witness
+verdict searches run on one thread.
+
 bench is the exception: it runs a fixed suite under Suicide::Forbid, each case
 with its own node budget (the empty 1x5, 1x6, 1x7 and 2x3 boards under psk and
-ssk at 10^8 nodes, and a 2x3 separation sweep at 10^6 nodes per search), and
-prints a flags line then one line per case of key=value fields, wall seconds
-included. It is a measurement for data/bench/, not a results body.";
+ssk at 10^8 nodes, and a 2x3 separation sweep at 10^6 nodes per search, on
+--threads threads), and prints a flags line then one line per case of key=value
+fields, wall seconds included. It is a measurement for data/bench/, not a
+results body.";
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -614,10 +624,13 @@ fn solve(flags: &Flags) -> Result<String, String> {
 /// one whose value differs — the search behind claim C-17. The order
 /// minimality is taken in is fixed by `superko_solve::separate`: stones
 /// ascending, then position code, then Black to move first.
+///
+/// `--threads` spreads the sweep's roots over that many threads and changes
+/// nothing in the body; the witness verdict searches for the minimal roots run
+/// on this thread afterwards.
 fn separate(flags: &Flags) -> Result<String, String> {
     flags.reject(&[
         "--rule",
-        "--threads",
         "--depth-cap",
         "--naive",
         "--root",
@@ -628,13 +641,19 @@ fn separate(flags: &Flags) -> Result<String, String> {
     let suicide = flags.suicide()?;
     let budget = flags.budget()?;
     let min_stones = flags.min_stones()?;
+    let threads = flags.threads()?;
     // Both rules are swept, so both rules' divergences are in force, and the
     // witness verdicts are decided at a komi floor.
     let under = solver_divergences(false, Repetition::Psk, suicide, true);
 
     let table = RuleTable::build(dims, suicide).map_err(|e| e.to_string())?;
     let started = Instant::now();
-    let report = sep::sweep_on_above(&table, budget, min_stones);
+    let opts = sep::Options {
+        budget,
+        min_stones,
+        threads,
+    };
+    let report = sep::sweep_with(&table, opts);
     let elapsed = started.elapsed();
 
     let mut body = String::new();
@@ -648,12 +667,13 @@ fn separate(flags: &Flags) -> Result<String, String> {
         let _ = writeln!(body, "budget={n}");
     }
 
+    eprintln!("# threads={threads}");
     eprintln!("# elapsed={:.3}s", elapsed.as_secs_f64());
     eprintln!("# nodes={}", report.nodes);
     Ok(body)
 }
 
-/// Every option `Flags::parse` accepts, for a command that takes none of them.
+/// Every option `Flags::parse` accepts.
 const ALL_OPTIONS: [&str; 11] = [
     "--board",
     "--rule",
@@ -670,13 +690,21 @@ const ALL_OPTIONS: [&str; 11] = [
 
 /// The settings a bench run is under, read from its command line.
 ///
-/// Every flag is refused today, `--budget` included: each case carries its own
-/// budget, and a bench whose budgets moved with the command line would not be
-/// comparable with the baseline. A feature that gives the bench a flag takes it
-/// out of the refusal here and reads it into [`bench::Settings`].
+/// `--threads` is read; every other flag is refused, `--budget` included: each
+/// case carries its own budget, and a bench whose budgets moved with the
+/// command line would not be comparable with the baseline. A feature that
+/// gives the bench a flag takes it out of the refusal here and reads it into
+/// [`bench::Settings`].
 fn bench_settings(flags: &Flags) -> Result<bench::Settings, String> {
-    flags.reject(&ALL_OPTIONS)?;
-    Ok(bench::Settings::default())
+    const READ: [&str; 1] = ["--threads"];
+    let refused: Vec<&str> = ALL_OPTIONS
+        .into_iter()
+        .filter(|name| !READ.contains(name))
+        .collect();
+    flags.reject(&refused)?;
+    Ok(bench::Settings {
+        threads: flags.threads()?,
+    })
 }
 
 /// `superko bench`.
@@ -764,18 +792,25 @@ mod tests {
     }
 
     #[test]
-    fn bench_takes_no_flags_yet() {
+    fn bench_takes_only_a_thread_count() {
         let none = Flags::parse(&[]).unwrap();
         assert_eq!(bench_settings(&none), Ok(bench::Settings::default()));
         assert_eq!(
             bench_settings(&none).unwrap().header(),
-            "flags order=heuristic"
+            "flags order=heuristic threads=1"
         );
+        let three = Flags::parse(&args("--threads 3")).unwrap();
+        assert_eq!(bench_settings(&three), Ok(bench::Settings { threads: 3 }));
+        let zero = Flags::parse(&args("--threads 0")).unwrap();
+        assert!(bench_settings(&zero).is_err());
         // Each is refused before any case runs, so none of these starts the
         // suite.
         // Driven from ALL_OPTIONS, so a name there that `Flags::parse` does not
         // accept, or that `Flags::reject` has no arm for, fails here.
         for name in ALL_OPTIONS {
+            if name == "--threads" {
+                continue;
+            }
             let flag = match name {
                 "--board" => "--board 1x5".to_string(),
                 "--naive" => "--naive".to_string(),
@@ -793,6 +828,25 @@ mod tests {
             );
         }
         assert!(run(&args("bench --symmetry on")).is_err());
+    }
+
+    /// `--threads` reaches `separate` and changes nothing in its body, the
+    /// witness lines of a separating board included; zero threads is refused.
+    #[test]
+    fn a_separate_body_is_the_same_at_every_thread_count() {
+        for board in ["1x3 --suicide forbid", "1x2 --suicide remove-own"] {
+            let serial = run(&args(&format!("separate --board {board}"))).unwrap();
+            for threads in [1, 2, 14] {
+                let spread = run(&args(&format!(
+                    "separate --board {board} --threads {threads}"
+                )))
+                .unwrap();
+                assert_eq!(spread, serial, "{board} at {threads} threads");
+            }
+        }
+        let separating = run(&args("separate --board 1x2 --suicide remove-own")).unwrap();
+        assert!(separating.contains("minimal-witness-separates=true"));
+        assert!(run(&args("separate --board 1x3 --suicide forbid --threads 0")).is_err());
     }
 
     #[test]

@@ -37,8 +37,30 @@
 //! scores and winners (see the crate docs). A report of *no* separation, and
 //! the minimality of a witness, do: they are statements about values, and
 //! reach winners only through that agreement.
+//!
+//! # Threads
+//!
+//! Every root is an independent pair of searches, so [`sweep_with`] spreads
+//! the roots over a fixed number of threads, each owning one positional and
+//! one situational [`Solver`] over the shared table. A thread takes roots in
+//! whatever order they come to it and records each root's two [`Solution`]s
+//! against its place in the sweep order; once every thread has finished, the
+//! results are added up in that order by the one function that assembles a
+//! [`Sweep`], the same one the one-thread sweep uses.
+//!
+//! A root's two solutions depend on the root, the rule and the budget, and not
+//! on which roots its solver searched before — a solver resets its counters
+//! and empties its archive at every root. So nothing in a [`Sweep`], node
+//! counts included, depends on the thread count, and neither does anything
+//! [`Sweep::lines`] prints: its witness verdict searches run afterwards, on
+//! the calling thread. That is a property of this code, not of Go, and
+//! `tests/threads.rs` holds it on the boards it names at one, two and fourteen
+//! threads.
 
 use core::fmt;
+use std::panic;
+use std::sync::atomic::{AtomicUsize, Ordering};
+use std::thread;
 
 use superko_graph::census::is_legal;
 use superko_rules::code::{PosCode, code_space, decode, render};
@@ -46,7 +68,7 @@ use superko_rules::config::{Dims, Repetition, Suicide};
 use superko_rules::reference::Color;
 use superko_rules::table::{RuleTable, TooLarge};
 
-use crate::search::Solver;
+use crate::search::{Solution, Solver};
 
 /// One root whose value differs between the two repetition rules.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -404,16 +426,220 @@ pub fn sweep_on(table: &RuleTable, budget: Option<u64>) -> Sweep {
 
 /// Sweep the roots of a built board carrying at least `min_stones` stones.
 ///
+/// The one-thread case of [`sweep_with`].
+///
 /// # Panics
 ///
 /// Panics when the board is too large for a position code.
 #[must_use]
 pub fn sweep_on_above(table: &RuleTable, budget: Option<u64>, min_stones: u32) -> Sweep {
-    let dims = table.dims();
-    let mut psk = Solver::new(table, Repetition::Psk).with_budget(budget);
-    let mut ssk = Solver::new(table, Repetition::Ssk).with_budget(budget);
-    let empty = PosCode(0);
+    sweep_with(
+        table,
+        Options {
+            budget,
+            min_stones,
+            threads: 1,
+        },
+    )
+}
 
+/// How a sweep runs.
+///
+/// `budget` and `min_stones` decide what the [`Sweep`] says. `threads` decides
+/// only how long it takes: see the module docs.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Options {
+    /// The node budget of each search, when there is one.
+    pub budget: Option<u64>,
+    /// The stone-count floor of the domain; zero sweeps everything.
+    pub min_stones: u32,
+    /// The number of threads the roots are spread over, at least one. More
+    /// threads than roots is allowed; the surplus is not started.
+    pub threads: usize,
+}
+
+impl Default for Options {
+    /// Every root, no budget, one thread.
+    fn default() -> Self {
+        Self {
+            budget: None,
+            min_stones: 0,
+            threads: 1,
+        }
+    }
+}
+
+/// Sweep the roots of a built board, spread over `opts.threads` threads.
+///
+/// # Panics
+///
+/// Panics when `opts.threads` is zero, when the board is too large for a
+/// position code, and, with the worker's own payload, when a search panics on
+/// any thread.
+#[must_use]
+pub fn sweep_with(table: &RuleTable, opts: Options) -> Sweep {
+    assert!(opts.threads > 0, "a sweep needs at least one thread");
+    let dims = table.dims();
+    let count =
+        usize::try_from(u64::from(code_space(dims)) * 2).expect("the root count fits a usize");
+    let roots = solve_indexed(
+        count,
+        opts.threads,
+        || {
+            (
+                Solver::new(table, Repetition::Psk).with_budget(opts.budget),
+                Solver::new(table, Repetition::Ssk).with_budget(opts.budget),
+            )
+        },
+        |(psk, ssk), index| solve_at(psk, ssk, dims, opts.min_stones, index),
+    );
+    fold(dims, opts.min_stones, &roots)
+}
+
+/// What one root of a sweep came to, before anything is added up.
+///
+/// Everything [`fold`] reads about a root, and nothing that depends on which
+/// thread produced it: [`Solver`] resets its counters and leaves its archive
+/// empty at every root, so both [`Solution`]s are functions of the root, the
+/// rule and the budget.
+#[derive(Clone, Copy, Debug)]
+enum Root {
+    /// Excluded by the stone-count floor.
+    Skipped,
+    /// Searched under both rules.
+    Searched {
+        /// Stones on the board, both colors.
+        stones: u32,
+        /// Whether no chain of the position lacks a liberty.
+        liberties: bool,
+        /// The search under positional superko.
+        psk: Solution,
+        /// The search under situational superko.
+        ssk: Solution,
+    },
+}
+
+/// The root at a place in the sweep order: codes ascending, Black to move
+/// before White. The place of `(code, to_move)` is `2 · code`, plus one for
+/// White.
+fn root_at(index: usize) -> (PosCode, Color) {
+    let code = PosCode(u32::try_from(index / 2).expect("a root's code fits a u32"));
+    let to_move = if index.is_multiple_of(2) {
+        Color::Black
+    } else {
+        Color::White
+    };
+    (code, to_move)
+}
+
+/// Search the root at one place of the sweep order under both rules, unless
+/// the stone-count floor excludes it.
+fn solve_at(
+    psk: &mut Solver<'_>,
+    ssk: &mut Solver<'_>,
+    dims: Dims,
+    min_stones: u32,
+    index: usize,
+) -> Root {
+    let (code, to_move) = root_at(index);
+    let board = decode(dims, code);
+    let stones = u32::try_from(board.cells().iter().filter(|cell| cell.is_some()).count())
+        .expect("stone count fits a u32");
+    if stones < min_stones {
+        return Root::Skipped;
+    }
+    Root::Searched {
+        stones,
+        liberties: is_legal(&board),
+        psk: psk.solve_root(code, to_move),
+        ssk: ssk.solve_root(code, to_move),
+    }
+}
+
+/// Run `work` at every index below `count` over `threads` threads, and return
+/// the results in index order.
+///
+/// Each thread builds its own state with `state` and takes the next unclaimed
+/// index from a shared counter until none is left, so no thread idles while an
+/// index remains. Which thread ran an index, and in what order the threads
+/// finished, is invisible in the result. One thread runs on the calling
+/// thread, and more threads than indices start only as many as there are
+/// indices.
+///
+/// A panic in `work` stops every thread from claiming further indices, and
+/// once all have stopped it is resumed on the calling thread with its own
+/// payload.
+fn solve_indexed<S, T: Send>(
+    count: usize,
+    threads: usize,
+    state: impl Fn() -> S + Sync,
+    work: impl Fn(&mut S, usize) -> T + Sync,
+) -> Vec<T> {
+    assert!(threads > 0, "work needs at least one thread");
+    let next = AtomicUsize::new(0);
+    let run = || {
+        let _stop = StopOnPanic { next: &next, count };
+        let mut own = state();
+        let mut out = Vec::new();
+        loop {
+            let index = next.fetch_add(1, Ordering::Relaxed);
+            if index >= count {
+                break;
+            }
+            out.push((index, work(&mut own, index)));
+        }
+        out
+    };
+
+    let workers = threads.min(count).max(1);
+    let parts: Vec<Vec<(usize, T)>> = if workers == 1 {
+        vec![run()]
+    } else {
+        thread::scope(|scope| {
+            let handles: Vec<_> = (0..workers).map(|_| scope.spawn(run)).collect();
+            // Join every thread before resuming any panic, so none is left
+            // running a search whose result nobody will read.
+            let joined: Vec<_> = handles.into_iter().map(|h| h.join()).collect();
+            joined
+                .into_iter()
+                .map(|part| part.unwrap_or_else(|payload| panic::resume_unwind(payload)))
+                .collect()
+        })
+    };
+
+    let mut slots: Vec<Option<T>> = (0..count).map(|_| None).collect();
+    for (index, result) in parts.into_iter().flatten() {
+        let slot = &mut slots[index];
+        assert!(slot.is_none(), "index {index} was run twice");
+        *slot = Some(result);
+    }
+    slots
+        .into_iter()
+        .enumerate()
+        .map(|(index, result)| result.unwrap_or_else(|| panic!("index {index} was never run")))
+        .collect()
+}
+
+/// Exhausts the shared counter of [`solve_indexed`] when its thread unwinds,
+/// so that the other threads stop claiming work.
+struct StopOnPanic<'a> {
+    next: &'a AtomicUsize,
+    count: usize,
+}
+
+impl Drop for StopOnPanic<'_> {
+    fn drop(&mut self) {
+        if thread::panicking() {
+            self.next.store(self.count, Ordering::Relaxed);
+        }
+    }
+}
+
+/// Add up a sweep from its roots, taken in the sweep order.
+///
+/// The only place a [`Sweep`] is assembled, whatever the thread count.
+fn fold(dims: Dims, min_stones: u32, roots: &[Root]) -> Sweep {
+    let empty = PosCode(0);
     let mut out = Sweep {
         dims,
         roots: u64::from(code_space(dims)) * 2,
@@ -434,81 +660,84 @@ pub fn sweep_on_above(table: &RuleTable, budget: Option<u64>, min_stones: u32) -
         skipped: 0,
         min_stones,
     };
+    assert_eq!(
+        u64::try_from(roots.len()).expect("the root count fits a u64"),
+        out.roots,
+        "a sweep is folded from every root of its board"
+    );
 
-    for raw in 0..code_space(dims) {
-        let code = PosCode(raw);
-        let board = decode(dims, code);
-        let liberties = is_legal(&board);
-        let stones = u32::try_from(board.cells().iter().filter(|cell| cell.is_some()).count())
-            .expect("stone count fits a u32");
-        if stones < min_stones {
-            out.skipped += 2;
+    for (index, root) in roots.iter().enumerate() {
+        let (code, to_move) = root_at(index);
+        let Root::Searched {
+            stones,
+            liberties,
+            psk: a,
+            ssk: b,
+        } = *root
+        else {
+            out.skipped += 1;
+            continue;
+        };
+        out.nodes = out
+            .nodes
+            .checked_add(a.nodes)
+            .and_then(|n| n.checked_add(b.nodes))
+            .expect("a node count overflowed");
+        out.ssk_only_plays = out
+            .ssk_only_plays
+            .checked_add(b.ssk_only)
+            .expect("a count overflowed");
+        if b.ssk_only > 0 {
+            out.roots_with_ssk_only += 1;
+        }
+        if code == empty && to_move == Color::Black {
+            out.empty_psk = a.value;
+            out.empty_ssk = b.value;
+        }
+        let (Some(pv), Some(sv)) = (a.value, b.value) else {
+            out.unresolved += 1;
+            let rank = rank_of(stones, code, to_move);
+            if out
+                .unresolved_least
+                .is_none_or(|(c, m, s)| rank < rank_of(s, c, m))
+            {
+                out.unresolved_least = Some((code, to_move, stones));
+            }
+            if liberties
+                && out
+                    .unresolved_least_liberties
+                    .is_none_or(|(c, m, s)| rank < rank_of(s, c, m))
+            {
+                out.unresolved_least_liberties = Some((code, to_move, stones));
+            }
+            continue;
+        };
+        out.resolved += 1;
+        if b.ssk_only > 0 {
+            out.resolved_with_ssk_only += 1;
+        }
+        if pv == sv {
             continue;
         }
-        for to_move in [Color::Black, Color::White] {
-            let a = psk.solve_root(code, to_move);
-            let b = ssk.solve_root(code, to_move);
-            out.nodes = out
-                .nodes
-                .checked_add(a.nodes)
-                .and_then(|n| n.checked_add(b.nodes))
-                .expect("a node count overflowed");
-            out.ssk_only_plays = out
-                .ssk_only_plays
-                .checked_add(b.ssk_only)
-                .expect("a count overflowed");
-            if b.ssk_only > 0 {
-                out.roots_with_ssk_only += 1;
-            }
-            if code == empty && to_move == Color::Black {
-                out.empty_psk = a.value;
-                out.empty_ssk = b.value;
-            }
-            let (Some(pv), Some(sv)) = (a.value, b.value) else {
-                out.unresolved += 1;
-                let rank = rank_of(stones, code, to_move);
-                if out
-                    .unresolved_least
-                    .is_none_or(|(c, m, s)| rank < rank_of(s, c, m))
-                {
-                    out.unresolved_least = Some((code, to_move, stones));
-                }
-                if liberties
-                    && out
-                        .unresolved_least_liberties
-                        .is_none_or(|(c, m, s)| rank < rank_of(s, c, m))
-                {
-                    out.unresolved_least_liberties = Some((code, to_move, stones));
-                }
-                continue;
-            };
-            out.resolved += 1;
-            if b.ssk_only > 0 {
-                out.resolved_with_ssk_only += 1;
-            }
-            if pv == sv {
-                continue;
-            }
-            let found = Separating {
-                code,
-                to_move,
-                psk: pv,
-                ssk: sv,
-                stones,
-                liberties,
-            };
-            out.separating += 1;
-            if out.minimal.is_none_or(|best| found.rank() < best.rank()) {
-                out.minimal = Some(found);
-            }
-            if liberties {
-                out.separating_liberties += 1;
-                if out
-                    .minimal_liberties
-                    .is_none_or(|best| found.rank() < best.rank())
-                {
-                    out.minimal_liberties = Some(found);
-                }
+        let found = Separating {
+            code,
+            to_move,
+            psk: pv,
+            ssk: sv,
+            stones,
+            liberties,
+        };
+        out.separating += 1;
+        if out.minimal.is_none_or(|best| found.rank() < best.rank()) {
+            out.minimal = Some(found);
+        }
+        if liberties {
+            out.separating_liberties += 1;
+            if out
+                .minimal_liberties
+                .is_none_or(|best| found.rank() < best.rank())
+            {
+                out.minimal_liberties = Some(found);
             }
         }
     }
@@ -522,5 +751,46 @@ impl fmt::Display for Separating {
             "code {} {} to move: psk {} ssk {}",
             self.code, self.to_move, self.psk, self.ssk
         )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Results come back in index order at every thread count, a surplus of
+    /// threads over indices and no indices at all included, and each thread
+    /// keeps its own state.
+    #[test]
+    fn indexed_results_come_back_in_index_order() {
+        let expected: Vec<usize> = (0..37).map(|i| i * i).collect();
+        for threads in [1, 2, 3, 14, 40] {
+            let got = solve_indexed(
+                37,
+                threads,
+                || 0_usize,
+                |seen, i| {
+                    *seen += 1;
+                    i * i
+                },
+            );
+            assert_eq!(got, expected, "{threads} threads");
+        }
+        assert!(solve_indexed(0, 4, || (), |(), i| i).is_empty());
+    }
+
+    /// A panic on a worker reaches the caller with its own message.
+    #[test]
+    #[should_panic(expected = "index 5 refused")]
+    fn a_worker_panic_reaches_the_caller() {
+        let _ = solve_indexed(
+            20,
+            4,
+            || (),
+            |(), i| {
+                assert!(i != 5, "index 5 refused");
+                i
+            },
+        );
     }
 }

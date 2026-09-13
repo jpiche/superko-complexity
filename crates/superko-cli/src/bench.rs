@@ -28,9 +28,13 @@
 //! | `empty-2x3`   | PSK, SSK   | 10⁸             |
 //! | `sweep-2x3`   | both       | 10⁶ per search  |
 //!
-//! An `empty-` case solves the empty board with Black to move. `sweep-2x3` is
-//! `superko_solve::separate::sweep_on_above` over every root of 2×3, without
-//! the witness verdicts `superko separate` adds when a root separates.
+//! An `empty-` case solves the empty board with Black to move, on one thread.
+//! `sweep-2x3` is `superko_solve::separate::sweep_with` over every root of
+//! 2×3 at the thread count `--threads` names (one by default), without the
+//! witness verdicts `superko separate` adds when a root separates. The thread
+//! count moves only its `seconds`: every other field of the line is a field of
+//! the `Sweep`, which does not depend on it (`superko_solve::separate`'s
+//! module docs, and its `tests/threads.rs`).
 //!
 //! # The line format
 //!
@@ -48,8 +52,10 @@
 //! - `seconds`: wall time to three decimals, of the same span in both kinds of
 //!   case — everything after the transition table is built. For an `empty-`
 //!   case that is the construction of its `Solver` (the archive allocation)
-//!   and the search; for the sweep it is the whole of `sweep_on_above`: its
-//!   two `Solver`s, the per-root decode and legality check, and every search.
+//!   and the search; for the sweep it is the whole of `sweep_with`: starting
+//!   and joining its threads when there is more than one, each thread's two
+//!   `Solver`s, the per-root decode and legality check, every search, and
+//!   adding up the per-root results.
 //!   Building the table is not timed, since no solver feature changes it; a
 //!   later feature that builds something per board (symmetry's code maps)
 //!   states here whether that build is inside the span;
@@ -80,21 +86,37 @@ pub const SWEEP_BUDGET_CAP: u64 = 1_000_000;
 
 /// The settings a bench run is under.
 ///
-/// Empty today: the suite runs the default solver. The flags a later feature
-/// adds (a thread count for the sweep, symmetry on or off) are fields here,
-/// read from the command line in `main.rs` and named by [`Settings::header`].
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub struct Settings {}
+/// The suite runs the default solver. Each flag a feature adds is a field
+/// here, read from the command line in `main.rs` and named by
+/// [`Settings::header`].
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Settings {
+    /// The threads the sweep case spreads its roots over, at least one. The
+    /// `empty-` cases are one search each and ignore it.
+    pub threads: usize,
+}
+
+impl Default for Settings {
+    /// One thread.
+    fn default() -> Self {
+        Self { threads: 1 }
+    }
+}
 
 impl Settings {
     /// The first line of a bench run: the settings in force.
     ///
     /// The move order is named although no flag sets it, because it is what a
     /// later ordering feature changes and a baseline that did not say which
-    /// order it measured would not be comparable.
+    /// order it measured would not be comparable. A line from before the
+    /// thread count existed, `flags order=heuristic`, ran on one thread.
     #[must_use]
     pub fn header(&self) -> String {
-        format!("flags order={}", order_name(MoveOrder::default()))
+        format!(
+            "flags order={} threads={}",
+            order_name(MoveOrder::default()),
+            self.threads
+        )
     }
 }
 
@@ -205,7 +227,7 @@ impl fmt::Display for Line {
 ///
 /// Refuses a board the transition table refuses, which no case of [`SUITE`]
 /// is.
-pub fn run_case(case: &Case, _settings: &Settings) -> Result<Line, String> {
+pub fn run_case(case: &Case, settings: &Settings) -> Result<Line, String> {
     let table = RuleTable::build(case.dims(), Suicide::Forbid).map_err(|e| e.to_string())?;
     let mut line = Line::default();
     line.push("case", case.name());
@@ -230,7 +252,12 @@ pub fn run_case(case: &Case, _settings: &Settings) -> Result<Line, String> {
         }
         Case::Sweep { budget, .. } => {
             let started = Instant::now();
-            let sweep = sep::sweep_on_above(&table, Some(budget), 0);
+            let opts = sep::Options {
+                budget: Some(budget),
+                min_stones: 0,
+                threads: settings.threads,
+            };
+            let sweep = sep::sweep_with(&table, opts);
             let seconds = started.elapsed().as_secs_f64();
             line.push("rule", "psk,ssk");
             line.push("resolved", sweep.resolved);
@@ -287,7 +314,14 @@ mod tests {
     #[test]
     fn the_header_names_the_default_order() {
         assert_eq!(MoveOrder::default(), MoveOrder::Heuristic);
-        assert_eq!(Settings::default().header(), "flags order=heuristic");
+        assert_eq!(
+            Settings::default().header(),
+            "flags order=heuristic threads=1"
+        );
+        assert_eq!(
+            Settings { threads: 14 }.header(),
+            "flags order=heuristic threads=14"
+        );
     }
 
     /// The suite pinned case by case, budgets included, and the budgets
@@ -427,6 +461,11 @@ mod tests {
             ("resolved-with-ssk-only", "0"),
         ]);
         assert_eq!(fields_but_seconds(&line), pinned);
+        // The thread count reaches the sweep and moves nothing but `seconds`.
+        for threads in [2, 14] {
+            let spread = run_case(&case, &Settings { threads }).unwrap();
+            assert_eq!(fields_but_seconds(&spread), pinned, "{threads} threads");
+        }
 
         let table = RuleTable::build(dims, Suicide::Forbid).unwrap();
         let sweep = sep::sweep_on_above(&table, Some(budget), 0);

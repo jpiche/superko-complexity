@@ -38,3 +38,16 @@ visibly, unless `SUPERKO_VERIFY_SLOW=1` is set.
 A `count-games` body is thread-independent; the witness command runs
 single-threaded and a `# produced-with:` line says how many threads the
 recorded run used. The 2×2 bodies are the ones marked `# slow:`.
+
+A `separate` body is thread-independent too: `--threads N` spreads the sweep's
+roots over N threads and adds nothing to the body
+(`crates/superko-solve/tests/threads.rs` holds the sweep and its body equal at
+one, two and fourteen threads on the boards it names). The witness command
+carries no `--threads`, and a file whose recorded run used more than one
+thread says so in a header line of the form
+
+```
+# produced-with: threads=14
+```
+
+A file without that line was produced on one thread.
