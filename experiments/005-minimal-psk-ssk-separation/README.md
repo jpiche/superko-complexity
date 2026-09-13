@@ -217,6 +217,79 @@ a separating play closes an odd walk of at least three plays with no pass at
 the recurring board, and such plays occur in games with no pass. That
 corrected the mechanism `docs/formal-model.md` §OPEN-1 stated.
 
+### 2026-09-13 — 1×6 and 2×3 under symmetry
+
+Runs of 2026-09-13 by the main session, at commit `855617f` with a clean
+tree, release build, one at a time, each `superko separate --board <board>
+--suicide forbid --threads 10 --symmetry on --budget <N>`
+(`data/runs-2026-09-13.log` records the times; the bodies and their `.err`
+files name the flags). `--symmetry on` searches one root per orbit of the
+board's symmetries and the color exchange and skips mirrored plays, under the
+unlicensed `board-symmetry` and `color-swap` divergences. Every number is
+`computed`.
+
+| board | budget per search | resolved of 1458 | unresolved | separating | resolved with an SSK-only play | searched / transported | empty board, PSK / SSK | nodes | elapsed, 10 threads |
+|---|---|---|---|---|---|---|---|---|---|
+| 1×6 | 10⁷ | 522 | 936 | 0 | 338 | 378 / 1080 | unresolved / unresolved | 3 924 176 675 | 15.9 s |
+| 2×3 | 10⁷ | 788 | 670 | 0 | 180 | 216 / 1242 | unresolved / unresolved | 1 978 344 864 | 9.8 s |
+| 1×6 | 10⁸ | 1218 | 240 | 4 | 1034 | 378 / 1080 | 1 / unresolved | 15 997 820 530 | 75.5 s |
+| 2×3 | 10⁸ | 992 | 466 | 4 | 384 | 216 / 1242 | 0 / unresolved | 15 787 640 549 | 78.2 s |
+
+In every run the least unresolved root is the empty board with Black to move.
+At 10⁷ the symmetric 2×3 sweep resolves 788 roots where the plain one resolved
+792. That run had canonical roots on (a transported root resolves exactly when
+its representative does) and mirrored moves on (which change which roots
+resolve under a budget); no run separated the two effects.
+The two 10⁸ bodies are `results/separate-1x6-forbid-symmetry-on-budget-1e8.txt`
+and `results/separate-2x3-forbid-symmetry-on-budget-1e8.txt`; the 10⁷ bodies
+are not promoted. The empty 1×6 board's PSK value, 1, is the one
+`tests/published.rs` reproduces for C-24.
+
+**The witness blocks at 10⁸.** Neither root was transported; its verdicts
+were searched on the root with mirrored moves on. The `minimal-liberties-`
+block names the same root in both bodies.
+
+| board | least separating root | to move | stones | PSK | SSK | witness floor | PSK: Black / White wins | SSK: Black / White wins | separates, determined |
+|---|---|---|---|---|---|---|---|---|---|
+| 1×6 | `X.X.X.` | Black | 3 | 1 | 6 | 1 | false / true | true / false | true, true |
+| 2×3 | `OOO/.X.` | White | 4 | 0 | −1 | −1 | true / false | false / true | true, true |
+
+Neither minimum is unconditional (`minimum-unconditional=false`): the empty
+board ranks below both and is unresolved.
+
+**The plain confirmations.** `superko solve --board <board> --rule psk|ssk
+--suicide forbid --root <root> --to-move <color> --komi-floor <k> --budget
+100000000`, no `--symmetry`, release binary at `855617f`
+(`data/witness-check-2026-09-13.txt`); the divergences named are the solver's
+standing ones only.
+
+| board | rule | value | nodes | Black wins | White wins |
+|---|---|---|---|---|---|
+| 1×6 | PSK | 1 | 12 770 190 | false | true |
+| 1×6 | SSK | 6 | 8 048 112 | true | false |
+| 2×3 | PSK | 0 | 91 894 350 | true | false |
+| 2×3 | SSK | unresolved | 100 000 001 | false | true |
+
+Every verdict agrees with the witness block, and the four bodies are
+`results/witness-<board>-<rule>-forbid.txt`, regenerated at `389b984` with the
+same values, node counts and verdicts. The 2×3 SSK value is unresolved in the
+plain search; its verdicts are not. These are C-56, and with C-53 they give
+C-57.
+
+**Two further checks, not promoted to `results/`.** The transposed 6×1 root
+`X/./X/./X/.` gives identical values, verdicts and node counts under both
+rules; on a line the transpose does not give the search a different move
+order, so this is not an independent search order. On 3×2 the transposed root
+`O./OX/O.` gives the same PSK verdicts, Black winning at floor −1, with its PSK
+value unresolved at 10⁸; its SSK searches, value and both verdicts, are
+unresolved at 10⁸.
+
+**Not run.** The naive engine on the witness roots: the command used
+`timeout`, which the macOS shell lacks, and the four runs exited 127 before
+starting. At 8 to 92 million pruned nodes an unpruned search would not finish;
+that is a reading of the node counts, not a measurement. Sweeps of 3×2 and
+6×1.
+
 ## Verdict
 
 **Row 1 passed, and row 2 did not fire**, so the sweep's numbers are worth
@@ -289,3 +362,40 @@ a measurement under an unlicensed divergence, not a result, and no claim
 cites it. Since then `separate --symmetry` also takes `roots` and `moves`, one
 half each, and mirrored-move bookkeeping was made cheaper; that notebook's
 follow-up section records both, with its timings.
+
+### 2026-09-13 — the six-point runs
+
+**Row 3 fired.** A separating root was found under `Defs.lean`'s rules on
+1×6 and on 2×3, and its four witness verdicts, searched separately and
+without the symmetry divergences, confirm it at a named komi floor: `X.X.X.`
+on 1×6 with Black to move at floor 1, and `OOO/.X.` on 2×3 with White to move
+at floor −1 (Result, 2026-09-13).
+
+**Its pre-registered consequence was not applied.** Row 3 said C-17 moves to
+`computed` with that root as its witness. The maintainer decided instead that
+C-17 names a *minimal* position, and that minimality in this experiment's
+order is its substance, so C-17 stays `open`. The existence of separating
+positions is C-56, `computed`, a row of its own.
+
+**Row 5 fired on both boards.** At 10⁸ nodes per search under symmetry the
+least unresolved root on 1×6 and on 2×3 is the empty board with Black to move,
+which ranks below each board's witness, so neither minimum is unconditional
+and the least separating position is not identified.
+
+**The hypothesis holds at six.** It placed the least separating board area
+under `Defs.lean`'s rules between 4 and 6. Four and five hold no separation,
+winners compared at every floor from −(m·n)−1 to m·n+1 (C-53), and six does
+(C-56), so the least area is six at the floors tested below six (C-57,
+`computed`). Floors outside that range below six are not compared.
+
+**Row 3's Lean route is not attempted yet.** Kernel evaluation of
+`Superko.decideWins` at the two witnesses under both rules is the next step.
+
+Consequences applied: ledger rows C-56 and C-57; the witness column and detail
+of C-17, whose status is unchanged; `results/` receives the two 10⁸ sweeps and
+the four plain witness solves; `README.md`, `docs/open-questions.md` §3,
+`proofs/C-52.md` and the status comment of
+`lean/SuperkoComplexity/Results/C50_Mechanism.lean`
+([`../../notebook/2026-09-13-six-point-separation.md`](../../notebook/2026-09-13-six-point-separation.md)).
+
+**Status stays `running`.**

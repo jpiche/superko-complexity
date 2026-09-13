@@ -72,11 +72,15 @@ mirror also
 censuses the situation graph and finds a single mutually reachable component
 above the empty board, so C-42's prune removes at most two archive entries
 (C-45, C-46): pruning the archive to a subset of itself is closed. The solver
-finds no position whose value differs between positional and situational
-superko on any board of at most five points, or at any of the 792 of 2×3's
-1458 roots it resolves within its node budget (C-53), where the suicide-removing
-convention, which `Defs.lean` does not model, already separates them on 1×2
-(C-54). Every number here regenerates from a witness command in [`results/`](results/) or a named
+finds no position whose winner differs between positional and situational
+superko on any board of at most five points, at the komi floors it tests
+(C-53), where the suicide-removing convention, which `Defs.lean` does not
+model, already separates them on 1×2 (C-54). On six points it finds such
+positions: on 1×6, `X.X.X.` with Black to move is won by White at komi floor 1
+under positional superko and by Black under situational superko, and on 2×3
+`OOO/.X.` with White to move separates at floor −1 (C-56, `computed`), so six
+is the least board area carrying one, within the floors tested below six
+(C-57, `computed`). Every number here regenerates from a witness command in [`results/`](results/) or a named
 test.
 
 **Not established.** The classes, which is the gap that matters. They are
@@ -84,9 +88,10 @@ grounded in prose (C-20); the sentence that turns the decider into an EXPSPACE
 membership is C-32, `folklore` ([`proofs/C-32.md`](proofs/C-32.md)); the
 transfer of the hardness construction to this ruleset is C-33, `open`; and the
 theorem that would carry the folklore EXPTIME argument beyond Robson's
-construction to arbitrary Go is C-49, which nobody has. No position whose value
-differs between the two superko rules under `Defs.lean`'s rules is known (C-17,
-`open`).
+construction to arbitrary Go is C-49, which nobody has. The least position
+separating the two superko rules under `Defs.lean`'s rules is not identified:
+on the six-point boards swept the empty board, which ranks first, has an
+unresolved SSK value (C-17, `open`). No separating verdict is checked by a kernel.
 
 What a reader must believe is [`docs/trusted-base.md`](docs/trusted-base.md);
 what is live is [`docs/open-questions.md`](docs/open-questions.md).

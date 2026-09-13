@@ -63,7 +63,7 @@ matching `C-<digits>`, `depends-on` comma-separated or `-`.
 | C-14 | SUPERKO-GO is in EXPTIME | conjecture | infra-gap | C-1 | Robson's belief as reported second-hand in a 2011 blog comment and in Hearn 2006; no proof |
 | C-15 | The index of the congruence on histories that agrees on legality and on the value, maximized over roots and komi floors, grows as 2^poly(m·n) | open | formalizable | C-13 | - ; the row used to say "the history-congruence index H(n)", which named neither the congruence nor the quantifier over roots, and open-questions.md §4 leans on it |
 | C-16 | Mechanical area scoring agrees with AGA agreed scoring under optimal play | conjecture | formalizable | - | docs/formal-model.md §4; the resumption mechanism the argument uses is AGA Rules 9 and 10, held |
-| C-17 | A minimal position exists whose game value differs under PSK and SSK | open | formalizable | - | KGS anecdotes; no published minimal case. Under Defs.lean's rules there is none on any board of at most five points, nor at any of the 792 of 2x3's 1458 roots resolved within 10^7 nodes per search (C-53); under suicide removal the least is X. on 1x2 (C-54); experiment 005, and "game value" is defined in the detail below |
+| C-17 | A minimal position exists whose game value differs under PSK and SSK | open | formalizable | - | KGS anecdotes; no published minimal case. Under Defs.lean's rules there is none on any board of at most five points (C-53); separating positions exist on six-point boards (C-56) and six is the least board area carrying one (C-57); the least position in experiment 005 order is not identified, because on 1x6 and on 2x3 the empty board with Black to move, which ranks below both witnesses, is unresolved at 10^8 nodes per search under symmetry; under suicide removal the least is X. on 1x2 (C-54); experiment 005, and "game value" is defined in the detail below |
 | C-18 | Under AGA rules a pass is exempt from the superko restriction | cited | prose-only | - | AGA Rules 2, 6 and 7 (held): Rule 6 restricts playing, Rule 2 says a pass is always legal; Tromp–Taylor Rule 6 (held) makes a turn either a pass or a non-repeating move |
 | C-19 | Pass stones do not affect the outcome under area scoring | cited | prose-only | - | AGA Rule 12 (held): under area counting prisoners are ignored, and a pass stone is a prisoner; Rule 11's extra White pass changes no point of the board |
 | C-20 | Mathlib has no resource-bounded complexity class; the downstream Lean 4 libraries surveyed supply classes, a generic space-membership lemma that is axiom-clean at this project's Mathlib pin, and space measures over machines and programs, and none supplies a PSPACE-complete source problem under polynomial-time many-one reductions over a string-encoded Turing-machine class | computed | prose-only | - | experiments/001-mathlib-complexity-audit and notebook/2026-09-11-complexity-grounding.md; mathlib f5e9087 checked 2026-09-09; descriptive-complexity de212562, complexitylib 6c248df and EdouardBonnet/classical-complexity 026a662 checked 2026-09-10; cslib ec768ef, Shreyas4991/Algolean f64556d and zksecurity/caliper b62f7c8b checked 2026-09-11 |
@@ -102,6 +102,8 @@ matching `C-<digits>`, `depends-on` comma-separated or `-`.
 | C-53 | Under Defs.lean's rules no position separates PSK from SSK on any board of at most five points: at every coloring of 1x1, 1x2, 1x3, 1x4, 2x2 and 1x5 and of their transposes, with either color to move, the minimax area difference is the same under both rules. At every root of every board of at most five points in both orientations, under the rules of Defs.lean, the winner under PSK also equals the winner under SSK at every komi floor from -(m*n)-1 to m*n+1, both colors' verdicts computed directly under each rule; floors outside that range are not tested. The rules do differ in legality on those boards: the SSK searches made plays PSK refuses at 4, 98 and 328 roots of 1x4, 2x2 and 1x5. On 1x3 they made none, every such play they generated being cut off, so the 1x3 agreement carries no evidence from the searches that the rules met there; the 1x3 legality gap is exhibited by crates/superko-graph/tests/containment.rs. On 2x3 the sweep is not exhaustive: at 10^7 nodes per search both searches resolve 792 of its 1458 roots, the values agree at all 792, and 184 of them made a play PSK refuses; the other 666 roots, the empty board among them, are unresolved and nothing is stated about them | computed | formalizable | - | results/separate-1x1-forbid.txt through -1x5-forbid.txt and -2x2-forbid.txt, and -2x3-forbid-budget-1e7.txt for 2x3, experiment 005; the line transposes by crates/superko-solve/tests/agreement.rs, which compares every field with no root unresolved; the winners on the boards of at most five points by the same file's the_winners_agree_under_both_rules_on_every_board_of_five_points, ignored in debug, which pins 1608 roots and 76944 verdict searches; the counts of roots making such a play depend on the search order and are lower bounds |
 | C-54 | Under the suicide-removing convention, which Defs.lean does not model, the least position separating PSK from SSK in experiment 005's order is X. on 1x2 with Black to move: its minimax area difference is -2 under PSK and 0 under SSK, and at komi floor -2 White wins under PSK and Black under SSK, as at -1 read through C-55. No 1x1 position separates, and none of 1x3, 1x4 or 2x2 does, so under that convention separation is not monotone in the board | computed | formalizable | C-55 | results/separate-1x2-remove-own.txt with its four witness verdicts, each a separate search; -1x1-, -1x3-, -1x4- and -2x2-remove-own.txt for the absences; traced by hand in notebook/2026-09-12-c17-separation-search.md; formalizing it needs a suicide-removing rule, which Defs.lean does not have |
 | C-55 | At every position of 1x1, 1x2, 1x3, 1x4 and 2x2 as the root under either suicide convention, and of 2x1, 3x1, 4x1, 1x5 and 5x1 as the root under the suicide-forbidding convention, with either color to move, under either superko rule, exactly one color wins at each komi floor k from -(m*n)-1 to m*n+1, and Black wins at k exactly when the minimax area difference exceeds k | computed | formalizable | - | crates/superko-solve/tests/agreement.rs, verdicts_are_determined_and_track_the_value for the boards under both conventions and the_winners_agree_under_both_rules_on_every_board_of_five_points, ignored in debug, for the suicide-forbidding convention on every board of at most five points, each computing the winners and the value by separate recursions; the general statement is a short induction over WinsFor and is not written |
+| C-56 | Under the rules of Defs.lean, positions separating PSK from SSK exist on boards of six points: at a named komi floor one color wins under PSK and the other under SSK. On 1x6, X.X.X. with Black to move: at komi floor 1 White wins under PSK and Black wins under SSK; the minimax area differences are 1 under PSK and 6 under SSK. On 2x3, OOO/.X. with White to move: at komi floor -1 Black wins under PSK and White wins under SSK; the PSK area difference is 0, and the SSK one is not resolved by the plain search at 10^8 nodes (it is -1 in the symmetric sweep, under the unlicensed board-symmetry and color-swap divergences) | computed | formalizable | - | results/witness-1x6-psk-forbid.txt, -1x6-ssk-, -2x3-psk- and -2x3-ssk-forbid.txt, each a plain superko solve at 10^8 nodes under the solver's standing divergences only, both colors' verdicts searched by the verdict recursion and not read from the value; found by results/separate-1x6-forbid-symmetry-on-budget-1e8.txt and -2x3-forbid-symmetry-on-budget-1e8.txt, which name board-symmetry and color-swap unlicensed and report four separating roots on each board; experiment 005 |
+| C-57 | Under the rules of Defs.lean, the least board area m*n carrying a position whose winner differs between PSK and SSK at some komi floor is six, where for boards of at most five points the floors compared are -(m*n)-1 to m*n+1 and floors outside that range are not tested | computed | formalizable | C-53, C-56 | the absence on every board of at most five points in both orientations is C-53's, winners compared directly at every floor of that range by crates/superko-solve/tests/agreement.rs, the_winners_agree_under_both_rules_on_every_board_of_five_points; the presence at six is C-56's 1x6 and 2x3 witnesses |
 
 ## Detail
 
@@ -608,12 +610,33 @@ stones, then the position code, then Black to move before White. Under `Defs.lea
 most five points (C-53). Under the suicide-removing convention the least
 witness is on 1×2 (C-54), and under that convention separation is not
 monotone in the board: 1×2 separates while 1×3, 1×4 and 2×2 do not. Under
-`Defs.lean`'s rules nothing is known either way, so the absence of a witness on
-the boards swept bounds nothing about the boards above them. Of the boards of
-six points only 2×3 is swept, and only under a budget of 10⁷ nodes per search:
-none of the 792 roots it resolves separates, and the 666 it leaves unresolved
-include the empty board, so no minimum on 2×3 is shown (C-53). 1×6, 3×2 and
-6×1 are not swept.
+`Defs.lean`'s rules separation first appears at six points, at the floors
+tested below six (C-57); whether it
+is monotone in the board above six is not known.
+
+Of the boards of six points, 2×3 is swept without symmetry under a budget of
+10⁷ nodes per search (C-53), and 1×6 and 2×3 are swept with `--symmetry on`,
+under the unlicensed `board-symmetry` and `color-swap` divergences, at 10⁷ and
+at 10⁸ nodes per search. At 10⁷ neither finds a separating root; at 10⁸ each
+finds four. The least each names, `X.X.X.` on 1×6 with Black to move and
+`OOO/.X.` on 2×3 with White to move, is confirmed by plain solves without
+those divergences (C-56), so six is the least board area carrying a
+separating position, at the floors tested below six (C-57). 3×2 and 6×1 are
+not swept. Each witness's transpose was run plainly at 10⁸ nodes, not promoted
+to `results/`: 6×1 gives identical values, verdicts and node counts, and on a
+line that is not an independent search order; on 3×2 the PSK verdicts agree
+with the PSK value unresolved, and the SSK value and both SSK verdicts are
+unresolved (experiment 005).
+
+**Why C-17 stays open.** The maintainer decided on 2026-09-13 that the claim
+names a *minimal* position, and that minimality in experiment 005's order is
+its substance; the existence of a separating position is C-56, a row of its
+own. The least position is not identified. On 1×6 and on 2×3 the empty board
+with Black to move ranks below both witnesses, and at 10⁸ nodes per search
+under symmetry its SSK value is unresolved on each board, so neither sweep's
+minimum is unconditional (`minimum-unconditional=false` in both bodies).
+Experiment 005's pre-registered row 3 would have moved C-17 to `computed` on a
+witness; that consequence was not applied, for this reason.
 
 ### C-50 to C-52 — what separates the rules
 
@@ -677,3 +700,65 @@ of separation C-53 records now reaches winners directly on the boards the test
 every board of at most five points in both orientations, suicide forbidden,
 at every komi floor of the range above — and not only through this agreement;
 on 2×3 it is a statement about values.
+
+### C-56, C-57 — separation at six points
+
+**The witnesses.** Both are verdicts at one komi floor, each searched by the
+verdict recursion under one rule, so neither routes through the threshold
+agreement of C-55, which is not computed on any board of six points. From the
+four files `results/witness-<board>-<rule>-forbid.txt`, each a plain
+`superko solve` at 10⁸ nodes:
+
+| board | root | to move | komi floor | PSK: Black wins / White wins | SSK: Black wins / White wins | PSK value | SSK value |
+|---|---|---|---|---|---|---|---|
+| 1×6 | `X.X.X.` | Black | 1 | false / true | true / false | 1 | 6 |
+| 2×3 | `OOO/.X.` | White | −1 | true / false | false / true | 0 | unresolved at 10⁸ |
+
+On 1×6 White wins under PSK and Black under SSK; on 2×3 Black wins under PSK
+and White under SSK. Each root carries no libertyless chain.
+
+**How they were found.** On 2026-09-13 the main session swept 1×6 and 2×3
+with `superko separate --suicide forbid --threads 10 --symmetry on` at 10⁷ and
+at 10⁸ nodes per search, at commit `855617f`. At 10⁷ no root separates on
+either board; at 10⁸ four separate on each, and the least each body names is
+the root above. Those runs search one root per orbit of the board's
+symmetries and the exchange of colors and skip mirrored plays, so their
+bodies, `results/separate-1x6-forbid-symmetry-on-budget-1e8.txt` and
+`-2x3-forbid-symmetry-on-budget-1e8.txt`, name `board-symmetry` and
+`color-swap` unlicensed. The two witness roots were searched themselves, not
+transported, and their verdicts in those bodies were searched with mirrored
+moves on. Experiment 005 has the full ladder.
+
+**How they were confirmed.** The four verdicts of each root were then
+searched by `superko solve` with no `--symmetry`, whose bodies name only the
+solver's standing divergences: `dims-are-runtime`, `rule-table-memo` and,
+under PSK, `psk-archive-projection`, all unlicensed, and
+`winner-via-floor-komi`, licensed by `Superko.winnerZ_eq_winner`. Every
+verdict resolves within the budget and agrees with the sweep's witness block;
+so does every value that resolves. The C-56 row therefore rests on neither
+symmetry divergence.
+
+**The 2×3 SSK value.** The plain value search of `OOO/.X.` under SSK exceeds
+10⁸ nodes, so the plain search leaves that value unresolved. The symmetric
+sweep gives −1, under the two unlicensed divergences. The row states the
+winner at floor −1, which the plain verdict searches resolve, and does not
+state that value as plain.
+
+**C-57.** Its absence half is C-53's comparison of winners at every root of
+every board of at most five points in both orientations, at komi floors
+−(m·n)−1 to m·n+1; its presence half is C-56 at area six.
+
+**What is not established.**
+
+- **The least separating position.** On 1×6 and 2×3 the empty board with
+  Black to move ranks below both witnesses and is unresolved at 10⁸ nodes per
+  search under symmetry; 3×2 and 6×1 are not swept. That is C-17, and it
+  stays `open`.
+- **Floors outside the range for C-57.** Below six points, winners at komi
+  floors outside −(m·n)−1 to m·n+1 are not compared.
+- **The other separating roots.** Each sweep counts four and names one; the
+  unresolved roots of each sweep may hold more.
+- **Anything proved.** No verdict here is checked by a kernel, and no Lean
+  certificate has been attempted: experiment 005's row 3 is the next step. The
+  Rust mirror of the rules and the solver are untrusted, their agreement with
+  `Defs.lean` tested, not proved.

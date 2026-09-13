@@ -33,7 +33,8 @@ visibly, unless `SUPERKO_VERIFY_SLOW=1` is set.
 | `axioms.txt` | the `#print axioms` dump for every headline theorem, checked by `check-lean.sh` |
 | `count-games-<board>-<rule>-<suicide>.txt` | one game count from the empty board by the Rust mirror (`computed`): the body `superko count-games` prints, with the resolved rules, the divergence list, the count, the node count and the refusal census. Cited by C-23, C-36, C-37 and, once the 2×2 runs land, C-9 and C-38 |
 | `scc-census-<board>-<suicide>.txt` | the strongly connected components of one board's situation graph (`computed`): vertices, edges, components, the largest, the empty board's, the count outside the largest, and the condensation depth, under both readings of the vertex set — `legal-` over the positions play can reach, `all-` over every coloring `Defs.lean` admits. `outside-largest` is the number C-46 cites: it bounds what C-42's forward-cone prune can remove. Cited by C-45 and C-46 |
-| `separate-<board>-<suicide>[-budget-<N>].txt` | the separation sweep of one board (`computed`), described below. Cited by C-53 and C-54 |
+| `separate-<board>-<suicide>[-symmetry-<value>][-budget-<N>].txt` | the separation sweep of one board (`computed`), described below. Cited by C-53, C-54 and C-56 |
+| `witness-<board>-<rule>-<suicide>.txt` | one plain `superko solve` of a separating root under one superko rule at one komi floor (`computed`), described below. Cited by C-56 |
 
 A `separate` file holds every root under both superko rules, the resolved and
 unresolved counts, the empty board's value under each rule, the number of
@@ -43,7 +44,23 @@ search made one, whether each of the two minima is unconditional, and, when a
 root separates, the least in experiment 005's order with its four witness
 verdicts at one komi floor. A sweep run under a node budget names the budget in
 the file name as well as in the body, and what it shows holds at its resolved
-roots only.
+roots only. A sweep run with `--symmetry` other than `off` names the value in
+the file name too, as `-symmetry-<value>` after the suicide convention and
+before the budget (`separate-1x6-forbid-symmetry-on-budget-1e8.txt`), and its
+witness command carries the same `--symmetry` flag. Its body is the one that
+value prints, described below, and what it shows is `computed` under the
+unlicensed divergences its `divergences=` line names.
+
+A `witness` file holds the body of one `superko solve` of a root a sweep
+reported as separating, under one superko rule, with no `--symmetry`: the
+resolved rules, the divergence list, the root and the color to move, the value
+(`unresolved` when the value search exceeds the budget), its node count and
+depth, the komi floor, both colors' verdicts at that floor, each its own search
+under the same budget (`unresolved` when it exceeds it), and the budget. A
+root's four witness verdicts are the two files of its board, one per rule. They
+confirm a witness that a sweep found under symmetry with the symmetry
+divergences off, so a claim citing them rests on the solver's standing
+divergences only.
 
 A `count-games` body is thread-independent; the witness command runs
 single-threaded and a `# produced-with:` line says how many threads the
@@ -64,7 +81,8 @@ A file without that line was produced on one thread. The two forms differ: the
 `count-games` files already committed carry a free-form line that begins
 `# produced-with: --threads N` (N is 4, 7 or 14 among them) and goes on in free
 text, saying why the body does not depend on it, while `threads=N` is the form
-for `separate`, which no committed `separate` file carries yet. Both are header
+for `separate`, which `separate-1x6-forbid-symmetry-on-budget-1e8.txt` and
+`separate-2x3-forbid-symmetry-on-budget-1e8.txt` carry as `threads=10`. Both are header
 lines, outside the body `verify-results.sh` diffs.
 
 A `separate` body produced with `--symmetry` other than `off` is a different

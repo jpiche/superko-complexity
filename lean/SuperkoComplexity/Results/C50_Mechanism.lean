@@ -54,11 +54,12 @@ than a guess:
 ## Status
 
 `proved`, machine-checked, on the three standard axioms. Nothing here bears on
-whether the *value* of a position differs between the rules: that is C-17, and
-it is open. A legality gap is necessary for a value gap and nowhere near
-sufficient: the sweep of `superko-solve` finds no value gap on any board with
-`m · n ≤ 5` (C-53), and C-53 also records how often its searches made plays SSK
-permits and PSK refuses on those boards.
+whether the *value* of a position differs between the rules. A legality gap is
+necessary for a value gap and nowhere near sufficient: the sweep of
+`superko-solve` finds no value gap on any board with `m · n ≤ 5` (C-53,
+`computed`), and C-53 also records how often its searches made plays SSK
+permits and PSK refuses on those boards. Positions whose winner differs exist
+on 1×6 and 2×3 (C-56, `computed`); which is the least is C-17, `open`.
 -/
 
 namespace Superko

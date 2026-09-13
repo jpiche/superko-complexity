@@ -60,19 +60,23 @@ Two sub-questions, of very different difficulty:
   PSK refuses on some of those boards; under the suicide-removing convention
   the least is `X.` on 1×2 (C-54, `computed`). Under that convention separation
   is not monotone in the board; under `Defs.lean`'s rules nothing is known
-  either way, so the absence at five points bounds nothing at six. Of the
-  six-point boards only 2×3 is swept, under a node budget, and it is
-  inconclusive: none of the 792 roots it resolves separates, and 666 are
-  unresolved, the empty board among them (C-53). The solver can spread a
-  sweep over threads, and behind a flag can search one root per symmetry
-  orbit and skip mirrored plays, under two unlicensed divergences
-  (`board-symmetry`, `color-swap`); 2×3 has not been swept with them at a
-  larger budget. The shape of a separating play is settled (C-50 and C-51,
-  `proved`; C-52, `proved` by hand): it closes an odd walk of at least three
-  plays with no pass at the recurring board, so a value separation needs a
-  position where closing that walk is worth a player's while. A witness, once
-  found, would be certified by kernel evaluation of `Superko.decideWins` under
-  both rules at one komi, if that evaluation reaches its board. Fully formalizable, and publishable on its own.
+  about monotonicity above six points. On six points separating positions
+  exist: `X.X.X.` on 1×6 with Black to move, won by White at komi floor 1
+  under PSK and by Black under SSK, and `OOO/.X.` on 2×3 with White to move,
+  at floor −1 (C-56, `computed`). Sweeps of 1×6 and 2×3 at 10⁸ nodes per
+  search, under the unlicensed `board-symmetry` and `color-swap` divergences,
+  found them, four separating roots on each board, and plain solves without
+  those divergences confirmed the four verdicts of each. Six is therefore the
+  least board area carrying a separating position, at the floors tested below
+  six (C-57, `computed`). The least position is still not identified: on both
+  boards the empty board with Black to move ranks first and its SSK value is
+  unresolved at that budget, so C-17 stays `open`; 3×2 and 6×1 are not swept. The shape of
+  a separating play is settled (C-50 and C-51, `proved`; C-52, `proved` by
+  hand): it closes an odd walk of at least three plays with no pass at the
+  recurring board. The two witnesses would be certified by kernel evaluation
+  of `Superko.decideWins` under both rules at their komi floors, if that
+  evaluation reaches a six-point board; that is not attempted yet. Fully
+  formalizable, and publishable on its own.
 - **A complexity separation** (C-12). Much harder, and `infra-gap`.
 
 **C-17 is the best short-term target in the project**: novel, self-contained,

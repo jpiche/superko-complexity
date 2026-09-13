@@ -1,0 +1,59 @@
+# witness: cargo run --release -q -p superko-cli -- separate --board 1x6 --suicide forbid --symmetry on --budget 100000000 2>/dev/null
+# commit: 855617f
+# date: 2026-09-13
+# defs-blob: 685d6dd688635e2071914d9d1fad0f60725cda96
+# produced-with: threads=10
+#
+board=1x6
+suicide=forbid
+divergences=dims-are-runtime:unlicensed,psk-archive-projection:unlicensed,rule-table-memo:unlicensed,winner-via-floor-komi:Superko.winnerZ_eq_winner,board-symmetry:unlicensed,color-swap:unlicensed
+roots=1458
+resolved=1218
+unresolved=240
+unresolved-least=......:black
+minimum-unconditional=false
+minimum-liberties-unconditional=false
+empty-psk=1
+empty-ssk=unresolved
+separating=4
+separating-liberties=4
+ssk-only-plays=1346062840
+roots-with-ssk-only=1274
+resolved-with-ssk-only=1034
+min-stones=0
+skipped=0
+symmetry=on
+symmetry-searched=378
+symmetry-transported=1080
+symmetry-mirrored-moves=on
+minimal-root=X.X.X.
+minimal-to-move=black
+minimal-stones=3
+minimal-liberties=true
+minimal-psk=1
+minimal-ssk=6
+minimal-transported=false
+minimal-komi-floors=1,2,3,4,5
+minimal-witness-komi-floor=1
+minimal-witness-psk-black-wins=false
+minimal-witness-psk-white-wins=true
+minimal-witness-ssk-black-wins=true
+minimal-witness-ssk-white-wins=false
+minimal-witness-separates=true
+minimal-witness-determined=true
+minimal-liberties-root=X.X.X.
+minimal-liberties-to-move=black
+minimal-liberties-stones=3
+minimal-liberties-liberties=true
+minimal-liberties-psk=1
+minimal-liberties-ssk=6
+minimal-liberties-transported=false
+minimal-liberties-komi-floors=1,2,3,4,5
+minimal-liberties-witness-komi-floor=1
+minimal-liberties-witness-psk-black-wins=false
+minimal-liberties-witness-psk-white-wins=true
+minimal-liberties-witness-ssk-black-wins=true
+minimal-liberties-witness-ssk-white-wins=false
+minimal-liberties-witness-separates=true
+minimal-liberties-witness-determined=true
+budget=100000000

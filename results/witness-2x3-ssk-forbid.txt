@@ -1,0 +1,18 @@
+# witness: cargo run --release -q -p superko-cli -- solve --board 2x3 --rule ssk --suicide forbid --root OOO/.X. --to-move white --komi-floor -1 --budget 100000000 2>/dev/null
+# commit: 389b984
+# date: 2026-09-13
+# defs-blob: 685d6dd688635e2071914d9d1fad0f60725cda96
+#
+board=2x3
+rule=ssk
+suicide=forbid
+divergences=dims-are-runtime:unlicensed,rule-table-memo:unlicensed,winner-via-floor-komi:Superko.winnerZ_eq_winner
+root=OOO/.X.
+to-move=white
+value=unresolved
+nodes=100000001
+max-depth=96
+komi-floor=-1
+black-wins=false
+white-wins=true
+budget=100000000
