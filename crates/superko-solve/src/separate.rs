@@ -36,7 +36,10 @@
 //! the witness itself never routes through the threshold agreement between
 //! scores and winners (see the crate docs). A report of *no* separation, and
 //! the minimality of a witness, do: they are statements about values, and
-//! reach winners only through that agreement.
+//! reach winners only through that agreement. Under the no-suicide rule on
+//! every board of at most five points, in both orientations, the winners under
+//! the two rules are also compared directly, at every komi floor from
+//! `-(m·n) - 1` to `m·n + 1`, by `tests/agreement.rs` (C-53, `computed`).
 //!
 //! # Threads
 //!

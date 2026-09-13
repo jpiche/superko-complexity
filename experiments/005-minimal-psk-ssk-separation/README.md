@@ -262,6 +262,15 @@ that the SSK-only plays counted are all such plays in the trees; that the two
 rules give the same winner on 1×5 at every komi, which needs C-55 beyond the
 boards it was checked on; and anything `proved` about C-17.
 
+*Note, 2026-09-13.* The 1×5 item above is closed within the tested floor
+range: `the_winners_agree_under_both_rules_on_every_board_of_five_points` in
+`crates/superko-solve/tests/agreement.rs` computes both colors' verdicts under
+each rule at every root of every board of at most five points in both
+orientations, suicide forbidden, at every komi floor from −(m·n)−1 to m·n+1,
+and finds the PSK winner equal to the SSK winner everywhere (C-53, C-55,
+`computed`). Floors outside that range are not tested, and nothing is proved
+([`../../notebook/2026-09-13-closing-the-1x5-gap.md`](../../notebook/2026-09-13-closing-the-1x5-gap.md)).
+
 **Status stays `running`.** It resumes at the six-point boards, where the empty
 2×3 root, unresolved at 10⁹ nodes, is the first obstacle.
 

@@ -99,9 +99,9 @@ matching `C-<digits>`, `depends-on` comma-separated or `-`.
 | C-50 | A pass made while the board is X archives both of X's situations, so at every state whose history contains the history that pass left, no play recreating X is permitted under either superko rule | proved | formalized:C50_pass_closes_board | - | lean/SuperkoComplexity/Results/C50_Mechanism.lean; pass_seen_both, with now_mem_seen_start and now_mem_seen_step for the invariant it needs. That every later state of a game is such a state is Basic.seen_subset_of_step iterated along the moves, which is not written as a theorem about sequences of moves |
 | C-51 | A play never removes the mover's own stones, puts a mover stone at no point but the one played, and adds no opponent stone; so no play recreates the board it was played on, and no two plays by one color with only passes between them do | proved | formalized:C51_play_changes_board | - | lean/SuperkoComplexity/Results/C50_Mechanism.lean; resolve_keeps_mover, resolve_mover_of_ne, resolve_other_of_other and C51_two_plays_by_one_color_change_board. Two plays by different colors can recreate a board: a ko |
 | C-52 | Where SSK permits a play that PSK refuses, the board it creates has stood only with the mover to play; the walk back from its last occurrence has odd length, begins and ends with plays by the mover, holds at least three plays, and no pass is made at that board before the separating play; each color's plays remove exactly as many of the other's stones as the other plays, so with three plays and no pass the middle play removes two stones and the outer two remove one between them. Such plays occur in games with no pass, so the separation does not depend on C-18 | proved | formalizable | C-50, C-51 | proofs/C-52.md, by hand: the argument over a walk is checked by no kernel, its local steps are (C-50, C-51); the pass-free 1x3 game is also replayed by crates/superko-graph/tests/containment.rs |
-| C-53 | Under Defs.lean's rules no position separates PSK from SSK on any board of at most five points: at every coloring of 1x1, 1x2, 1x3, 1x4, 2x2 and 1x5 and of their transposes, with either color to move, the minimax area difference is the same under both rules. The rules do differ in legality on those boards: the SSK searches made plays PSK refuses at 4, 98 and 328 roots of 1x4, 2x2 and 1x5. On 1x3 they made none, every such play they generated being cut off, so the 1x3 agreement carries no evidence from the searches that the rules met there; the 1x3 legality gap is exhibited by crates/superko-graph/tests/containment.rs. On 2x3 the sweep is not exhaustive: at 10^7 nodes per search both searches resolve 792 of its 1458 roots, the values agree at all 792, and 184 of them made a play PSK refuses; the other 666 roots, the empty board among them, are unresolved and nothing is stated about them | computed | formalizable | - | results/separate-1x1-forbid.txt through -1x5-forbid.txt and -2x2-forbid.txt, and -2x3-forbid-budget-1e7.txt for 2x3, experiment 005; the line transposes by crates/superko-solve/tests/agreement.rs, which compares every field with no root unresolved; the counts of roots making such a play depend on the search order and are lower bounds |
+| C-53 | Under Defs.lean's rules no position separates PSK from SSK on any board of at most five points: at every coloring of 1x1, 1x2, 1x3, 1x4, 2x2 and 1x5 and of their transposes, with either color to move, the minimax area difference is the same under both rules. At every root of every board of at most five points in both orientations, under the rules of Defs.lean, the winner under PSK also equals the winner under SSK at every komi floor from -(m*n)-1 to m*n+1, both colors' verdicts computed directly under each rule; floors outside that range are not tested. The rules do differ in legality on those boards: the SSK searches made plays PSK refuses at 4, 98 and 328 roots of 1x4, 2x2 and 1x5. On 1x3 they made none, every such play they generated being cut off, so the 1x3 agreement carries no evidence from the searches that the rules met there; the 1x3 legality gap is exhibited by crates/superko-graph/tests/containment.rs. On 2x3 the sweep is not exhaustive: at 10^7 nodes per search both searches resolve 792 of its 1458 roots, the values agree at all 792, and 184 of them made a play PSK refuses; the other 666 roots, the empty board among them, are unresolved and nothing is stated about them | computed | formalizable | - | results/separate-1x1-forbid.txt through -1x5-forbid.txt and -2x2-forbid.txt, and -2x3-forbid-budget-1e7.txt for 2x3, experiment 005; the line transposes by crates/superko-solve/tests/agreement.rs, which compares every field with no root unresolved; the winners on the boards of at most five points by the same file's the_winners_agree_under_both_rules_on_every_board_of_five_points, ignored in debug, which pins 1608 roots and 76944 verdict searches; the counts of roots making such a play depend on the search order and are lower bounds |
 | C-54 | Under the suicide-removing convention, which Defs.lean does not model, the least position separating PSK from SSK in experiment 005's order is X. on 1x2 with Black to move: its minimax area difference is -2 under PSK and 0 under SSK, and at komi floor -2 White wins under PSK and Black under SSK, as at -1 read through C-55. No 1x1 position separates, and none of 1x3, 1x4 or 2x2 does, so under that convention separation is not monotone in the board | computed | formalizable | C-55 | results/separate-1x2-remove-own.txt with its four witness verdicts, each a separate search; -1x1-, -1x3-, -1x4- and -2x2-remove-own.txt for the absences; traced by hand in notebook/2026-09-12-c17-separation-search.md; formalizing it needs a suicide-removing rule, which Defs.lean does not have |
-| C-55 | At every position of 1x1, 1x2, 1x3, 1x4 and 2x2 as the root, with either color to move, under either superko rule and either suicide convention, exactly one color wins at each komi floor k from -(m*n)-1 to m*n+1, and Black wins at k exactly when the minimax area difference exceeds k | computed | formalizable | - | crates/superko-solve/tests/agreement.rs, verdicts_are_determined_and_track_the_value, which computes the winners and the value by separate recursions; the general statement is a short induction over WinsFor and is not written |
+| C-55 | At every position of 1x1, 1x2, 1x3, 1x4 and 2x2 as the root under either suicide convention, and of 2x1, 3x1, 4x1, 1x5 and 5x1 as the root under the suicide-forbidding convention, with either color to move, under either superko rule, exactly one color wins at each komi floor k from -(m*n)-1 to m*n+1, and Black wins at k exactly when the minimax area difference exceeds k | computed | formalizable | - | crates/superko-solve/tests/agreement.rs, verdicts_are_determined_and_track_the_value for the boards under both conventions and the_winners_agree_under_both_rules_on_every_board_of_five_points, ignored in debug, for the suicide-forbidding convention on every board of at most five points, each computing the winners and the value by separate recursions; the general statement is a short induction over WinsFor and is not written |
 
 ## Detail
 
@@ -599,7 +599,9 @@ of verdicts at one named komi floor. That is the quantity `Defs.lean` defines
 and the one a kernel evaluation of `Superko.decideWins` can check; the value
 locates candidates and is not the evidence. The absence of a witness and the
 minimality of one are statements about values, and reach winners only through
-C-55.
+C-55, with one exception: under `Defs.lean`'s rules, on every board of at most
+five points in both orientations, the winners under the two rules are compared
+directly at every komi floor from −(m·n)−1 to m·n+1 (C-53).
 
 Minimal is taken in experiment 005's order: board area, then the number of
 stones, then the position code, then Black to move before White. Under `Defs.lean`'s rules there is no witness on any board of at
@@ -649,10 +651,16 @@ agreement recorded there is not vacuous. The 666 unresolved roots all made
 one: the budget stopped exactly the searches in which the rules met, as on
 the earlier budgeted runs. A separating root among them is not excluded.
 
-The value is compared rather than the winner because one search answers for
-every komi at once. On the boards C-55 covers, equal values mean equal winners
-at every komi floor in C-55's range; on 1×5, C-53 is a statement about values
-only.
+The sweep compares the value rather than the winner because one search answers
+for every komi at once. The winners are compared by a separate test: at every
+root of every board of at most five points in both orientations, under
+`Defs.lean`'s rules, `the_winners_agree_under_both_rules_on_every_board_of_five_points`
+in `crates/superko-solve/tests/agreement.rs` computes both colors' verdicts
+under each rule at every komi floor from −(m·n)−1 to m·n+1, and the PSK winner
+equals the SSK winner at every one (`computed`). On those boards, 1×5 and 5×1
+included, C-53 is therefore a statement about winners in that floor range as
+well as about values, and does not reach winners only through C-55. Floors
+outside the range are not tested. On 2×3 only values are compared.
 
 ### C-55 — the threshold agreement
 
@@ -662,6 +670,10 @@ at every komi floor from one below the lowest possible score to one above the
 highest. The general statement is a short induction over the game tree: at a
 finished game the leaf test is `winnerZ`, the mover's disjunction is a maximum,
 and the waiter's conjunction is a minimum. It is not written in Lean. Nothing
-`proved` rests on it, and no C-17 witness may. The absence of separation C-53
-records, and the minimality of C-54's witness, are statements about values, and
-reach winners only through it.
+`proved` rests on it, and no C-17 witness may. The minimality of C-54's witness
+is a statement about values, and reaches winners only through it. The absence
+of separation C-53 records now reaches winners directly on the boards the test
+`the_winners_agree_under_both_rules_on_every_board_of_five_points` covers —
+every board of at most five points in both orientations, suicide forbidden,
+at every komi floor of the range above — and not only through this agreement;
+on 2×3 it is a statement about values.

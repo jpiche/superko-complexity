@@ -17,7 +17,9 @@
 //!    `black wins at komi floor k` equal to `value > k` at every komi floor
 //!    from `-(m·n) - 1` to `m·n + 1` checks the threshold agreement the crate
 //!    docs mark `computed` rather than assuming it. Floors outside that range
-//!    are not tested.
+//!    are not tested. On every board of at most five points, suicide
+//!    forbidden, the winners under the two superko rules are also held equal
+//!    at every such floor, in a test ignored in debug.
 //!
 //! 3. **Determinacy.** Exactly one color wins from every state (C-28,
 //!    `proved`). The verdict searches are held to it.
@@ -251,6 +253,166 @@ fn verdicts_are_determined_and_track_the_value() {
             }
         }
     }
+}
+
+/// Every board of at most five points, in both orientations.
+const FIVE: [(usize, usize); 10] = [
+    (1, 1),
+    (1, 2),
+    (2, 1),
+    (1, 3),
+    (3, 1),
+    (1, 4),
+    (4, 1),
+    (2, 2),
+    (1, 5),
+    (5, 1),
+];
+
+/// Roots of [`FIVE`], `2 · 3^(m·n)` a board: 6 on 1×1, 18 on each two-point
+/// line, 54 on each three-point line, 162 on each four-point line and on 2×2,
+/// and 486 on each five-point line, so `6 + 2·18 + 2·54 + 3·162 + 2·486`.
+const FIVE_ROOTS: u64 = 1608;
+
+/// Verdict searches over [`FIVE`]: at each root, `2·m·n + 3` komi floors, both
+/// colors and both rules, so `roots · (2·m·n + 3) · 4` a board: 120 on 1×1,
+/// 504 on each two-point line, 1 944 on each three-point line, 7 128 on each
+/// four-point line and on 2×2, and 25 272 on each five-point line, so
+/// `120 + 2·504 + 2·1944 + 3·7128 + 2·25272`.
+const FIVE_VERDICTS: u64 = 76_944;
+
+/// Worker threads for [`the_winners_agree_under_both_rules_on_every_board_of_five_points`].
+/// The checks are the same at any count; this only spreads the roots.
+const FIVE_THREADS: usize = 8;
+
+/// Under the rules of `Defs.lean` (suicide forbidden), at every root of every
+/// board of at most five points in both orientations, with the plain solver
+/// and no budget: at every komi floor of [`floors`], `-(m·n) - 1` to `m·n + 1`,
+/// exactly one color wins under each rule, Black wins exactly when that rule's
+/// value exceeds the floor, the PSK value equals the SSK value, and the PSK
+/// winner equals the SSK winner, both colors' verdicts compared.
+///
+/// The last is the one C-53 needs on 1×5 and 5×1: there the threshold agreement
+/// was not otherwise checked, so equal values reached equal winners only by
+/// inference. Here the winners are computed by the verdict recursion under
+/// each rule and compared directly. Floors outside the range are not tested.
+/// The counts of roots and verdict searches are pinned from arithmetic, so the
+/// test cannot pass on a loop that visits nothing.
+///
+/// Release only: 25 272 verdict searches on each five-point line.
+///
+/// `cargo test --release -p superko-solve --test agreement -- --ignored the_winners_agree_under_both_rules_on_every_board_of_five_points`
+#[test]
+#[ignore = "release only: every verdict of every root of 1x5 and 5x1"]
+fn the_winners_agree_under_both_rules_on_every_board_of_five_points() {
+    let (mut roots, mut verdicts) = (0u64, 0u64);
+    for (rows, cols) in FIVE {
+        let dims = Dims::new(rows, cols);
+        let table = RuleTable::build(dims, Suicide::Forbid).expect("a small board");
+        let board_roots = 2 * code_space(dims);
+        let exponent = u32::try_from(rows * cols).expect("point count fits a u32");
+        assert_eq!(
+            u64::from(board_roots),
+            2 * 3u64.pow(exponent),
+            "{dims}: the root count is not 2 * 3^(m*n)"
+        );
+        let (board_seen, board_verdicts) = std::thread::scope(|s| {
+            let workers: Vec<_> = (0..FIVE_THREADS)
+                .map(|t| {
+                    let table = &table;
+                    s.spawn(move || winners_agree_on_roots(table, t, FIVE_THREADS))
+                })
+                .collect();
+            workers
+                .into_iter()
+                .map(|w| w.join().unwrap_or_else(|e| std::panic::resume_unwind(e)))
+                .fold((0u64, 0u64), |(a, b), (c, d)| (a + c, b + d))
+        });
+        let span = u64::try_from(rows * cols).expect("point count fits a u64");
+        assert_eq!(board_seen, u64::from(board_roots), "{dims}: roots visited");
+        assert_eq!(
+            board_verdicts,
+            u64::from(board_roots) * (2 * span + 3) * 4,
+            "{dims}: verdict searches made"
+        );
+        roots += board_seen;
+        verdicts += board_verdicts;
+    }
+    assert_eq!(
+        (roots, verdicts),
+        (FIVE_ROOTS, FIVE_VERDICTS),
+        "roots visited and verdict searches made over every board of at most five points"
+    );
+}
+
+/// The checks of [`the_winners_agree_under_both_rules_on_every_board_of_five_points`]
+/// at the roots `stride · i + offset` of a board's sweep order, root `r` being
+/// code `r / 2` with Black to move when `r` is even. Returns the roots checked
+/// and the verdict searches made.
+fn winners_agree_on_roots(table: &RuleTable, offset: usize, stride: usize) -> (u64, u64) {
+    let dims = table.dims();
+    let mut psk = Solver::new(table, Repetition::Psk);
+    let mut ssk = Solver::new(table, Repetition::Ssk);
+    let (mut roots, mut verdicts) = (0u64, 0u64);
+    let count = 2 * usize::try_from(code_space(dims)).expect("code space fits a usize");
+    for root in (offset..count).step_by(stride) {
+        let code = PosCode(u32::try_from(root / 2).expect("a position code"));
+        let to_move = if root % 2 == 0 {
+            Color::Black
+        } else {
+            Color::White
+        };
+        let values = [&mut psk, &mut ssk].map(|solver| {
+            solver
+                .solve_root(code, to_move)
+                .value
+                .expect("no budget was set")
+        });
+        assert_eq!(
+            values[0], values[1],
+            "{dims} forbid root {code} {to_move} to move: PSK value {} and SSK value {} differ",
+            values[0], values[1]
+        );
+        roots += 1;
+        for floor in floors(dims) {
+            // wins[rule][color]: rule 0 is PSK, color 0 is Black.
+            let mut wins = [[false; 2]; 2];
+            for (slot, (rep, solver)) in [(Repetition::Psk, &mut psk), (Repetition::Ssk, &mut ssk)]
+                .into_iter()
+                .enumerate()
+            {
+                for (ci, c) in [Color::Black, Color::White].into_iter().enumerate() {
+                    wins[slot][ci] = solver
+                        .decide_root(code, to_move, floor, c)
+                        .wins
+                        .expect("no budget was set");
+                    verdicts += 1;
+                }
+                let [black, white] = wins[slot];
+                assert_ne!(
+                    black, white,
+                    "{dims} {rep} forbid root {code} {to_move} to move at komi floor {floor}: \
+                     both colors or neither has a winning strategy"
+                );
+                assert_eq!(
+                    black,
+                    i64::from(values[slot]) > floor,
+                    "{dims} {rep} forbid root {code} {to_move} to move: value {} and the verdict \
+                     at komi floor {floor} disagree",
+                    values[slot]
+                );
+            }
+            for (ci, c) in [Color::Black, Color::White].into_iter().enumerate() {
+                assert_eq!(
+                    wins[0][ci], wins[1][ci],
+                    "{dims} forbid root {code} {to_move} to move at komi floor {floor}: whether \
+                     {c} wins is {} under PSK and {} under SSK",
+                    wins[0][ci], wins[1][ci]
+                );
+            }
+        }
+    }
+    (roots, verdicts)
 }
 
 /// The value does not depend on the move order and the node count does. The

@@ -24,7 +24,9 @@
 //! or in Lean**: it is `computed`, checked by the fast engine in
 //! `tests/agreement.rs` at every komi floor from `-(m·n) - 1` to `m·n + 1`, at
 //! every root position of 1×1, 1×2, 1×3, 1×4 and 2×2, under both rules and both
-//! suicide conventions (C-55). Floors outside that range are not tested. At
+//! suicide conventions, and of 2×1, 3×1, 4×1, 1×5 and 5×1 under both rules with
+//! suicide forbidden, these five in a test ignored in debug (C-55). Floors
+//! outside that range are not tested. At
 //! such a floor every leaf's winner test gives what it gives at the nearer end
 //! floor of the range, because the area difference lies between `-(m·n)` and
 //! `m·n` (read from `winner_at` and `RuleTable::area`, not tested); that the
@@ -35,7 +37,11 @@
 //! mirrors `Superko.decideWins` and needs no threshold argument. A report of
 //! **no** separation, and the minimality of a witness, do rest on it: the sweep
 //! compares values and reaches winners only through the agreement, so on boards
-//! outside the range above they are statements about values alone.
+//! outside the range above they are statements about values alone. Under the
+//! no-suicide rule, on every board of at most five points in both orientations,
+//! the winners under the two superko rules are also compared directly at every
+//! komi floor of that range (`tests/agreement.rs`, C-53, `computed`), so there a
+//! report of no separation is about winners as well, within those floors.
 //!
 //! # Two engines, one of them the arbiter
 //!
@@ -71,7 +77,10 @@
 //! root position, on every board with `m · n <= 3` under both rules and both
 //! suicide conventions; on
 //! 1×1, 1×2, 1×3, 1×4 and 2×2 the fast engine's verdicts satisfy determinacy
-//! (C-28, `proved`) and the threshold agreement (C-55); and the 1×n empty-board
+//! (C-28, `proved`) and the threshold agreement (C-55), and on 2×1, 3×1, 4×1,
+//! 1×5 and 5×1 they do under the no-suicide rule, where on every board of at
+//! most five points the PSK and SSK winners are also equal at every floor of
+//! that range (C-53); and the 1×n empty-board
 //! scores under positional superko reproduce the transcribed table of C-24 for
 //! n ≤ 6.
 //!
