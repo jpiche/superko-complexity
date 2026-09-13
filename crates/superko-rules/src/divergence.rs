@@ -131,11 +131,11 @@ impl Divergence {
                  resolved within the node budgets `superko-solve`'s tests/symmetry.rs names \
                  (1288 of 2916 pairs of a root and any of its images, both rules, on each); \
                  that values and verdicts with those plays skipped equal those without is \
-                 `computed` at every root and komi floor of every board of at most five \
-                 points except 1x5 and 5x1 with suicide removing its own stones, where it is \
-                 `computed` only where both searches resolved within the budgets of \
-                 `superko-solve`'s tests/mirrored.rs (440 of 972 values and 15976 of 25272 \
-                 verdicts, both rules, on each); and none of it is proved."
+                 `computed` at every root, and at komi floors -(m*n)-1 to m*n+1, of every \
+                 board of at most five points except 1x5 and 5x1 with suicide removing its \
+                 own stones, where it is `computed` only where both searches resolved within \
+                 the budgets of `superko-solve`'s tests/mirrored.rs (440 of 972 values and \
+                 15976 of 25272 verdicts, both rules, on each); and none of it is proved."
             }
             Self::ColorSwap => {
                 "Some roots take their values, negated, from the root with every stone's \

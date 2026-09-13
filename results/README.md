@@ -103,9 +103,7 @@ points, except on 1x5 and 5x1 with suicide removing its own stones, where it is
 `computed` only where both searches resolved within the budgets
 `crates/superko-solve/tests/mirrored.rs` names (440 of 972 values and 15 976 of
 25 272 verdicts, both rules, on each). Verdicts at floors outside that range are
-not tested, and none of it is proved. The `board-symmetry` consequence sentence
-says "at every root and komi floor" and so overstates the tested floor range
-(`../docs/trusted-base.md`). Without `--symmetry on` none of these lines appears
+not tested, and none of it is proved. Without `--symmetry on` none of these lines appears
 and the body is unchanged.
 
 A `solve` body produced with `--symmetry on` turns on mirrored moves alone,

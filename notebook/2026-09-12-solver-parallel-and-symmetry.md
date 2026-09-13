@@ -506,3 +506,12 @@ comments and docs only:
 6. **Scratch.** `data/review-clippy` and `data/review-clippy-bench-r1` are
    reviewer clippy target directories, 13 MB each and gitignored, made against
    the rule above, and can be deleted.
+
+## Addendum, after `56f7935`
+
+The main session narrowed the `board-symmetry` consequence sentence in
+`crates/superko-rules/src/divergence.rs` to the tested floor range,
+`-(m*n)-1` to `m*n+1`, and removed the notes in `docs/trusted-base.md` and
+`results/README.md` that said it overstated. The bullet on that sentence under
+"What is not established" and item 3 of the next-session list describe the
+state before that change and are left as written.

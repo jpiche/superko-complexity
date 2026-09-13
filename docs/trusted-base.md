@@ -140,10 +140,8 @@ board group and negate under the color exchange is `computed` on the same
 boards, and so is the verdict transport, at the floors of that range whose
 image stays in it; on 1×5 and 5×1 with suicide removing its own stones, only
 at the roots resolved within the budgets of `tests/symmetry.rs`. Verdicts at
-floors outside that range are not tested. The `board-symmetry` consequence
-sentence in `divergence.rs` says "at every root and komi floor" and so
-overstates the tested floor range; `superko-rules`'s crate docs say a witness
-header prints that sentence, though no CLI code calls `consequence()` today.
+floors outside that range are not tested. `superko-rules`'s crate docs say a
+witness header prints each divergence's consequence sentence, though no CLI code calls `consequence()` today.
 Neither divergence is proved.
 
 **Independent numerical agreement.** This is the strong one. The definitions
