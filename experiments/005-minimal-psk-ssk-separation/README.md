@@ -399,3 +399,14 @@ the four plain witness solves; `README.md`, `docs/open-questions.md` §3,
 ([`../../notebook/2026-09-13-six-point-separation.md`](../../notebook/2026-09-13-six-point-separation.md)).
 
 **Status stays `running`.**
+
+**Addendum, 2026-09-13.** Row 3, the kernel certificate of the six-point
+witnesses, is deferred rather than attempted. Following the witnesses' winning
+lines showed that both separate by returning to a board the fresh history of
+encoding (C) leaves open, and that the 1×6 one reached by a game is won by
+Black under either rule (C-58); a certificate of C-56 would certify a fact
+about (C). The question the witnesses raise is whether a game's history can
+carry a separation, which is experiment 006. The ledger consequence of row 3,
+C-17 to `proved`, was in any case wrong after the maintainer's decision that
+C-17 names the minimal position: a certificate would move a verdict row of
+C-56 to `proved` and nothing else.

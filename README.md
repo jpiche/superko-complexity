@@ -80,7 +80,11 @@ positions: on 1×6, `X.X.X.` with Black to move is won by White at komi floor 1
 under positional superko and by Black under situational superko, and on 2×3
 `OOO/.X.` with White to move separates at floor −1 (C-56, `computed`), so six
 is the least board area carrying one, within the floors tested below six
-(C-57, `computed`). Every number here regenerates from a witness command in [`results/`](results/) or a named
+(C-57, `computed`). Both win by bringing back a board that has stood only with
+the winner to move, which the root's fresh history leaves open: reached by a
+game, the 1×6 one follows a White pass and Black wins under either rule (C-58,
+`proved` by hand), so what these positions say about play is
+[experiment 006](experiments/006-live-separation/README.md), not yet run. Every number here regenerates from a witness command in [`results/`](results/) or a named
 test.
 
 **Not established.** The classes, which is the gap that matters. They are

@@ -77,7 +77,35 @@ Two sub-questions, of very different difficulty:
   of `Superko.decideWins` under both rules at their komi floors, if that
   evaluation reaches a six-point board; that is not attempted yet. Fully
   formalizable, and publishable on its own.
-- **A complexity separation** (C-12). Much harder, and `infra-gap`.
+- **Why the six-point witnesses separate, and what they say about play.**
+  Followed move by move (`crates/superko-solve/tests/lines.rs`, `computed`),
+  both witnesses win under SSK by the same device: a play that brings back a
+  board which has stood only with the winner to move, now with the loser to
+  move. On 1×6 the board is the root itself, `X.X.X.`, Black's best board,
+  and White's one play there recreates the situation just left; on 2×3 it is
+  the board after the second move, reached while Black's pass is pending, so
+  that White neither passes the game to its end nor makes a new board. A
+  *delayed pass*: SSK lets a player obtain "`B`, opponent to move" after `B`
+  has gone into history, once, at a moment the archive has closed the
+  opponent's replies; passing at `B` when it stood would have given the same
+  situation with an empty archive and closed `B` to both rules (C-50). PSK
+  visits a board once and has no such move. That is C-52's odd walk read as a
+  resource. Both witnesses need the history encoding (C) starts with. On 1×6
+  the dependence is total: a game reaches `X.X.X.` with Black to move only
+  after a White pass, and Black then wins by passing under either rule (C-58,
+  `proved` by hand). On 2×3 the six shortest games reaching `OOO/.X.` with
+  White to move give the same value under both rules in every case
+  (`notebook/2026-09-13-why-the-witnesses-separate.md`, `computed`; six
+  histories, not a proof). Whether any position reached by a game separates
+  the rules with that game's history archived — a *live* separation — is
+  experiment 006, and it is the question the KGS anecdotes of C-17 are about.
+  It bears on C-1: C-56 is a fact about (C).
+- **A complexity separation** (C-12). Much harder, and `infra-gap`. What the
+  witnesses show is the whole of the difference between the rules read as a
+  resource: each board may host two situations under SSK and one under PSK,
+  a bounded extra per board over exponentially many boards, and it is what a
+  reduction in either direction has to simulate. Nothing about the classes
+  follows from that; it is a reading, `conjecture` at most.
 
 **C-17 is the best short-term target in the project**: novel, self-contained,
 machine-checkable end to end, and it needs no complexity-theory infrastructure.

@@ -246,6 +246,14 @@ weaker than it looks, because it says nothing about positions with a
 non-trivial history. The archive argument giving EXPSPACE membership is
 insensitive to this, but a hypothetical EXPTIME algorithm might not be.
 
+The first concrete pressure on faithfulness is C-56: the two six-point
+positions whose winner differs between the superko rules under (C) win by
+returning to a board the fresh history leaves open. Reached by a game, the 1×6
+one follows a White pass and is won by Black under either rule (C-58, `proved`
+by hand), and the 2×3 one agrees under both rules along its shortest reaching
+games (`computed`). Whether any position reached by a game separates the rules
+with that history archived is experiment 006.
+
 *Resolve by:* checking which encoding Lichtenstein–Sipser and Robson actually
 use, and stating whether the folklore EXPSPACE and EXPTIME arguments survive
 each of (A), (B), (C). This is claim C-1 and it blocks the ledger.
