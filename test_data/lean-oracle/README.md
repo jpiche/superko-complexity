@@ -103,7 +103,7 @@ insertion `step'` performs on a pass, and the pass exemption both rules carry.
 The reason the `play` and `count` tables thin out as the board grows. Walking
 the game tree through the computable rules, in the Lean interpreter, costs
 roughly ten to twenty times more per extra ply, and the constant grows with
-the board. Measured on this toolchain (`observed`, wall clock, whole file):
+the board. Measured on Lean v4.34.0-rc2 (`observed`, wall clock, whole file):
 
 | board | play depth | cost |
 |---|---|---|
@@ -114,6 +114,11 @@ the board. Measured on this toolchain (`observed`, wall clock, whole file):
 | 1x5 | 0 | 20 s |
 | 1x6 | 0 | 279 s |
 | 2x3 | 0 | 340 s |
+
+Regenerating every fixture at its recorded depth on Lean v4.35.0 took 29 s
+(1x6), 30 s (6x1), 39 s (2x3) and 44 s (3x2), and at most 5 s for each
+smaller board (`observed`, wall clock, one machine). The two depth-0 rows above
+were not re-measured there, and the deeper rows were not rerun at all.
 
 `docs/plans/rules-mirror-plan.md` asks for six plies at `m * n ≤ 3` and four
 above; the measurement is what the depths are set from instead, and each file

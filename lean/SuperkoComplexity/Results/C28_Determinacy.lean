@@ -3,7 +3,9 @@ Copyright (c) 2026 Joseph J. Piché. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph J. Piché
 -/
-import SuperkoComplexity.Results.C13_Termination
+module
+
+public import SuperkoComplexity.Results.C13_Termination
 
 /-!
 # C-28 — exactly one color wins
@@ -52,6 +54,8 @@ This file is that proof.
   winner, which is C-29's business.
 * Nothing about which color wins, from any particular position or in general.
 -/
+
+@[expose] public section
 
 namespace Superko
 

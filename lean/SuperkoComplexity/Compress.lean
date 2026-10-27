@@ -3,7 +3,9 @@ Copyright (c) 2026 Joseph J. Piché. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph J. Piché
 -/
-import SuperkoComplexity.Results.C29_DeciderCorrect
+module
+
+public import SuperkoComplexity.Results.C29_DeciderCorrect
 
 /-!
 # What the value sees of the archive
@@ -55,6 +57,8 @@ Nor does anything here bear on C-14. The decision problem takes a root position
 alone (C-1, encoding (C)), so no algorithm is obliged to summarize an interior
 history; and a bound on one summary scheme bounds no complexity class.
 -/
+
+@[expose] public section
 
 open scoped Classical
 

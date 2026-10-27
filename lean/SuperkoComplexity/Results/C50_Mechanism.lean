@@ -3,7 +3,9 @@ Copyright (c) 2026 Joseph J. Piché. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph J. Piché
 -/
-import SuperkoComplexity.Basic
+module
+
+public import SuperkoComplexity.Basic
 
 /-!
 # What separates the two superko rules (C-50, C-51)
@@ -61,6 +63,8 @@ necessary for a value gap and nowhere near sufficient: the sweep of
 permits and PSK refuses on those boards. Positions whose winner differs exist
 on 1×6 and 2×3 (C-56, `computed`); which is the least is C-17, `open`.
 -/
+
+@[expose] public section
 
 namespace Superko
 

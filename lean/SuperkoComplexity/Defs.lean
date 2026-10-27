@@ -3,10 +3,12 @@ Copyright (c) 2026 Joseph J. Piché. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph J. Piché
 -/
-import Mathlib.Logic.Relation
-import Mathlib.Data.Set.Card
-import Mathlib.Data.Rat.Defs
-import Mathlib.Data.Fintype.Pi
+module
+
+public import Mathlib.Logic.Relation
+public import Mathlib.Data.Set.Card
+public import Mathlib.Data.Rat.Defs
+public import Mathlib.Data.Fintype.Pi
 
 /-!
 # The trusted definitional core
@@ -22,7 +24,7 @@ enlarges what a reader must audit and invalidates prior auditing.
 
 ## Status
 
-**Compiles** against Lean 4.34.0-rc2 and Mathlib. The definitions have been
+**Compiles** against Lean 4.35.0 and Mathlib v4.35.0. The definitions have been
 exercised on concrete positions — see `Sanity.lean`, whose checks are proved by
 `decide` and so are verified by the kernel rather than observed.
 
@@ -58,6 +60,8 @@ Decidable counterparts, proved equal to these, live in `Basic.lean`. Those are
 what the certificate checkers in `Certificates/` use. The bridging lemmas are
 the reason a certificate check says something about *these* definitions.
 -/
+
+@[expose] public section
 
 open scoped Classical
 

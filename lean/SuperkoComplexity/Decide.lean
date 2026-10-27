@@ -3,8 +3,10 @@ Copyright (c) 2026 Joseph J. Piché. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph J. Piché
 -/
-import SuperkoComplexity.Results.C13_Termination
-import Mathlib.Data.Rat.Floor
+module
+
+public import SuperkoComplexity.Results.C13_Termination
+public import Mathlib.Data.Rat.Floor
 
 /-!
 # The computable game layer
@@ -68,6 +70,8 @@ validation of the published 2×2 game count (C-9): that count is a search for th
 Rust side to produce and a certificate checker to verify, and no run of this
 decider enumerates games at all.
 -/
+
+@[expose] public section
 
 namespace Superko
 

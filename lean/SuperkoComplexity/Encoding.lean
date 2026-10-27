@@ -3,15 +3,17 @@ Copyright (c) 2026 Joseph J. Piché. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph J. Piché
 -/
-import SuperkoComplexity.Basic
-import Mathlib.Data.Nat.Size
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.Rat.Lemmas
-import Mathlib.Data.List.OfFn
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Push
+module
+
+public import SuperkoComplexity.Basic
+public import Mathlib.Data.Nat.Size
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.Rat.Lemmas
+public import Mathlib.Data.List.OfFn
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.Push
 
 /-!
 # The input encoding (C-31)
@@ -92,6 +94,8 @@ Three statements pin the layout those definitions claim: `cellFlat_idx`
 bit is at `2 * k + 1`). A reader who accepts those definitions and checks those
 three statements has checked this file. It adds nothing to `Defs.lean`.
 -/
+
+@[expose] public section
 
 namespace Superko.Enc
 

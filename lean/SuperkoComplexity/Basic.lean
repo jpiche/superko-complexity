@@ -3,9 +3,11 @@ Copyright (c) 2026 Joseph J. Piché. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph J. Piché
 -/
-import SuperkoComplexity.Defs
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
+module
+
+public import SuperkoComplexity.Defs
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
 
 /-!
 # Derived notions and decidable counterparts
@@ -38,6 +40,8 @@ two flattens the order to a single natural number, because two units of that
 budget are exactly enough to absorb the reset of `passes` that a play performs.
 One `omega` call per case then discharges the whole argument.
 -/
+
+@[expose] public section
 
 namespace Superko
 

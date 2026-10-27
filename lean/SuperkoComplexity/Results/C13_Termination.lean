@@ -3,7 +3,9 @@ Copyright (c) 2026 Joseph J. Piché. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph J. Piché
 -/
-import SuperkoComplexity.Basic
+module
+
+public import SuperkoComplexity.Basic
 
 /-!
 # C-13 — play under superko terminates
@@ -44,6 +46,8 @@ with nothing to spare.
 `docs/formal-model.md` §5. `playMeasure_add_le` gives the corresponding bound
 from an arbitrary state if a later claim wants one.
 -/
+
+@[expose] public section
 
 namespace Superko
 

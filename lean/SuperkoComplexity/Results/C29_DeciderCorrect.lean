@@ -3,7 +3,9 @@ Copyright (c) 2026 Joseph J. Piché. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph J. Piché
 -/
-import SuperkoComplexity.Decide
+module
+
+public import SuperkoComplexity.Decide
 
 /-!
 # C-29 — the archive decider decides SUPERKO-GO
@@ -48,6 +50,8 @@ therefore not incidental to the statement: tightening C-26 — a lexicographic
 measure would, as `C13_Termination.lean` notes — changes the fuel figure these
 theorems are stated at, and they would have to be restated.
 -/
+
+@[expose] public section
 
 namespace Superko
 

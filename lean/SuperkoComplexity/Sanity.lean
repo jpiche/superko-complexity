@@ -3,7 +3,9 @@ Copyright (c) 2026 Joseph J. Piché. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph J. Piché
 -/
-import SuperkoComplexity.Basic
+module
+
+public import SuperkoComplexity.Basic
 
 /-!
 # Sanity checks on the definitions
@@ -29,20 +31,22 @@ Each check routes through the computable counterparts in `Basic.lean` and their
 bridging lemmas, which is what makes it a statement about `Defs.lean`.
 -/
 
+@[expose] public section
+
 namespace Superko
 namespace Sanity
 
 /-! ## Fixtures -/
 
-private def B : Option Color := some Color.black
-private def W : Option Color := some Color.white
-private def E : Option Color := none
+def B : Option Color := some Color.black
+def W : Option Color := some Color.white
+def E : Option Color := none
 
-private def mk22 (p00 p01 p10 p11 : Option Color) : Position 2 2 := fun p =>
+def mk22 (p00 p01 p10 p11 : Option Color) : Position 2 2 := fun p =>
   if p = (0,0) then p00 else if p = (0,1) then p01
   else if p = (1,0) then p10 else p11
 
-private def mk33 (f : Fin 3 → Fin 3 → Option Color) : Position 3 3 :=
+def mk33 (f : Fin 3 → Fin 3 → Option Color) : Position 3 3 :=
   fun p => f p.1 p.2
 
 /-! ## Board geometry

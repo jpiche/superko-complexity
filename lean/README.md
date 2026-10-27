@@ -55,3 +55,8 @@ through a bridging lemma proves nothing about Go.
   `Lean.ofReduceBool`. Prefer `decide`; isolate what needs it. See
   [`../CLAUDE.md`](../CLAUDE.md).
 - A theorem proving a ledger claim is named for it: `C13_terminates`.
+- Every file under `SuperkoComplexity/` is a `module` that opens
+  `@[expose] public section`, so definitions unfold across files exactly as
+  they did before the module system; a module imports only modules.
+  `Axioms.lean` and `Oracle.lean` are scripts outside the library and stay
+  plain files.

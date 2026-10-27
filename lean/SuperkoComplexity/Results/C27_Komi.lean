@@ -3,8 +3,10 @@ Copyright (c) 2026 Joseph J. Piché. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph J. Piché
 -/
-import SuperkoComplexity.Results.C29_DeciderCorrect
-import Mathlib.Data.Rat.Floor
+module
+
+public import SuperkoComplexity.Results.C29_DeciderCorrect
+public import Mathlib.Data.Rat.Floor
 
 /-!
 # C-27 — komi matters only through its floor
@@ -59,6 +61,8 @@ here rules that out; the scope of the claim is `BlackWins` at Black.
   about whether area scoring without dead-stone determination is the right
   scoring rule (C-16).
 -/
+
+@[expose] public section
 
 namespace Superko
 
