@@ -2,8 +2,8 @@
 
 ## Building
 
-Pinned to `leanprover/lean4:v4.34.0-rc2`, matching the Mathlib revision in
-`lake-manifest.json`.
+Pinned to `leanprover/lean4:v4.35.0`, matching the Mathlib release tag
+`v4.35.0` that `lakefile.toml` requires and `lake-manifest.json` locks.
 
 ```bash
 lake build

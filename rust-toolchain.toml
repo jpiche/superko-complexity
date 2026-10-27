@@ -4,5 +4,5 @@
 #
 # `rustfmt` and `clippy` are listed because CI runs both as gates.
 [toolchain]
-channel = "1.96.0"
+channel = "1.99.1"
 components = ["rustfmt", "clippy"]

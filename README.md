@@ -44,7 +44,7 @@ way.
 status and its witness. This section summarizes it, and where the two disagree
 the ledger is right.
 
-**Proved.** Twelve claims, machine-checked against Lean 4.34.0-rc2 and Mathlib on
+**Proved.** Twelve claims, machine-checked against Lean 4.35.0 and Mathlib on
 the three standard axioms, no `sorry` and no `native_decide`
 ([`results/axioms.txt`](results/axioms.txt)). Play terminates, and a game from
 a root position makes at most 4·3^(m·n) moves (C-13, C-26). From every state
